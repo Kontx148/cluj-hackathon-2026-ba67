@@ -9,14 +9,11 @@ import '../models/feed_item.dart';
 class FeedService {
   static const _assetPath = 'data/feed-items.json';
 
-  Future<List<FeedItem>> fetchFeed({FeedLevel? level}) async {
-    final items = useRemoteFeedApi
-        ? await _fetchFromApi(level: level)
-        : await _fetchFromAssets();
-
-    if (level == null) return items;
-
-    return items.where((item) => item.level == level).toList();
+  Future<List<FeedItem>> fetchFeed() async {
+    if (useRemoteFeedApi) {
+      return _fetchFromApi();
+    }
+    return _fetchFromAssets();
   }
 
   Future<List<FeedItem>> _fetchFromAssets() async {
@@ -24,24 +21,12 @@ class FeedService {
     return _parseItems(jsonDecode(raw) as Map<String, dynamic>);
   }
 
-  Future<List<FeedItem>> _fetchFromApi({FeedLevel? level}) async {
-    final uri = Uri.parse('$apiBase/api/feed').replace(
-      queryParameters: level == null
-          ? null
-          : {
-              'level': switch (level) {
-                FeedLevel.eu => 'EU',
-                FeedLevel.romania => 'Romania',
-                FeedLevel.local => 'Local',
-              },
-            },
-    );
-
+  Future<List<FeedItem>> _fetchFromApi() async {
+    final uri = Uri.parse('$apiBase/api/feed');
     final response = await http.get(uri).timeout(const Duration(seconds: 15));
     if (response.statusCode != 200) {
       throw Exception('Feed API ${response.statusCode}: ${response.body}');
     }
-
     return _parseItems(jsonDecode(response.body) as Map<String, dynamic>);
   }
 
