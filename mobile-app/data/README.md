@@ -13,8 +13,11 @@ JSON feed files bundled into the Flutter app. Updated by **feed-api ingest** (vi
 | `news-items.json` | News section — politician stances, party programs, RSS news |
 | `law-items.json` | Laws section — bills, laws, consultations (incl. Senat ingest) |
 | `law-sources.json` | Registry of official sources (documentation; **not enforced** at ingest) |
-| `LAW_GATHERING.md` | ID rules, importance, `actionPossible`, pipeline notes |
+| `source-registry.json` | **All sources by pillar** — multiple sources per purpose |
+| `SOURCE_FOCUS.md` | Product focus and workflow mapping |
+| `civic-keywords.json` | Regex filters for n8n news workflows |
 | `feed-items.json` | Legacy combined feed (superseded by news + law split) |
+| `LAW_GATHERING.md` | ID rules, importance, `actionPossible`, pipeline notes |
 | `schemas/feed-item.schema.json` | Shape consumed by the Flutter app |
 | `schemas/raw-law-record.schema.json` | Shape n8n sends to `/api/ingest/raw` |
 
@@ -26,10 +29,12 @@ JSON feed files bundled into the Flutter app. Updated by **feed-api ingest** (vi
 n8n workflow → POST /api/ingest/raw → feed-api → news-items.json | law-items.json
 ```
 
-| `category` in ingest POST | Written to |
-|---------------------------|------------|
-| `news` | `news-items.json` |
-| `law` | `law-items.json` |
+| `category` in ingest POST | Written to | Active workflows |
+|---------------------------|------------|------------------|
+| `law` | `law-items.json` | **2** — Senat, Camera Deputaților |
+| `news` | `news-items.json` | **3** — G4Media, Digi24, Maszol |
+
+Full list: [../n8n/README.md](../n8n/README.md) · [source-registry.json](./source-registry.json)
 
 Merge is by item `id` — re-ingest updates existing rows, does not duplicate.
 

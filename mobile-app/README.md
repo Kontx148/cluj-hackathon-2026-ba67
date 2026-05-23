@@ -182,7 +182,7 @@ Default (no `API_BASE`): loads bundled `data/news-items.json` and `data/law-item
 ## Data / n8n
 
 - **Ingest flow (n8n → feed-api → JSON):** [tools/feed-api/README.md](tools/feed-api/README.md)
-- **Docker + workflows:** [n8n/README.md](n8n/README.md)
+- **Docker + workflows:** [n8n/README.md](n8n/README.md) — **2 law** workflows (Senat, Cdep → `law-items.json`), **3 news** workflows (G4Media, Digi24, Maszol → `news-items.json`)
 - **Data files:** [data/README.md](data/README.md)
 - Schema: `data/schemas/feed-item.schema.json`
 - Update JSON on disk (via n8n or by hand), then **rebuild release** for iOS/Android

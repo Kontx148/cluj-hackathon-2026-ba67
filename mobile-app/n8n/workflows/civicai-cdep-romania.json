@@ -1,5 +1,5 @@
 {
-  "name": "CivicAI — Senat upcoming votes (RO)",
+  "name": "CivicAI — Camera Deputatilor upcoming bills (RO)",
   "nodes": [
     {
       "parameters": {
@@ -7,7 +7,7 @@
           "interval": [{ "field": "hours", "hoursInterval": 12 }]
         }
       },
-      "id": "f1a20001-0001-4000-8000-000000000001",
+      "id": "f1a60001-0001-4000-8000-000000000001",
       "name": "Every 12 hours",
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.2,
@@ -16,19 +16,26 @@
     {
       "parameters": {
         "method": "GET",
-        "url": "http://feed-api:3001/api/fetch/senat"
+        "url": "http://feed-api:3001/api/fetch/cdep",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
       },
-      "id": "f1a20001-0001-4000-8000-000000000002",
-      "name": "Fetch senat consultation",
+      "id": "f1a60001-0001-4000-8000-000000000002",
+      "name": "Fetch cdep listing",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [220, 0]
     },
     {
       "parameters": {
-        "jsCode": "const body = $input.first().json;\nif (!body.records || body.records.length === 0) {\n  throw new Error('No senat records parsed');\n}\nreturn [{ json: { records: body.records } }];"
+        "jsCode": "const body = $input.first().json;\nif (!body.records || body.records.length === 0) {\n  return [{ json: { records: [], skipped: true, reason: body.error || 'no records' } }];\n}\nreturn [{ json: { records: body.records } }];"
       },
-      "id": "f1a20001-0001-4000-8000-000000000003",
+      "id": "f1a60001-0001-4000-8000-000000000003",
       "name": "Prepare records",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -41,21 +48,15 @@
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
-            {
-              "name": "X-Ingest-Key",
-              "value": "civicai-dev-key"
-            },
-            {
-              "name": "Content-Type",
-              "value": "application/json"
-            }
+            { "name": "X-Ingest-Key", "value": "civicai-dev-key" },
+            { "name": "Content-Type", "value": "application/json" }
           ]
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ records: $json.records, category: 'law', meta: { workflow: 'senat-plx' } }) }}"
+        "jsonBody": "={{ JSON.stringify({ records: $json.records, category: 'law', meta: { workflow: 'cdep-plx' } }) }}"
       },
-      "id": "f1a20001-0001-4000-8000-000000000004",
+      "id": "f1a60001-0001-4000-8000-000000000004",
       "name": "Ingest merge",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
@@ -64,9 +65,9 @@
   ],
   "connections": {
     "Every 12 hours": {
-      "main": [[{ "node": "Fetch senat consultation", "type": "main", "index": 0 }]]
+      "main": [[{ "node": "Fetch cdep listing", "type": "main", "index": 0 }]]
     },
-    "Fetch senat consultation": {
+    "Fetch cdep listing": {
       "main": [[{ "node": "Prepare records", "type": "main", "index": 0 }]]
     },
     "Prepare records": {

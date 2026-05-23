@@ -2,22 +2,31 @@ import '../models/feed_item.dart';
 
 enum FeedSection { news, laws }
 
+const _newsSourceIds = {
+  'g4media',
+  'digi24',
+  'hotnews',
+  'pressone',
+  'recorder',
+  'ziuadecluj',
+  'cluj24',
+  'zcj',
+  'maszol',
+  'transtelex',
+  'transindex',
+  'monitorul-cluj',
+  'ep-thinktank',
+};
+
 const _lawSourceIds = {
   'senat-plx',
   'cdep-plx',
+  'cdep',
   'monitorul-oficial',
-  'eur-lex',
-  'ep-oeil',
   'legislatie-just',
+  'lege5',
+  'legis-ro',
   'primaria-cluj',
-};
-
-const _newsSourceIds = {
-  'g4media',
-  'ep-thinktank',
-  'digi24',
-  'transtelex',
-  'maszol',
 };
 
 FeedSection feedSectionForItem(FeedItem item) {

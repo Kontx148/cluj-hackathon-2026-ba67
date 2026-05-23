@@ -6,7 +6,10 @@ const {
   normalizeRecords,
   mergeFeedItems,
   parseSenatConsultationHtml,
+  parseCdepListingHtml,
+  parsePrimariaClujConsultationRss,
 } = require("./normalize");
+const { translateLawItems } = require("./translate");
 
 const PORT = Number(process.env.PORT) || 3001;
 
@@ -146,7 +149,7 @@ app.post("/api/ingest/feed", (req, res) => {
  * Merge normalized or raw records into news-items.json or law-items.json.
  * Body: { records: RawLawRecord[], meta?, category?: "news"|"law" }
  */
-app.post("/api/ingest/raw", (req, res) => {
+app.post("/api/ingest/raw", async (req, res) => {
   if (!checkIngestKey(req)) {
     return res.status(401).json({ error: "Invalid or missing X-Ingest-Key" });
   }
@@ -156,13 +159,17 @@ app.post("/api/ingest/raw", (req, res) => {
     return res.status(400).json({ error: "Body must include records: []" });
   }
 
-  const incoming = normalizeRecords(records);
+  let incoming = normalizeRecords(records);
   const resolvedCategory =
     category === "news" || category === "law"
       ? category
       : incoming.every((item) => item.feedCategory === "news")
         ? "news"
         : "law";
+
+  if (resolvedCategory === "law") {
+    incoming = await translateLawItems(incoming);
+  }
 
   const existing = resolvedCategory === "news" ? readNewsFeed() : readLawFeed();
   const merged = mergeFeedItems(existing.items || [], incoming);
@@ -216,6 +223,33 @@ app.get("/api/fetch/senat", async (_req, res) => {
   } catch (err) {
     res.status(502).json({
       error: err instanceof Error ? err.message : "senat fetch failed",
+    });
+  }
+});
+
+/** Fetch + parse Cluj-Napoca public consultations (local upcoming decisions). */
+app.get("/api/fetch/primaria-cluj", async (_req, res) => {
+  try {
+    const url =
+      "https://primariaclujnapoca.ro/cetateni/dezbateri-publice/feed/";
+    const response = await fetch(url, {
+      headers: {
+        "User-Agent": "CivicAI/1.0 (hackathon)",
+        Accept: "application/rss+xml, application/xml, text/xml",
+      },
+      signal: AbortSignal.timeout(20000),
+    });
+
+    if (!response.ok) {
+      return res.status(502).json({ error: `primaria-cluj HTTP ${response.status}` });
+    }
+
+    const xml = await response.text();
+    const records = parsePrimariaClujConsultationRss(xml);
+    res.json({ ok: true, count: records.length, records });
+  } catch (err) {
+    res.status(502).json({
+      error: err instanceof Error ? err.message : "primaria-cluj fetch failed",
     });
   }
 });

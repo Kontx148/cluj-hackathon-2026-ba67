@@ -11,6 +11,8 @@ class FeedItem {
     required this.sourceId,
     required this.level,
     this.sourceLang = 'en',
+    this.titleEn,
+    this.descriptionEn,
     this.summary,
     this.tags = const [],
     this.importance = 3,
@@ -29,6 +31,8 @@ class FeedItem {
   final String sourceId;
   final FeedLevel level;
   final String sourceLang;
+  final String? titleEn;
+  final String? descriptionEn;
   final String? summary;
   final List<String> tags;
   final int importance;
@@ -59,6 +63,8 @@ class FeedItem {
       sourceId: json['sourceId'] as String,
       level: _parseLevel(json['level'] as String),
       sourceLang: json['sourceLang'] as String? ?? 'en',
+      titleEn: json['title_en'] as String?,
+      descriptionEn: json['description_en'] as String?,
       summary: json['summary'] as String? ?? json['summary_en'] as String?,
       tags: (json['tags'] as List<dynamic>?)
               ?.map((e) => e.toString())

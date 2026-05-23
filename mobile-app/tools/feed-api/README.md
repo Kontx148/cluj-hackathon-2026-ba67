@@ -113,8 +113,9 @@ Ingest is a **listener**; workflows are **callers**.
 |--------|------|-------------|
 | GET | `/api/health` | Service status + data file paths |
 | GET | `/api/feed` | Combined news + law items. Query: `level`, `entityType`, `category` (`news`\|`law`), `lang` (`en`\|`ro`) |
-| GET | `/api/fetch/senat` | Fetch + parse Senat public consultation HTML → `{ records: [...] }` |
+| GET | `/api/fetch/senat` | Fetch + parse Senat public consultation HTML → `{ records: [...] }` (~68 bills) |
 | GET | `/api/fetch/cdep` | Camera Deputatilor listing (may 404 if URL changes) |
+| GET | `/api/fetch/primaria-cluj` | Cluj-Napoca public consultations RSS → `{ records: [...] }` |
 
 ### Write (requires `X-Ingest-Key`)
 
@@ -167,6 +168,13 @@ Content-Type: application/json
 
 Normalization logic: [normalize.js](./normalize.js).
 
+Romanian law items are auto-translated to English on ingest (`title_en` + `summary`) via [translate.js](./translate.js) (MyMemory API + legal phrase map). To refresh bundled JSON:
+
+```bash
+cd mobile-app/tools/feed-api
+npm run translate-laws
+```
+
 ---
 
 ## Run locally
@@ -194,11 +202,19 @@ Point n8n HTTP nodes to `http://localhost:3001` instead of `http://feed-api:3001
 
 ## Workflow → file mapping
 
+**Active workflows:** **2 law** → `law-items.json`, **3 news** → `news-items.json` (see [n8n/README.md](../../n8n/README.md)).
+
 | Workflow | Fetch step | Ingest `category` | Writes to |
 |----------|------------|-------------------|-----------|
 | `civicai-senat-romania.json` | `GET /api/fetch/senat` | `law` | `law-items.json` |
-| `civicai-g4media-law.json` | G4Media RSS | `news` | `news-items.json` |
-| `civicai-ep-thinktank.json` | EP Think Tank RSS | `news` | `news-items.json` |
+| `civicai-cdep-romania.json` | `GET /api/fetch/cdep` | `law` | `law-items.json` |
+| `civicai-g4media-ro-civic.json` | G4Media RSS | `news` | `news-items.json` |
+| `civicai-digi24-ro-civic.json` | Digi24 RSS | `news` | `news-items.json` |
+| `civicai-maszol-local-civic.json` | Maszol RSS | `news` | `news-items.json` |
+
+**Paused:** `civicai-ep-thinktank.json` (EU news — not in current focus).
+
+**Fetch helper without bundled workflow:** `GET /api/fetch/primaria-cluj` (Cluj public consultations) — add a workflow if you want it ingested automatically.
 
 ---
 

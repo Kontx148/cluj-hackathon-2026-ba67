@@ -2,15 +2,25 @@
 /** @typedef {import('./normalize.types').FeedItem} FeedItem */
 
 const SOURCE_NAMES = {
-  "eur-lex": "EUR-Lex",
-  "ep-oeil": "EP Legislative Observatory",
-  "ep-thinktank": "EP Think Tank",
-  "legislatie-just": "Legislatie.just.ro",
-  "monitorul-oficial": "Monitorul Oficial",
-  "cdep-plx": "Chamber of Deputies",
   "senat-plx": "Senat",
-  "primaria-cluj": "Cluj-Napoca City Hall",
+  "cdep-plx": "Camera Deputaților",
+  "monitorul-oficial": "Monitorul Oficial",
+  "legislatie-just": "Legislatie.just.ro",
+  "lege5": "Lege5.ro",
+  "legis-ro": "Legis.ro",
+  "primaria-cluj": "Primăria Cluj-Napoca",
   g4media: "G4Media",
+  digi24: "Digi24",
+  hotnews: "HotNews",
+  pressone: "PressOne",
+  recorder: "Recorder",
+  cluj24: "Cluj24",
+  ziuadecluj: "Ziua de Cluj",
+  zcj: "Cluj24",
+  maszol: "Maszol",
+  transtelex: "Transtelex",
+  transindex: "Transindex",
+  "monitorul-cluj": "Monitorul de Cluj",
 };
 
 const LEVEL_TAGS = {
@@ -24,25 +34,41 @@ const TYPE_TAGS = {
   bill: "#bill-proposal",
   vote: "#vote-upcoming",
   local_official: "#local-decision",
-  news: "#bill-proposal",
+  news: "#news",
 };
+
+const RO_NEWS_SOURCE_IDS = new Set([
+  "g4media",
+  "digi24",
+  "hotnews",
+  "pressone",
+  "recorder",
+]);
+
+const LOCAL_NEWS_SOURCE_IDS = new Set([
+  "ziuadecluj",
+  "cluj24",
+  "zcj",
+  "maszol",
+  "transtelex",
+  "transindex",
+  "monitorul-cluj",
+]);
 
 const LAW_SOURCE_IDS = new Set([
   "senat-plx",
   "cdep-plx",
   "monitorul-oficial",
-  "eur-lex",
-  "ep-oeil",
   "legislatie-just",
+  "lege5",
+  "legis-ro",
   "primaria-cluj",
 ]);
 
 const NEWS_SOURCE_IDS = new Set([
-  "g4media",
+  ...RO_NEWS_SOURCE_IDS,
+  ...LOCAL_NEWS_SOURCE_IDS,
   "ep-thinktank",
-  "digi24",
-  "transtelex",
-  "maszol",
 ]);
 
 function inferFeedCategory(raw, entityType, sourceId) {
@@ -151,6 +177,13 @@ function computeTags(raw) {
   if (LEVEL_TAGS[level]) tags.add(LEVEL_TAGS[level]);
   if (TYPE_TAGS[entity]) tags.add(TYPE_TAGS[entity]);
   if (computeActionPossible(raw) && entity !== "law") tags.add("#consultation");
+  const deadline = raw.voteDate || raw.consultationDeadline;
+  if (deadline) {
+    const d = new Date(deadline);
+    if (!Number.isNaN(d.getTime()) && d > new Date()) tags.add("#vote-upcoming");
+  } else if (entity === "bill" && /senat|cdep/.test(raw.sourceId || "")) {
+    tags.add("#vote-upcoming");
+  }
   return [...tags];
 }
 
@@ -179,11 +212,13 @@ function normalizeRawRecord(raw) {
     sourceLang: raw.sourceLang || (level === "EU" ? "en" : "ro"),
     entityType,
     feedCategory,
-    summary: (raw.summary || description).trim(),
     tags: computeTags(raw),
     importance: computeImportance(raw),
     actionPossible: computeActionPossible(raw),
   };
+
+  const summary = raw.summary ? String(raw.summary).trim() : "";
+  if (summary) item.summary = summary;
 
   if (raw.voteDate) item.voteDate = raw.voteDate;
   if (raw.consultationDeadline && !item.voteDate) {
@@ -250,12 +285,93 @@ function parseSenatConsultationHtml(html) {
         : undefined,
       publishedAt: new Date().toISOString(),
       fetchedAt: new Date().toISOString(),
-      status: "public consultation",
+      status: "public consultation — vote upcoming",
       actionPossible: true,
+      tags: ["#Romania", "#bill-proposal", "#vote-upcoming", "#consultation"],
     });
   }
 
-  return records.slice(0, 30);
+  return records;
+}
+
+function decodeXmlEntities(text) {
+  return String(text)
+    .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, "$1")
+    .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(Number(code)))
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#8211;/g, "–")
+    .replace(/&#8217;/g, "'")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+/**
+ * Minimal RSS 2.0 item parser (no external deps).
+ * @param {string} xml
+ */
+function parseRssFeedItems(xml) {
+  const items = [];
+  const itemRe = /<item>([\s\S]*?)<\/item>/gi;
+  let match;
+
+  while ((match = itemRe.exec(xml)) !== null) {
+    const block = match[1];
+    const getTag = (tag) => {
+      const tagRe = new RegExp(`<${tag}[^>]*>([\\s\\S]*?)<\\/${tag}>`, "i");
+      const tagMatch = block.match(tagRe);
+      return tagMatch ? decodeXmlEntities(tagMatch[1].trim()) : "";
+    };
+
+    const title = getTag("title");
+    const link = getTag("link");
+    if (!title || !link) continue;
+
+    items.push({
+      title,
+      link,
+      pubDate: getTag("pubDate") || getTag("dc:date"),
+      guid: getTag("guid"),
+      description: getTag("description").slice(0, 600),
+    });
+  }
+
+  return items;
+}
+
+/**
+ * Cluj-Napoca public consultations (dezbateri publice RSS).
+ * @param {string} xml
+ */
+function parsePrimariaClujConsultationRss(xml) {
+  return parseRssFeedItems(xml)
+    .filter(
+      (item) =>
+        !/procedura de dezbatere publică în vederea elaborării/i.test(item.title),
+    )
+    .slice(0, 25)
+    .map((item) => ({
+      sourceId: "primaria-cluj",
+      sourceName: SOURCE_NAMES["primaria-cluj"],
+      level: "Local",
+      sourceLang: "ro",
+      entityType: "local_official",
+      feedCategory: "law",
+      externalId: item.guid || item.link,
+      title: item.title,
+      detailUrl: item.link,
+      description: item.description || item.title,
+      publishedAt: item.pubDate
+        ? new Date(item.pubDate).toISOString()
+        : new Date().toISOString(),
+      fetchedAt: new Date().toISOString(),
+      status: "public consultation — local decision upcoming",
+      actionPossible: true,
+      tags: ["#Cluj", "#local-decision", "#vote-upcoming", "#consultation"],
+    }));
 }
 
 /**
@@ -289,7 +405,9 @@ function parseCdepListingHtml(html) {
       description: title,
       publishedAt: new Date().toISOString(),
       fetchedAt: new Date().toISOString(),
-      status: "active listing",
+      status: "in progress — vote upcoming",
+      actionPossible: true,
+      tags: ["#Romania", "#bill-proposal", "#vote-upcoming"],
     });
   }
 
@@ -302,6 +420,8 @@ module.exports = {
   mergeFeedItems,
   parseCdepListingHtml,
   parseSenatConsultationHtml,
+  parseRssFeedItems,
+  parsePrimariaClujConsultationRss,
   inferFeedCategory,
   SOURCE_NAMES,
 };

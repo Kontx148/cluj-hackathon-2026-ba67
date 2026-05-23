@@ -7,6 +7,7 @@ import '../l10n/app_strings.dart';
 import '../l10n/locale_scope.dart';
 import '../models/feed_item.dart';
 import '../services/feed_service.dart';
+import '../utils/feed_item_localization.dart';
 import '../utils/feed_filter.dart';
 import '../utils/feed_section.dart';
 import '../utils/importance_level.dart';
@@ -23,10 +24,10 @@ class _FeedScreenState extends State<FeedScreen> {
   final _feedService = FeedService();
   late Future<List<FeedItem>> _feedFuture;
 
-  FeedLevel? _levelFilter;
+  FeedLevel? _levelFilter = FeedLevel.romania;
   String? _tagFilter;
   int? _importanceFilter;
-  FeedSection _section = FeedSection.news;
+  FeedSection _section = FeedSection.laws;
 
   FeedFilters _filters(AppLocale locale) => FeedFilters(
         section: _section,
@@ -150,7 +151,8 @@ class _FeedScreenState extends State<FeedScreen> {
       SliverList.separated(
         itemCount: items.length,
         separatorBuilder: (_, __) => const SizedBox(height: 12),
-        itemBuilder: (context, index) => _FeedCard(item: items[index]),
+        itemBuilder: (context, index) =>
+            _FeedCard(item: items[index], locale: locale),
       ),
     ];
   }
@@ -211,7 +213,13 @@ class _FeedScreenState extends State<FeedScreen> {
             ],
             selected: {_section},
             onSelectionChanged: (selection) {
-              setState(() => _section = selection.first);
+              setState(() {
+                _section = selection.first;
+                _levelFilter = _section == FeedSection.laws
+                    ? FeedLevel.romania
+                    : null;
+                _tagFilter = null;
+              });
             },
           ),
           const SizedBox(height: 16),
@@ -389,9 +397,10 @@ class _FilterSection extends StatelessWidget {
 }
 
 class _FeedCard extends StatelessWidget {
-  const _FeedCard({required this.item});
+  const _FeedCard({required this.item, required this.locale});
 
   final FeedItem item;
+  final AppLocale locale;
 
   @override
   Widget build(BuildContext context) {
@@ -427,14 +436,14 @@ class _FeedCard extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                item.title,
+                item.localizedTitle(locale),
                 style: theme.textTheme.titleMedium,
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
               ),
               const SizedBox(height: 8),
               Text(
-                item.displaySummary,
+                item.localizedSummary(locale),
                 style: theme.textTheme.bodyMedium,
                 maxLines: 4,
                 overflow: TextOverflow.ellipsis,

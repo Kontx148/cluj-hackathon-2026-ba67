@@ -1,32 +1,24 @@
 # CivicAI n8n automation
 
-Docker Compose stack: **n8n** (workflows) + **feed-api** (ingest listener). Workflows fetch civic data and **POST** it to the ingest API, which writes `news-items.json` and `law-items.json`.
+Docker Compose: **n8n** + **feed-api**. Workflows fetch civic data and merge into JSON under `mobile-app/data/`.
 
-**Full ingest flow, security model, and API reference:** [../tools/feed-api/README.md](../tools/feed-api/README.md)
+**Sources registry:** [../data/source-registry.json](../data/source-registry.json)  
+**Content focus:** [../data/SOURCE_FOCUS.md](../data/SOURCE_FOCUS.md)  
+**Ingest API:** [../tools/feed-api/README.md](../tools/feed-api/README.md)
 
 ---
 
-## Architecture (summary)
+## Workflow inventory
 
-```
-External sources (Senat, RSS)
-        ↓
-   n8n workflow (trigger: schedule or manual)
-        ↓
-   POST http://feed-api:3001/api/ingest/raw
-   Header: X-Ingest-Key
-        ↓
-   feed-api → normalize → merge → JSON on disk
-        ↓
-   Flutter app (bundled JSON at build time)
-```
+| Type | Count | Target file | Workflows |
+|------|-------|-------------|-----------|
+| **Law** | **2** | `law-items.json` | Senat, Camera Deputaților |
+| **News** | **3** | `news-items.json` | G4Media, Digi24, Maszol |
+| **Paused** | 1 | — | EP Think Tank (EU; do not activate) |
 
-| Service | URL (local) |
-|---------|-------------|
-| n8n UI | http://localhost:5678 |
-| feed-api | http://localhost:3001 |
+**Total in `workflows/`:** 6 JSON files — import the **5 active** ones (2 law + 3 news).
 
-Inside Docker, workflows use **`http://feed-api:3001`** (not `localhost`).
+Each workflow POSTs to `POST /api/ingest/raw` with `category: law` or `category: news`. Ingest merges by item `id`.
 
 ---
 
@@ -34,73 +26,48 @@ Inside Docker, workflows use **`http://feed-api:3001`** (not `localhost`).
 
 ```bash
 cd mobile-app/n8n
-cp .env.example .env    # set N8N_BASIC_AUTH_PASSWORD + INGEST_API_KEY
-```
-
-**If `docker compose up` fails with `error getting credentials` (Mac):**
-
-```bash
-docker pull node:20-alpine
-docker pull docker.n8n.io/n8nio/n8n:latest
+cp .env.example .env
 docker compose up -d
 ```
 
-Or remove `"credsStore": "desktop"` from `~/.docker/config.json` and restart Docker Desktop.
-
-**If port 3001 is in use:** `lsof -ti:3001 | xargs kill` or `docker compose down`.
-
-```bash
-docker compose up -d
-```
-
-1. Open **http://localhost:5678** (basic auth from `.env`)
-2. **Workflows → Import from file** — import all JSON in `workflows/`
-3. **Execute workflow** on each (test) → toggle **Active**
-
-Verify:
-
-```bash
-curl http://localhost:3001/api/health
-curl http://localhost:3001/api/feed | head -c 400
-ls -la ../data/news-items.json ../data/law-items.json
-```
-
-Rebuild the Flutter app so the phone picks up new JSON:
-
-```bash
-cd .. && flutter build ios --release && flutter install --release
-```
+1. **http://localhost:5678** → import workflows from `workflows/`
+2. Execute each active workflow once → toggle **Active**
+3. `curl http://localhost:3001/api/feed | head -c 400`
+4. Rebuild app: `cd .. && flutter build ios --release && flutter install --release`
 
 ---
 
-## Workflows
+## Law workflows → `law-items.json` (2)
 
-| File | Source | Category | Output file |
-|------|--------|----------|-------------|
-| `civicai-senat-romania.json` | Senat via `/api/fetch/senat` | `law` | `law-items.json` |
-| `civicai-g4media-law.json` | G4Media RSS (law keywords) | `news` | `news-items.json` |
-| `civicai-ep-thinktank.json` | EP Think Tank RSS | `news` | `news-items.json` |
-
-Each workflow’s last node POSTs to `/api/ingest/raw` with `X-Ingest-Key` matching `INGEST_API_KEY` in `.env`.
+| File | Source | Fetch |
+|------|--------|-------|
+| `civicai-senat-romania.json` | [senat.ro/legiproiect](https://www.senat.ro/legiproiect.aspx) | `GET /api/fetch/senat` (~68 bills in consultation) |
+| `civicai-cdep-romania.json` | [cdep.ro](https://www.cdep.ro/) | `GET /api/fetch/cdep` (best-effort; may return no records) |
 
 ---
 
-## Environment (`.env`)
+## News workflows → `news-items.json` (3)
 
-| Variable | Purpose |
-|----------|---------|
-| `INGEST_API_KEY` | Shared secret for ingest POSTs (feed-api + workflow headers) |
-| `N8N_BASIC_AUTH_PASSWORD` | n8n UI login |
-| `N8N_HOST` / `WEBHOOK_URL` | Use `localhost` for local Docker |
+| File | Source | Level |
+|------|--------|-------|
+| `civicai-g4media-ro-civic.json` | [G4Media RSS](https://www.g4media.ro/feed) | Romania |
+| `civicai-digi24-ro-civic.json` | [Digi24 RSS](https://www.digi24.ro/rss) | Romania |
+| `civicai-maszol-local-civic.json` | [Maszol RSS](https://maszol.ro/rss) | Local (Cluj area) |
 
----
-
-## Run feed-api without Docker
-
-See [../tools/feed-api/README.md](../tools/feed-api/README.md#run-locally).
+RSS workflows filter items with civic keywords — see [snippets/rss-civic-filter.js](./snippets/rss-civic-filter.js).
 
 ---
 
-## Optional: LLM enrichment
+## Paused (not in current focus)
 
-Add an n8n **OpenAI** or **HTTP Request** node before ingest to fill `summary`, `tags`, and `importance`. Pass through `records[].summary` — normalize uses it when present.
+| File | Note |
+|------|------|
+| `civicai-ep-thinktank.json` | EU news — out of RO/local scope; leave inactive |
+
+---
+
+## Add a source
+
+1. Register in [source-registry.json](../data/source-registry.json)
+2. Duplicate an RSS workflow (news) or a fetch workflow (law), edit URL + `sourceId`
+3. Import → Execute → Active → rebuild the Flutter app

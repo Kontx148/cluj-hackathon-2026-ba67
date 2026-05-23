@@ -14,8 +14,8 @@ class AppStrings {
   String get title => 'CivicAI';
 
   String get tagline => _locale == AppLocale.ro
-      ? 'Politica UE, românească și locală într-un singur loc — explicată clar.'
-      : 'EU, Romanian, and local politics in one place — explained clearly.';
+      ? 'Voturi viitoare, știri naționale și locale care îți afectează viața de zi cu zi.'
+      : 'Upcoming votes and national & local news that affect everyday life.';
 
   String get refresh =>
       _locale == AppLocale.ro ? 'Reîmprospătare' : 'Refresh';
@@ -36,10 +36,11 @@ class AppStrings {
 
   String get levelLocal => _locale == AppLocale.ro ? 'Local' : 'Local';
 
-  String get sectionNews => _locale == AppLocale.ro ? 'Știri' : 'News';
+  String get sectionNews =>
+      _locale == AppLocale.ro ? 'Știri civice' : 'Civic news';
 
   String get sectionLaws =>
-      _locale == AppLocale.ro ? 'Legi și proiecte' : 'Laws & bills';
+      _locale == AppLocale.ro ? 'Voturi viitoare' : 'Upcoming votes';
 
   String get filterLevel => _locale == AppLocale.ro ? 'Nivel' : 'Level';
 

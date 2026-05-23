@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "description": "Keyword filters for civic-impact news ingest (n8n Code nodes).",
+  "romaniaNational": {
+    "description": "Romanian news that can affect citizens' daily lives, rights, or cost of living.",
+    "pattern": "salari|pensii|pensie|tax|tva|impozit|sanat|spital|medic|invatam|scoal|universit|locuin|chiri|energie|electric|gaze|pret|inflat|protest|guvern|parlament|cetat|consum|drepturi|munc[aă]|somaj|reform|buget|subvent|acciz|copii|familie|infrastruct|drum|autostr|corupt|justit|democrat|aleger|vot|lege|ordonan|proiect|senat|deputat|minister|PNL|PSD|AUR|USR",
+    "flags": "i"
+  },
+  "localCluj": {
+    "description": "Cluj-area news affecting local transport, housing, schools, council decisions.",
+    "pattern": "cluj|primar|consiliu|HCL|taxa local|transport|tramv|autobuz|STCF|parc|construct|locuin|scoal|gradinit|spital|politie|strad|cartier|florest|turda|dej|consultare|buget local|trafic|locuitor|maszol|udmr|rmdsz|kolozs|monitorul",
+    "flags": "i"
+  }
+}

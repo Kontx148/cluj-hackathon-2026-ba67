@@ -56,8 +56,8 @@ void main() {
     );
   });
 
-  test('filters by language', () {
-    const roItem = FeedItem(
+  test('filters by language for news only', () {
+    const roNews = FeedItem(
       id: '3',
       title: 'Știre',
       link: 'https://example.ro',
@@ -66,15 +66,60 @@ void main() {
       source: 'G4Media',
       sourceId: 'g4media',
       level: FeedLevel.romania,
+      feedCategory: 'news',
       sourceLang: 'ro',
     );
 
     expect(
-      const FeedFilters(language: AppLocale.en).apply([sample, roItem]),
+      const FeedFilters(language: AppLocale.en).apply([sample, roNews]),
       hasLength(1),
     );
     expect(
-      const FeedFilters(language: AppLocale.ro).apply([sample, roItem]),
+      const FeedFilters(language: AppLocale.ro).apply([sample, roNews]),
+      hasLength(1),
+    );
+    expect(
+      const FeedFilters(
+        section: FeedSection.news,
+        language: AppLocale.en,
+      ).apply([sample, roNews]),
+      hasLength(1),
+    );
+    expect(
+      const FeedFilters(
+        section: FeedSection.news,
+        language: AppLocale.ro,
+      ).apply([sample, roNews]),
+      hasLength(1),
+    );
+    expect(
+      const FeedFilters(
+        section: FeedSection.news,
+        language: AppLocale.ro,
+      ).apply([roNews]).first.sourceLang,
+      'ro',
+    );
+  });
+
+  test('does not filter laws by UI language', () {
+    const roBill = FeedItem(
+      id: '4',
+      title: 'B246 / 2026',
+      link: 'https://www.senat.ro/',
+      description: 'Desc',
+      publishedAt: '2026-05-01T00:00:00Z',
+      source: 'Senat',
+      sourceId: 'senat-plx',
+      level: FeedLevel.romania,
+      feedCategory: 'law',
+      sourceLang: 'ro',
+    );
+
+    expect(
+      const FeedFilters(
+        section: FeedSection.laws,
+        language: AppLocale.en,
+      ).apply([sample, roBill]),
       hasLength(1),
     );
   });
