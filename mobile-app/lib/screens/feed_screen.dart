@@ -205,7 +205,8 @@ class _FeedScreenState extends State<FeedScreen> {
                   children: [
                     Text(strings.eyebrow, style: theme.textTheme.labelSmall),
                     const SizedBox(height: 2),
-                    Text(strings.appName, style: theme.textTheme.headlineMedium),
+                    Text(strings.appName,
+                        style: theme.textTheme.headlineMedium),
                   ],
                 ),
               ),
@@ -238,9 +239,8 @@ class _FeedScreenState extends State<FeedScreen> {
             onSelectionChanged: (selection) {
               setState(() {
                 _section = selection.first;
-                _levelFilter = _section == FeedSection.laws
-                    ? FeedLevel.romania
-                    : null;
+                _levelFilter =
+                    _section == FeedSection.laws ? FeedLevel.romania : null;
                 _tagFilter = null;
               });
             },
@@ -294,8 +294,7 @@ class _FeedScreenState extends State<FeedScreen> {
                 _chip(
                   label: strings.levelRomania,
                   selected: _levelFilter == FeedLevel.romania,
-                  onTap: () =>
-                      setState(() => _levelFilter = FeedLevel.romania),
+                  onTap: () => setState(() => _levelFilter = FeedLevel.romania),
                 ),
                 _chip(
                   label: strings.levelLocal,
@@ -518,8 +517,8 @@ class _FeedCard extends StatelessWidget {
                             vertical: 6,
                           ),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF2F9E44)
-                                .withValues(alpha: 0.12),
+                            color:
+                                const Color(0xFF2F9E44).withValues(alpha: 0.12),
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(
                               color: const Color(0xFF2F9E44)
