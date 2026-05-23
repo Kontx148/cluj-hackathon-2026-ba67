@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RawLawRecord",
+  "description": "Intermediate shape from n8n extract nodes before normalization to FeedItem. See LAW_GATHERING.md",
+  "type": "object",
+  "required": ["sourceId", "externalId", "title", "detailUrl", "fetchedAt"],
+  "properties": {
+    "sourceId": { "type": "string" },
+    "externalId": {
+      "type": "string",
+      "description": "Native id from source (CELEX, PL-x number, procedure ref)"
+    },
+    "title": { "type": "string" },
+    "detailUrl": { "type": "string", "format": "uri" },
+    "fetchedAt": { "type": "string", "format": "date-time" },
+    "level": { "enum": ["EU", "Romania", "Local"] },
+    "sourceLang": { "enum": ["en", "ro", "hu"] },
+    "entityType": {
+      "enum": ["law", "bill", "vote", "local_official"]
+    },
+    "status": {
+      "type": "string",
+      "description": "Raw status text from source page"
+    },
+    "publishedAt": { "type": "string", "format": "date-time" },
+    "voteDate": { "type": "string", "format": "date" },
+    "consultationDeadline": { "type": "string", "format": "date" },
+    "description": { "type": "string" },
+    "moNumber": { "type": "string" },
+    "celex": { "type": "string" },
+    "procedureRef": { "type": "string" },
+    "plxNumber": { "type": "string" }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,113 @@
+{
+  "version": 1,
+  "description": "Official law sources for n8n gather workflows. See LAW_GATHERING.md for mapping rules.",
+  "sources": [
+    {
+      "id": "eur-lex",
+      "name": "EUR-Lex",
+      "level": "EU",
+      "lang": "en",
+      "entityTypes": ["law"],
+      "baseUrl": "https://eur-lex.europa.eu/",
+      "entryUrl": "https://eur-lex.europa.eu/search.html?scope=EURLEX&text=",
+      "gatherMethod": "sparql_or_search",
+      "sparqlEndpoint": "https://publications.europa.eu/webapi/rdf/sparql",
+      "cadence": "weekly",
+      "idPrefix": "eu-celex",
+      "enabled": true,
+      "notes": "Feed cards only: CELEX, title, link, in-force date. No full text in feed."
+    },
+    {
+      "id": "ep-oeil",
+      "name": "EP Legislative Observatory",
+      "level": "EU",
+      "lang": "en",
+      "entityTypes": ["bill", "vote"],
+      "baseUrl": "https://oeil.secure.europarl.europa.eu/",
+      "entryUrl": "https://oeil.secure.europarl.europa.eu/oeil/en/search.jsp?procedureType=COD",
+      "gatherMethod": "html_scrape",
+      "cadence": "daily",
+      "idPrefix": "eu-proc",
+      "enabled": true,
+      "extractFields": ["procedureRef", "title", "stage", "nextVoteDate", "detailUrl"]
+    },
+    {
+      "id": "legislatie-just",
+      "name": "Legislatie.just.ro",
+      "level": "Romania",
+      "lang": "ro",
+      "entityTypes": ["law"],
+      "baseUrl": "https://legislatie.just.ro/",
+      "entryUrl": "https://legislatie.just.ro/Public/RezultateCautare",
+      "gatherMethod": "html_scrape",
+      "cadence": "weekly",
+      "idPrefix": "ro-law",
+      "enabled": true,
+      "notes": "Use for consolidated acts; pair with MO for promulgation date when possible."
+    },
+    {
+      "id": "monitorul-oficial",
+      "name": "Monitorul Oficial",
+      "level": "Romania",
+      "lang": "ro",
+      "entityTypes": ["law"],
+      "baseUrl": "https://monitoruloficial.ro/",
+      "entryUrl": "https://monitoruloficial.ro/e-monitor/",
+      "gatherMethod": "html_scrape",
+      "cadence": "daily",
+      "idPrefix": "ro-mo",
+      "enabled": true,
+      "extractFields": ["moNumber", "title", "publishDate", "pdfUrl"]
+    },
+    {
+      "id": "cdep-plx",
+      "name": "Camera Deputaților — projects",
+      "level": "Romania",
+      "lang": "ro",
+      "entityTypes": ["bill", "vote"],
+      "baseUrl": "https://www.cdep.ro/",
+      "entryUrl": "https://www.cdep.ro/pls/proiecte/upl_search.proiecte",
+      "gatherMethod": "html_scrape",
+      "cadence": "daily",
+      "idPrefix": "ro-plx-cdep",
+      "enabled": true,
+      "priority": 1,
+      "extractFields": ["plxNumber", "title", "status", "initiator", "detailUrl", "lastUpdate"]
+    },
+    {
+      "id": "senat-plx",
+      "name": "Senat — legislative projects",
+      "level": "Romania",
+      "lang": "ro",
+      "entityTypes": ["bill", "vote"],
+      "baseUrl": "https://www.senat.ro/",
+      "entryUrl": "https://www.senat.ro/Legis/Lista.aspx",
+      "gatherMethod": "html_scrape",
+      "cadence": "daily",
+      "idPrefix": "ro-plx-senat",
+      "enabled": true,
+      "priority": 2,
+      "extractFields": ["projectNumber", "title", "status", "detailUrl"]
+    },
+    {
+      "id": "primaria-cluj",
+      "name": "Cluj-Napoca City Hall",
+      "level": "Local",
+      "lang": "ro",
+      "entityTypes": ["local_official", "bill"],
+      "baseUrl": "https://primariaclujnapoca.ro/",
+      "entryUrl": "https://primariaclujnapoca.ro/consultari-publice/",
+      "gatherMethod": "html_scrape",
+      "cadence": "weekly",
+      "idPrefix": "local-cluj",
+      "enabled": true,
+      "extractFields": ["title", "consultationDeadline", "documentUrl"]
+    }
+  ],
+  "merge": {
+    "targetFile": "feed-items.json",
+    "dedupeKey": "id",
+    "sortBy": "publishedAt",
+    "sortOrder": "desc"
+  }
+}
