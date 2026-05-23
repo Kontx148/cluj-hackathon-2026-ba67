@@ -6,7 +6,7 @@ Decentralized civic engagement platform (vision): digital-ID-based anonymous vot
 
 | Path | Description |
 |------|-------------|
-| `mobile-app/` | Flutter app, [`data/`](mobile-app/data/) (feed JSON), [`design/`](mobile-app/design/) specs |
+| `mobile-app/` | Flutter app, [`data/`](mobile-app/data/) (feed JSON), [`design/`](mobile-app/design/) specs, [`n8n/`](mobile-app/n8n/) + [`feed-api`](mobile-app/tools/feed-api/) for ingest |
 | `mobile-app.zip` | Original design bundle archive (optional) |
 
 The mobile app is self-contained (no separate `services/` folder).
