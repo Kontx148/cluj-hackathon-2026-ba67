@@ -1,7 +1,7 @@
-import 'package:civicai/l10n/app_locale.dart';
-import 'package:civicai/models/feed_item.dart';
-import 'package:civicai/utils/feed_filter.dart';
-import 'package:civicai/utils/feed_section.dart';
+import 'package:votera/l10n/app_locale.dart';
+import 'package:votera/models/feed_item.dart';
+import 'package:votera/utils/feed_filter.dart';
+import 'package:votera/utils/feed_section.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

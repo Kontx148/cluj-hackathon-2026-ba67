@@ -16,4 +16,13 @@ router.get('/:id', (req, res) => {
   res.json(publicElectionView(e));
 });
 
+router.get('/:id/public-key', (req, res) => {
+  const e = storage.state.elections[req.params.id];
+  if (!e) return res.status(404).json({ error: 'Election not found' });
+  res.json({
+    electionId: e.electionId,
+    publicKey: e.electionPublicKey,
+  });
+});
+
 export default router;

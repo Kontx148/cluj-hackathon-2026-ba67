@@ -5,8 +5,10 @@ import type { Election, Transaction } from './types';
  * FINISHED. Used by every public read path.
  */
 export function publicElectionView(e: Election): Election {
-  if (e.status === 'FINISHED') return e;
-  const { tally, publishedTally, ...rest } = e;
+  const { electionPrivateKey, ...withoutPrivateKey } = e;
+  void electionPrivateKey;
+  if (withoutPrivateKey.status === 'FINISHED') return withoutPrivateKey as Election;
+  const { tally, publishedTally, ...rest } = withoutPrivateKey;
   return rest as Election;
 }
 
@@ -23,12 +25,17 @@ export function publicTransactionView(
   tx: Transaction,
   electionStatusById: Record<string, string>,
 ): Transaction {
-  if (tx.type !== 'ELECTION_FINISHED') return tx;
+  const data = tx.data || {};
+  const { electionPrivateKey, ...withoutPrivateKey } = data as Record<string, unknown>;
+  void electionPrivateKey;
+  const safeTx = { ...tx, data: withoutPrivateKey };
+
+  if (tx.type !== 'ELECTION_FINISHED') return safeTx;
   const status = electionStatusById[tx.electionId];
-  if (status === 'FINISHED') return tx;
+  if (status === 'FINISHED') return safeTx;
   // Defensive: hide the published tally if the election is somehow not yet
   // finished but a finished block ended up in the chain.
-  const { publishedTally: _omit, ...restData } = (tx.data || {}) as Record<string, unknown>;
+  const { publishedTally: _omit, ...restData } = safeTx.data as Record<string, unknown>;
   void _omit;
-  return { ...tx, data: { ...restData, publishedTally: '<redacted-until-finished>' } };
+  return { ...safeTx, data: { ...restData, publishedTally: '<redacted-until-finished>' } };
 }

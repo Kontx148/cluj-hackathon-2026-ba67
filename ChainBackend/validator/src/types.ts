@@ -69,6 +69,7 @@ export interface Election {
   endsAt: string;
   requiredApprovals: number;
   electionPublicKey: string;
+  electionPrivateKey: string;
   status: ElectionStatus;
   proposedBy: string;
   proposedAt: string;

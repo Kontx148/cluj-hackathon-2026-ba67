@@ -1,5 +1,6 @@
 import { config } from './config';
 import { computeAggregate } from './tally';
+import { validatorVoteVerificationService } from './validator-vote-verification-service';
 import { decodeVote } from './vote-vector';
 import type { ActionPayload, ValidatorState } from './types';
 
@@ -48,6 +49,7 @@ export function validateAction(
         'startsAt',
         'endsAt',
         'electionPublicKey',
+        'electionPrivateKey',
         'proposedBy',
         'requiredApprovals',
       ];
@@ -120,8 +122,11 @@ export function validateAction(
       }
       const districtId = String(data.districtId || '');
       const anonymousTokenHash = String(data.anonymousTokenHash || '');
-      const encryptedVote = data.encryptedVote;
-      const proof = String(data.proof || '');
+      const candidateId = String(data.candidateId || '');
+      const encryptedVote =
+        data.encryptedVote || (candidateId ? `mock-encrypted:${candidateId}` : '');
+      const proof = String(data.proof || data.voterProof || '');
+      const encryptedDigitalId = data.encryptedDigitalId;
       const voteTimestamp = String(data.voteTimestamp || data.timestamp || '');
 
       if (!districtId) return { ok: false, error: 'data.districtId required' };
@@ -130,7 +135,14 @@ export function validateAction(
       }
       if (!anonymousTokenHash) return { ok: false, error: 'data.anonymousTokenHash required' };
       if (!encryptedVote) return { ok: false, error: 'data.encryptedVote required' };
-      if (!proof) return { ok: false, error: 'data.proof required' };
+      if (!proof) return { ok: false, error: 'data.proof (or voterProof) required' };
+      const digitalIdCheck = validatorVoteVerificationService.verifyEncryptedDigitalId(
+        e,
+        encryptedDigitalId,
+      );
+      if (!digitalIdCheck.ok) {
+        return { ok: false, error: digitalIdCheck.error };
+      }
       if (!voteTimestamp) return { ok: false, error: 'data.voteTimestamp (or timestamp) required' };
 
       const ts = Date.parse(voteTimestamp);
@@ -158,7 +170,10 @@ export function validateAction(
           data: {
             districtId,
             anonymousTokenHash,
+            candidateId: candidateId || undefined,
             encryptedVote,
+            encryptedDigitalId,
+            digitalIdHash: digitalIdCheck.digitalIdHash,
             proof,
             voteTimestamp,
           },

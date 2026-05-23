@@ -12,8 +12,9 @@ const router = Router();
  *   3. mock-encrypted:<candidateId>         ← legacy single-candidate
  *
  * Validators run the full vote-vector + token + window checks before
- * approving. The duplicate-token rejection still surfaces the exact spec
- * message: "Token already used. Re-voting is not supported."
+ * approving. They also decrypt encryptedDigitalId using the election private
+ * key and check local voter eligibility. The gateway never sees the raw
+ * digital ID.
  */
 router.post('/', async (req, res) => {
   const body = req.body || {};
@@ -21,12 +22,17 @@ router.post('/', async (req, res) => {
     'electionId',
     'districtId',
     'anonymousTokenHash',
-    'encryptedVote',
-    'proof',
+    'encryptedDigitalId',
     'timestamp',
   ];
   for (const k of required) {
     if (body[k] === undefined) return res.status(400).json({ error: `Missing field: ${k}` });
+  }
+  if (body.encryptedVote === undefined && body.candidateId === undefined) {
+    return res.status(400).json({ error: 'Missing field: encryptedVote or candidateId' });
+  }
+  if (body.proof === undefined && body.voterProof === undefined) {
+    return res.status(400).json({ error: 'Missing field: proof or voterProof' });
   }
   const consensus = await runConsensus({
     type: 'VOTE_CAST',
@@ -34,8 +40,11 @@ router.post('/', async (req, res) => {
     data: {
       districtId: body.districtId,
       anonymousTokenHash: body.anonymousTokenHash,
+      candidateId: body.candidateId,
       encryptedVote: body.encryptedVote,
+      encryptedDigitalId: body.encryptedDigitalId,
       proof: body.proof,
+      voterProof: body.voterProof,
       voteTimestamp: body.timestamp,
     },
   });
@@ -50,6 +59,13 @@ router.post('/', async (req, res) => {
     if (validatorReasons.some((r) => r.includes('Token already used'))) {
       return res.status(409).json({
         error: 'Token already used. Re-voting is not supported.',
+        validatorReasons,
+        consensus,
+      });
+    }
+    if (validatorReasons.some((r) => r === 'VOTER_NOT_ELIGIBLE')) {
+      return res.status(403).json({
+        error: 'VOTER_NOT_ELIGIBLE',
         validatorReasons,
         consensus,
       });

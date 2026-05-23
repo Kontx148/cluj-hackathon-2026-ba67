@@ -11,8 +11,14 @@ class FeedService {
   static const _lawAssetPath = 'data/law-items.json';
 
   Future<List<FeedItem>> fetchFeed() async {
+    // The remote feed API is only used when CIVIC_FEED_API_BASE is set at
+    // compile time.  The bundled JSON is the default and always the fallback.
     if (useRemoteFeedApi) {
-      return _fetchFromApi();
+      try {
+        return await _fetchFromApi();
+      } catch (_) {
+        // Fall through to bundled assets.
+      }
     }
     return _fetchFromAssets();
   }
@@ -29,12 +35,17 @@ class FeedService {
   }
 
   Future<List<FeedItem>> _fetchFromApi() async {
-    final uri = Uri.parse('$apiBase/api/feed');
-    final response = await http.get(uri).timeout(const Duration(seconds: 15));
+    final uri = Uri.parse('$civicFeedApiBase/api/feed');
+    final response =
+        await http.get(uri).timeout(const Duration(seconds: 10));
     if (response.statusCode != 200) {
-      throw Exception('Feed API ${response.statusCode}: ${response.body}');
+      throw Exception(
+        'Feed API ${response.statusCode}: ${response.body}',
+      );
     }
-    return _parseItems(jsonDecode(response.body) as Map<String, dynamic>);
+    return _parseItems(
+      jsonDecode(response.body) as Map<String, dynamic>,
+    );
   }
 
   List<FeedItem> _parseItems(Map<String, dynamic> body) {
@@ -46,8 +57,8 @@ class FeedService {
 
   List<FeedItem> _sortItems(List<FeedItem> parsed) {
     parsed.sort(
-      (a, b) =>
-          DateTime.parse(b.publishedAt).compareTo(DateTime.parse(a.publishedAt)),
+      (a, b) => DateTime.parse(b.publishedAt)
+          .compareTo(DateTime.parse(a.publishedAt)),
     );
     return parsed;
   }

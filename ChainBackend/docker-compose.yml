@@ -1,5 +1,3 @@
-version: "3.9"
-
 # 2 gateways + 3 validators
 #
 # - gateways are stateless replaceable entry points (front-end can use either)
@@ -22,6 +20,7 @@ services:
       VALIDATOR_ID: validator-1
       VALIDATOR_PRIVATE_KEY: mock-validator-1-key
       CHAIN_STORAGE_PATH: /data/validator-1-chain.json
+      ELIGIBILITY_LIST_PATH: /app/data/eligible-voters.json
       CONSENSUS_THRESHOLD: 2
       VALIDATOR_URLS: http://validator-1:4101,http://validator-2:4102,http://validator-3:4103
     ports:
@@ -41,6 +40,7 @@ services:
       VALIDATOR_ID: validator-2
       VALIDATOR_PRIVATE_KEY: mock-validator-2-key
       CHAIN_STORAGE_PATH: /data/validator-2-chain.json
+      ELIGIBILITY_LIST_PATH: /app/data/eligible-voters.json
       CONSENSUS_THRESHOLD: 2
       VALIDATOR_URLS: http://validator-1:4101,http://validator-2:4102,http://validator-3:4103
     ports:
@@ -60,6 +60,7 @@ services:
       VALIDATOR_ID: validator-3
       VALIDATOR_PRIVATE_KEY: mock-validator-3-key
       CHAIN_STORAGE_PATH: /data/validator-3-chain.json
+      ELIGIBILITY_LIST_PATH: /app/data/eligible-voters.json
       CONSENSUS_THRESHOLD: 2
       VALIDATOR_URLS: http://validator-1:4101,http://validator-2:4102,http://validator-3:4103
     ports:

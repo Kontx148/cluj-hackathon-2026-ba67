@@ -8,6 +8,7 @@ import healthRoutes from './routes/health';
 import thresholdRoutes from './routes/threshold';
 import { replayState } from './state';
 import { storage } from './storage';
+import { eligibilityService } from './eligibility-service';
 
 function buildApp() {
   const app = express();
@@ -33,6 +34,7 @@ function buildApp() {
 }
 
 function main() {
+  eligibilityService.load();
   storage.load();
   ensureGenesis();
   replayState(storage.state);

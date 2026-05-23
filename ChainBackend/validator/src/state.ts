@@ -36,6 +36,7 @@ export function applyTransaction(
         endsAt: String(data.endsAt || ''),
         requiredApprovals: Number(data.requiredApprovals ?? 2),
         electionPublicKey: String(data.electionPublicKey || ''),
+        electionPrivateKey: String(data.electionPrivateKey || ''),
         status: 'PROPOSED',
         proposedBy: String(data.proposedBy || ''),
         proposedAt: tx.proposedAt,

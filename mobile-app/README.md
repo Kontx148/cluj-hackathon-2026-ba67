@@ -1,8 +1,44 @@
 # CivicAI mobile app (Flutter)
 
-English UI for the civic feed (EU / Romania / Local). Everything for this app lives under `mobile-app/`.
+Two-tab Flutter app:
 
-Feed data is bundled from `data/news-items.json` and `data/law-items.json` — no backend required on the phone.
+- **Vote tab (default, left):** picks an election, verifies digital ID
+  via [eidkit.ro](https://eidkit.ro) (or a dev-mode demo identity),
+  encrypts the digital ID with the election public key, and submits the vote
+  to the gateway. The raw digital ID never leaves the phone in plaintext.
+- **Civic tab (right):** the original AI-curated feed of laws & civic news.
+
+```bash
+flutter run \
+  --dart-define=API_BASE=http://165.232.67.137:4001
+```
+
+| dart-define | Default | Purpose |
+|---|---|---|
+| `API_BASE` | `http://165.232.67.137:4001` | Election chain gateway |
+| `CIVIC_FEED_API_BASE` | _(empty)_ | Optional remote feed API; empty = bundled `data/*.json` |
+
+Feed data is bundled from `data/news-items.json` and `data/law-items.json` — no backend required on the phone for the civic tab.
+
+## Voting flow
+
+1. **Pick an election** (only `OPEN` elections are tappable).
+2. **Verify identity** — choose between
+   - **Cartea de Identitate Electronică (CEI)**: opens [eidkit.ro](https://eidkit.ro)
+     as a stub. Real NFC-based CEI reading needs the EidKit Flutter SDK
+     (`TODO(eidkit)` in `lib/services/identity_service.dart`).
+   - **Developer mode**: pick from a list of demo digital IDs that match the
+     validators' bundled allowlist (`ChainBackend/validator/data/eligible-voters.json`).
+     One entry is intentionally not on the list so you can demo the
+     `VOTER_NOT_ELIGIBLE` rejection.
+3. **Pick a candidate.**
+4. **Confirm.** The phone:
+   - Fetches the election public key from `GET /elections/:id/public-key`.
+   - Encrypts the digital ID with RSA-OAEP-SHA256 (`pointycastle` + `basic_utils`).
+   - Builds the encrypted vote vector `mock-enc:<electionId>:[1,0,...]`.
+   - Generates a fresh anonymous token + voter proof.
+   - POSTs `/votes`.
+5. **Receipt** — shows the transaction type, block index, and block hash.
 
 ## Layout
 
@@ -167,17 +203,17 @@ Only if you run `tools/feed-api` and want live JSON instead of bundled assets:
 cd mobile-app/tools/feed-api && npm install && npm start
 ```
 
-| Platform | `API_BASE` for local server |
-|----------|-----------------------------|
+| Platform | `CIVIC_FEED_API_BASE` for local server |
+|----------|----------------------------------------|
 | Android emulator | `http://10.0.2.2:3001` |
 | iOS Simulator | `http://localhost:3001` |
 | Physical device (same Wi‑Fi as laptop) | `http://<laptop-LAN-IP>:3001` |
 
 ```bash
-flutter run --release --dart-define=API_BASE=http://10.0.2.2:3001
+flutter run --release --dart-define=CIVIC_FEED_API_BASE=http://10.0.2.2:3001
 ```
 
-Default (no `API_BASE`): loads bundled `data/news-items.json` and `data/law-items.json`.
+Default (no `CIVIC_FEED_API_BASE`): loads bundled `data/news-items.json` and `data/law-items.json`.
 
 ## Data / n8n
 

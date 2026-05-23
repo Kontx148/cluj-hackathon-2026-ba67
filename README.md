@@ -8,7 +8,8 @@ The permissioned, blockchain-style election chain backend lives in
 [`ChainBackend/`](./ChainBackend/). It is a self-contained Docker Compose
 project with **5 services**: 2 stateless gateways and 3 validators that
 each persist their own copy of the chain. Writes go through a 2-of-3
-consensus.
+consensus. Election proposals generate an RSA election key pair; mobile
+clients fetch the public key and submit only encrypted digital IDs.
 
 To run it:
 
