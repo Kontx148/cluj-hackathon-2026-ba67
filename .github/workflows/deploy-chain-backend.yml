@@ -1,0 +1,82 @@
+name: Deploy Backend Services
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "ChainBackend/**"
+      - "mobile-app/n8n/**"
+      - "mobile-app/tools/feed-api/**"
+      - "mobile-app/data/**"
+      - ".github/workflows/deploy.yml"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy services to DigitalOcean
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.DO_HOST }}
+          username: root
+          key: ${{ secrets.DO_SSH_KEY }}
+          script: |
+            set -e
+
+            REPO_DIR="/root/cluj-hackathon-2026-ba67"
+            REPO_URL="https://github.com/${{ github.repository }}.git"
+
+            if [ ! -d "$REPO_DIR/.git" ]; then
+              git clone "$REPO_URL" "$REPO_DIR"
+            fi
+
+            cd "$REPO_DIR"
+
+            git fetch origin main
+            git reset --hard origin/main
+
+            echo "Deploying ChainBackend..."
+
+            cd "$REPO_DIR/ChainBackend"
+
+            cat > .env << 'EOF'
+            ADMIN_API_KEY=${{ secrets.CHAIN_ADMIN_API_KEY }}
+            AEP_API_KEY=${{ secrets.CHAIN_AEP_API_KEY }}
+            BEC_API_KEY=${{ secrets.CHAIN_BEC_API_KEY }}
+            COURT_API_KEY=${{ secrets.CHAIN_COURT_API_KEY }}
+            CONSENSUS_THRESHOLD=2
+            EOF
+
+            docker compose -p chainbackend up --build -d
+
+            docker compose -p chainbackend ps
+
+            curl -f http://localhost:4001/health
+            curl -f http://localhost:4002/health
+            curl -f http://localhost:4001/validators/status
+
+            echo "Deploying CivicAI n8n..."
+
+            cd "$REPO_DIR/mobile-app/n8n"
+
+            cat > .env << 'EOF'
+            INGEST_API_KEY=${{ secrets.INGEST_API_KEY }}
+            GENERIC_TIMEZONE=Europe/Bucharest
+            N8N_HOST=${{ secrets.N8N_HOST }}
+            N8N_PROTOCOL=http
+            WEBHOOK_URL=${{ secrets.WEBHOOK_URL }}
+            N8N_BASIC_AUTH_ACTIVE=true
+            N8N_BASIC_AUTH_USER=${{ secrets.N8N_BASIC_AUTH_USER }}
+            N8N_BASIC_AUTH_PASSWORD=${{ secrets.N8N_BASIC_AUTH_PASSWORD }}
+            EOF
+
+            docker compose -p civicai-n8n up --build -d
+
+            docker compose -p civicai-n8n ps
+
+            curl -f http://localhost:3001/health || true
+            curl -f http://localhost:5678 || true
+
+            echo "Deployment finished."
