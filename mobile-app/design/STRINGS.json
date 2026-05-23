@@ -1,0 +1,40 @@
+{
+  "title": "CivicAI",
+  "tagline": "EU, Romanian, and local politics in one place — explained clearly.",
+  "search": "Search by title, source, or tag…",
+  "refresh": "Refresh",
+  "all": "All",
+  "topics": "Topics",
+  "levels": "Level",
+  "types": "Type",
+  "nothing": "No results for the current filters.",
+  "action": "Civic action possible",
+  "importance": "Importance",
+  "source": "Source",
+  "open": "Open",
+  "powered": "AI-generated summary (demo)",
+  "eyebrow": "AI-GENERATED SUMMARIES (DEMO)",
+  "footer": "CivicAI · Hackathon MVP · Cluj 2026",
+  "tags": {
+    "topics": [
+      "#healthcare",
+      "#education",
+      "#taxation",
+      "#infrastructure",
+      "#environment",
+      "#public-safety",
+      "#digitalization",
+      "#social-policy",
+      "#energy",
+      "#defense"
+    ],
+    "types": [
+      "#law-in-force",
+      "#bill-proposal",
+      "#vote-upcoming",
+      "#party-program",
+      "#representative-stance",
+      "#local-decision"
+    ]
+  }
+}

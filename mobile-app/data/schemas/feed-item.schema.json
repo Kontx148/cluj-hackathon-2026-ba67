@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "FeedItem",
+  "type": "object",
+  "required": [
+    "id",
+    "title",
+    "link",
+    "description",
+    "publishedAt",
+    "source",
+    "sourceId",
+    "level",
+    "sourceLang"
+  ],
+  "properties": {
+    "id": { "type": "string" },
+    "title": { "type": "string" },
+    "link": { "type": "string", "format": "uri" },
+    "description": { "type": "string" },
+    "publishedAt": { "type": "string", "format": "date-time" },
+    "source": { "type": "string" },
+    "sourceId": { "type": "string" },
+    "level": { "enum": ["EU", "Romania", "Local"] },
+    "sourceLang": {
+      "type": "string",
+      "description": "Original source language (e.g. ro, hu, en)"
+    },
+    "summary": {
+      "type": "string",
+      "description": "English AI summary shown in the app"
+    },
+    "summary_en": {
+      "type": "string",
+      "description": "Deprecated alias for summary; use summary for new ingest"
+    },
+    "tags": { "type": "array", "items": { "type": "string" } },
+    "importance": { "type": "integer", "minimum": 1, "maximum": 5 },
+    "actionPossible": { "type": "boolean" },
+    "voteDate": {
+      "type": "string",
+      "format": "date",
+      "description": "Optional scheduled vote date (n8n)"
+    },
+    "entityType": {
+      "enum": [
+        "news",
+        "law",
+        "bill",
+        "vote",
+        "party_program",
+        "politician_stance",
+        "local_official"
+      ],
+      "description": "Optional filter category"
+    }
+  },
+  "additionalProperties": false
+}

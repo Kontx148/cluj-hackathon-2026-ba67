@@ -1,0 +1,15 @@
+{
+  "sources": [
+    { "id": "eur-lex", "name": "EUR-Lex", "url": "https://eur-lex.europa.eu/", "level": "EU", "lang": "en", "enabled": false },
+    { "id": "ep-legislative", "name": "EP Legislative Observatory", "url": "https://oeil.secure.europarl.europa.eu/", "level": "EU", "lang": "en", "enabled": false },
+    { "id": "monitorul-oficial", "name": "Official Gazette of Romania", "url": "https://monitoruloficial.ro/", "level": "Romania", "lang": "ro", "enabled": false },
+    { "id": "cdep", "name": "Chamber of Deputies", "url": "https://www.cdep.ro/", "level": "Romania", "lang": "ro", "enabled": false },
+    { "id": "g4media", "name": "G4Media", "url": "https://www.g4media.ro/feed", "level": "Romania", "lang": "ro", "enabled": false },
+    { "id": "primaria-cluj", "name": "Cluj-Napoca City Hall", "url": "https://primariaclujnapoca.ro/", "level": "Local", "lang": "ro", "enabled": false },
+    { "id": "maszol", "name": "Maszol", "url": "https://maszol.ro/rss", "level": "Local", "lang": "hu", "enabled": false },
+    { "id": "transtelex", "name": "Transtelex", "url": "https://transtelex.ro/rss", "level": "Local", "lang": "hu", "enabled": false }
+  ],
+  "meta": {
+    "note": "Placeholder catalog for n8n; set enabled to true when wired. Summaries ingested in English."
+  }
+}
