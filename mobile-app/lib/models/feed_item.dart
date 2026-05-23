@@ -17,6 +17,7 @@ class FeedItem {
     this.actionPossible = false,
     this.entityType,
     this.voteDate,
+    this.feedCategory,
   });
 
   final String id;
@@ -34,6 +35,8 @@ class FeedItem {
   final bool actionPossible;
   final String? entityType;
   final String? voteDate;
+  /// `news` or `law` — which tab/section this item belongs to.
+  final String? feedCategory;
 
   String get displaySummary => summary ?? description;
 
@@ -65,6 +68,7 @@ class FeedItem {
       actionPossible: json['actionPossible'] as bool? ?? false,
       entityType: json['entityType'] as String?,
       voteDate: json['voteDate'] as String?,
+      feedCategory: json['feedCategory'] as String?,
     );
   }
 }

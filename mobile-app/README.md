@@ -2,16 +2,17 @@
 
 English UI for the civic feed (EU / Romania / Local). Everything for this app lives under `mobile-app/`.
 
-Feed data is bundled from `data/feed-items.json` — no backend required.
+Feed data is bundled from `data/news-items.json` and `data/law-items.json` — no backend required on the phone.
 
 ## Layout
 
 | Path | Purpose |
 |------|---------|
 | `lib/` | Flutter source |
-| `data/` | Feed JSON + schemas (bundled into the app; n8n can update the file) |
+| `data/` | Feed JSON + schemas (bundled into the app; n8n updates via ingest API) |
 | `design/` | UI specs and reference |
-| `tools/feed-api/` | Optional local API for n8n ingest (not needed for normal runs) |
+| `tools/feed-api/` | Ingest API — [README](tools/feed-api/README.md) |
+| `n8n/` | Docker Compose + workflows — [README](n8n/README.md) |
 
 ## One-time setup
 
@@ -176,10 +177,13 @@ cd mobile-app/tools/feed-api && npm install && npm start
 flutter run --release --dart-define=API_BASE=http://10.0.2.2:3001
 ```
 
-Default (no `API_BASE`): loads `data/feed-items.json` from app assets.
+Default (no `API_BASE`): loads bundled `data/news-items.json` and `data/law-items.json`.
 
 ## Data / n8n
 
+- **Ingest flow (n8n → feed-api → JSON):** [tools/feed-api/README.md](tools/feed-api/README.md)
+- **Docker + workflows:** [n8n/README.md](n8n/README.md)
+- **Data files:** [data/README.md](data/README.md)
 - Schema: `data/schemas/feed-item.schema.json`
-- Update `data/feed-items.json`, then rebuild release for iOS/Android
-- Or `POST` to `tools/feed-api` when using `API_BASE`
+- Update JSON on disk (via n8n or by hand), then **rebuild release** for iOS/Android
+- Or use `API_BASE` to read live from feed-api while Docker is running

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'l10n/app_locale.dart';
+import 'l10n/locale_scope.dart';
 import 'screens/feed_screen.dart';
 import 'theme.dart';
 
@@ -7,17 +9,32 @@ void main() {
   runApp(const CivicApp());
 }
 
-class CivicApp extends StatelessWidget {
+class CivicApp extends StatefulWidget {
   const CivicApp({super.key});
 
   @override
+  State<CivicApp> createState() => _CivicAppState();
+}
+
+class _CivicAppState extends State<CivicApp> {
+  AppLocale _locale = AppLocale.en;
+
+  void _setLocale(AppLocale locale) {
+    setState(() => _locale = locale);
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'CivicAI',
-      theme: buildCivicTheme(dark: false),
-      darkTheme: buildCivicTheme(dark: true),
-      themeMode: ThemeMode.system,
-      home: const FeedScreen(),
+    return LocaleScope(
+      locale: _locale,
+      onLocaleChanged: _setLocale,
+      child: MaterialApp(
+        title: 'CivicAI',
+        theme: buildCivicTheme(dark: false),
+        darkTheme: buildCivicTheme(dark: true),
+        themeMode: ThemeMode.system,
+        home: const FeedScreen(),
+      ),
     );
   }
 }

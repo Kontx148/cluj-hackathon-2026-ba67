@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../l10n/app_strings.dart';
+import '../l10n/locale_scope.dart';
 import '../utils/importance_level.dart';
 
 /// Importance shown clearly to the public (label + colored dots).
@@ -18,30 +18,34 @@ class ImportanceIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final locale = context.appLocale;
+    final strings = context.strings;
     final n = level.clamp(ImportanceLevel.min, ImportanceLevel.max);
     final accent = ImportanceLevel.color(n);
+    final semanticsLabel =
+        '${strings.importance}: ${ImportanceLevel.publicLabel(n, locale)}';
 
     if (compact) {
       return Semantics(
-        label: '${AppStrings.importance}: ${ImportanceLevel.publicLabel(n)}',
+        label: semanticsLabel,
         child: _ColoredDots(level: n, accent: accent),
       );
     }
 
     return Semantics(
-      label: '${AppStrings.importance}: ${ImportanceLevel.publicLabel(n)}',
+      label: semanticsLabel,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            AppStrings.importance,
+            strings.importance,
             style: Theme.of(context).textTheme.labelSmall,
           ),
           if (showLabel) ...[
             const SizedBox(height: 2),
             Text(
-              ImportanceLevel.publicLabel(n),
+              ImportanceLevel.publicLabel(n, locale),
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
                     fontWeight: FontWeight.w600,
                     color: accent,
@@ -63,6 +67,7 @@ class ImportanceBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final locale = context.appLocale;
     final n = level.clamp(ImportanceLevel.min, ImportanceLevel.max);
     final accent = ImportanceLevel.color(n);
 
@@ -78,7 +83,7 @@ class ImportanceBadge extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            ImportanceLevel.label(n),
+            ImportanceLevel.label(n, locale),
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
                   fontWeight: FontWeight.w700,
                   color: accent,
