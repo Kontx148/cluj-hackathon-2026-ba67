@@ -111,6 +111,7 @@ jobs:
             N8N_BASIC_AUTH_ACTIVE=true
             N8N_BASIC_AUTH_USER=${{ secrets.N8N_BASIC_AUTH_USER }}
             N8N_BASIC_AUTH_PASSWORD=${{ secrets.N8N_BASIC_AUTH_PASSWORD }}
+            N8N_SECURE_COOKIE=false
             EOF
 
             docker compose -p civicai-n8n down
@@ -135,6 +136,17 @@ jobs:
                 exit 1
               fi
             done
+
+            echo "Importing n8n workflows..."
+
+            if [ -d "$REPO_DIR/mobile-app/n8n/workflows" ]; then
+              docker compose -p civicai-n8n exec -T n8n n8n import:workflow --separate --input=/workflows || true
+              docker compose -p civicai-n8n restart n8n
+            else
+              echo "No workflows folder found, skipping workflow import."
+            fi
+
+            echo "Checking feed-api..."
 
             if curl -fsS http://localhost:3001/health; then
               echo "feed-api healthy"
