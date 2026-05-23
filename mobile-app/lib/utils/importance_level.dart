@@ -1,12 +1,25 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/app_locale.dart';
+
 /// Public-facing importance scale (1–5) shown on cards and filters.
 abstract final class ImportanceLevel {
   static const min = 1;
   static const max = 5;
 
-  static String label(int level) {
-    return switch (level.clamp(min, max)) {
+  static String label(int level, [AppLocale locale = AppLocale.en]) {
+    final n = level.clamp(min, max);
+    if (locale == AppLocale.ro) {
+      return switch (n) {
+        1 => 'Scăzută',
+        2 => 'Moderată',
+        3 => 'Semnificativă',
+        4 => 'Ridicată',
+        5 => 'Critică',
+        _ => 'Necunoscută',
+      };
+    }
+    return switch (n) {
       1 => 'Low',
       2 => 'Moderate',
       3 => 'Significant',
@@ -16,9 +29,9 @@ abstract final class ImportanceLevel {
     };
   }
 
-  static String publicLabel(int level) {
+  static String publicLabel(int level, [AppLocale locale = AppLocale.en]) {
     final n = level.clamp(min, max);
-    return '${label(n)} ($n/$max)';
+    return '${label(n, locale)} ($n/$max)';
   }
 
   /// Citizen-facing color scale (calm → urgent).

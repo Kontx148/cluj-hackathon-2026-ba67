@@ -1,0 +1,79 @@
+{
+  "name": "CivicAI — Senat upcoming votes (RO)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [{ "field": "hours", "hoursInterval": 12 }]
+        }
+      },
+      "id": "f1a20001-0001-4000-8000-000000000001",
+      "name": "Every 12 hours",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "http://feed-api:3001/api/fetch/senat"
+      },
+      "id": "f1a20001-0001-4000-8000-000000000002",
+      "name": "Fetch senat consultation",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [220, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.first().json;\nif (!body.records || body.records.length === 0) {\n  throw new Error('No senat records parsed');\n}\nreturn [{ json: { records: body.records } }];"
+      },
+      "id": "f1a20001-0001-4000-8000-000000000003",
+      "name": "Prepare records",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [440, 0]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://feed-api:3001/api/ingest/raw",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Ingest-Key",
+              "value": "civicai-dev-key"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ records: $json.records, category: 'law', meta: { workflow: 'senat-plx' } }) }}"
+      },
+      "id": "f1a20001-0001-4000-8000-000000000004",
+      "name": "Ingest merge",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [660, 0]
+    }
+  ],
+  "connections": {
+    "Every 12 hours": {
+      "main": [[{ "node": "Fetch senat consultation", "type": "main", "index": 0 }]]
+    },
+    "Fetch senat consultation": {
+      "main": [[{ "node": "Prepare records", "type": "main", "index": 0 }]]
+    },
+    "Prepare records": {
+      "main": [[{ "node": "Ingest merge", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" },
+  "meta": { "templateCredsSetupCompleted": true }
+}

@@ -2,10 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../constants/feed_tags.dart';
+import '../l10n/app_locale.dart';
 import '../l10n/app_strings.dart';
+import '../l10n/locale_scope.dart';
 import '../models/feed_item.dart';
 import '../services/feed_service.dart';
+import '../utils/feed_item_localization.dart';
 import '../utils/feed_filter.dart';
+import '../utils/feed_section.dart';
 import '../utils/importance_level.dart';
 import '../widgets/importance_indicator.dart';
 
@@ -20,11 +24,14 @@ class _FeedScreenState extends State<FeedScreen> {
   final _feedService = FeedService();
   late Future<List<FeedItem>> _feedFuture;
 
-  FeedLevel? _levelFilter;
+  FeedLevel? _levelFilter = FeedLevel.romania;
   String? _tagFilter;
   int? _importanceFilter;
+  FeedSection _section = FeedSection.laws;
 
-  FeedFilters get _filters => FeedFilters(
+  FeedFilters _filters(AppLocale locale) => FeedFilters(
+        section: _section,
+        language: locale,
         level: _levelFilter,
         tag: _tagFilter,
         importance: _importanceFilter,
@@ -45,6 +52,9 @@ class _FeedScreenState extends State<FeedScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final strings = context.strings;
+    final locale = context.appLocale;
+
     return Scaffold(
       body: SafeArea(
         child: FutureBuilder<List<FeedItem>>(
@@ -55,13 +65,15 @@ class _FeedScreenState extends State<FeedScreen> {
               child: CustomScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 slivers: [
-                  SliverToBoxAdapter(child: _buildHeader(context)),
-                  ..._buildFeedSlivers(context, snapshot),
+                  SliverToBoxAdapter(
+                    child: _buildHeader(context, strings, locale),
+                  ),
+                  ..._buildFeedSlivers(context, snapshot, strings, locale),
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.only(top: 24, bottom: 32),
                       child: Text(
-                        AppStrings.footer,
+                        strings.footer,
                         textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.labelSmall,
                       ),
@@ -79,6 +91,8 @@ class _FeedScreenState extends State<FeedScreen> {
   List<Widget> _buildFeedSlivers(
     BuildContext context,
     AsyncSnapshot<List<FeedItem>> snapshot,
+    AppStrings strings,
+    AppLocale locale,
   ) {
     if (snapshot.connectionState == ConnectionState.waiting) {
       return const [
@@ -96,19 +110,19 @@ class _FeedScreenState extends State<FeedScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  AppStrings.loadError,
+                  strings.loadError,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  '${snapshot.error}\n\n${AppStrings.loadErrorHint}',
+                  '${snapshot.error}\n\n${strings.loadErrorHint}',
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
                 const SizedBox(height: 16),
                 FilledButton(
                   onPressed: _reload,
-                  child: const Text(AppStrings.retry),
+                  child: Text(strings.retry),
                 ),
               ],
             ),
@@ -118,14 +132,14 @@ class _FeedScreenState extends State<FeedScreen> {
     }
 
     final allItems = snapshot.data ?? [];
-    final items = _filters.apply(allItems);
+    final items = _filters(locale).apply(allItems);
 
     if (items.isEmpty) {
       return [
         SliverFillRemaining(
           child: Center(
             child: Text(
-              AppStrings.noResults,
+              strings.noResults,
               style: Theme.of(context).textTheme.bodyMedium,
             ),
           ),
@@ -137,77 +151,124 @@ class _FeedScreenState extends State<FeedScreen> {
       SliverList.separated(
         itemCount: items.length,
         separatorBuilder: (_, __) => const SizedBox(height: 12),
-        itemBuilder: (context, index) => _NewsCard(item: items[index]),
+        itemBuilder: (context, index) =>
+            _FeedCard(item: items[index], locale: locale),
       ),
     ];
   }
 
-  Widget _buildHeader(BuildContext context) {
+  Widget _buildHeader(
+    BuildContext context,
+    AppStrings strings,
+    AppLocale locale,
+  ) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            AppStrings.eyebrow,
+            strings.eyebrow,
             style: Theme.of(context).textTheme.labelSmall,
           ),
           Text(
-            AppStrings.title,
+            strings.title,
             style: Theme.of(context).textTheme.headlineMedium,
           ),
           const SizedBox(height: 4),
           Text(
-            AppStrings.tagline,
+            strings.tagline,
             style: Theme.of(context).textTheme.bodyMedium,
+          ),
+          const SizedBox(height: 16),
+          _FilterSection(
+            title: strings.filterLanguage,
+            child: SegmentedButton<AppLocale>(
+              segments: [
+                for (final option in AppLocale.values)
+                  ButtonSegment(
+                    value: option,
+                    label: Text(option.label),
+                  ),
+              ],
+              selected: {locale},
+              onSelectionChanged: (selection) {
+                LocaleScope.of(context).onLocaleChanged(selection.first);
+              },
+            ),
+          ),
+          const SizedBox(height: 12),
+          SegmentedButton<FeedSection>(
+            segments: [
+              ButtonSegment(
+                value: FeedSection.news,
+                label: Text(strings.sectionNews),
+                icon: const Icon(Icons.newspaper_outlined),
+              ),
+              ButtonSegment(
+                value: FeedSection.laws,
+                label: Text(strings.sectionLaws),
+                icon: const Icon(Icons.gavel_outlined),
+              ),
+            ],
+            selected: {_section},
+            onSelectionChanged: (selection) {
+              setState(() {
+                _section = selection.first;
+                _levelFilter = _section == FeedSection.laws
+                    ? FeedLevel.romania
+                    : null;
+                _tagFilter = null;
+              });
+            },
           ),
           const SizedBox(height: 16),
           Row(
             children: [
               IconButton(
                 onPressed: _reload,
-                tooltip: AppStrings.refresh,
+                tooltip: strings.refresh,
                 icon: const Icon(Icons.refresh),
               ),
               Text(
-                AppStrings.refresh,
+                strings.refresh,
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
             ],
           ),
           const SizedBox(height: 8),
           _FilterSection(
-            title: AppStrings.filterLevel,
+            title: strings.filterLevel,
             child: _horizontalChips([
               _chip(
-                label: AppStrings.allLevels,
+                label: strings.allLevels,
                 selected: _levelFilter == null,
                 onTap: () => setState(() => _levelFilter = null),
               ),
               _chip(
-                label: AppStrings.levelEu,
+                label: strings.levelEu,
                 selected: _levelFilter == FeedLevel.eu,
                 onTap: () => setState(() => _levelFilter = FeedLevel.eu),
               ),
               _chip(
-                label: AppStrings.levelRomania,
+                label: strings.levelRomania,
                 selected: _levelFilter == FeedLevel.romania,
                 onTap: () => setState(() => _levelFilter = FeedLevel.romania),
               ),
               _chip(
-                label: AppStrings.levelLocal,
+                label: strings.levelLocal,
                 selected: _levelFilter == FeedLevel.local,
                 onTap: () => setState(() => _levelFilter = FeedLevel.local),
               ),
             ]),
           ),
           _FilterSection(
-            title: AppStrings.filterImportance,
-            child: _importanceDropdown(context),
+            title: strings.filterImportance,
+            child: _importanceDropdown(context, strings, locale),
           ),
           _FilterSection(
-            title: AppStrings.filterTopics,
-            child: _topicDropdown(context),
+            title: strings.filterTopics,
+            child: _topicDropdown(context, strings),
           ),
           const SizedBox(height: 8),
         ],
@@ -241,13 +302,17 @@ class _FeedScreenState extends State<FeedScreen> {
     );
   }
 
-  Widget _importanceDropdown(BuildContext context) {
+  Widget _importanceDropdown(
+    BuildContext context,
+    AppStrings strings,
+    AppLocale locale,
+  ) {
     return _filterDropdown<int?>(
       value: _importanceFilter,
       items: [
-        const DropdownMenuItem<int?>(
+        DropdownMenuItem<int?>(
           value: null,
-          child: Text(AppStrings.allImportance),
+          child: Text(strings.allImportance),
         ),
         for (var i = ImportanceLevel.min; i <= ImportanceLevel.max; i++)
           DropdownMenuItem<int?>(
@@ -256,7 +321,7 @@ class _FeedScreenState extends State<FeedScreen> {
               children: [
                 Icon(Icons.circle, size: 10, color: ImportanceLevel.color(i)),
                 const SizedBox(width: 8),
-                Text(ImportanceLevel.label(i)),
+                Text(ImportanceLevel.label(i, locale)),
               ],
             ),
           ),
@@ -265,13 +330,13 @@ class _FeedScreenState extends State<FeedScreen> {
     );
   }
 
-  Widget _topicDropdown(BuildContext context) {
+  Widget _topicDropdown(BuildContext context, AppStrings strings) {
     return _filterDropdown<String?>(
       value: _tagFilter,
       items: [
-        const DropdownMenuItem<String?>(
+        DropdownMenuItem<String?>(
           value: null,
-          child: Text(AppStrings.allTags),
+          child: Text(strings.allTags),
         ),
         for (final tag in FeedTags.topics)
           DropdownMenuItem<String?>(
@@ -331,13 +396,15 @@ class _FilterSection extends StatelessWidget {
   }
 }
 
-class _NewsCard extends StatelessWidget {
-  const _NewsCard({required this.item});
+class _FeedCard extends StatelessWidget {
+  const _FeedCard({required this.item, required this.locale});
 
   final FeedItem item;
+  final AppLocale locale;
 
   @override
   Widget build(BuildContext context) {
+    final strings = context.strings;
     final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -369,14 +436,14 @@ class _NewsCard extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                item.title,
+                item.localizedTitle(locale),
                 style: theme.textTheme.titleMedium,
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
               ),
               const SizedBox(height: 8),
               Text(
-                item.displaySummary,
+                item.localizedSummary(locale),
                 style: theme.textTheme.bodyMedium,
                 maxLines: 4,
                 overflow: TextOverflow.ellipsis,
@@ -406,7 +473,7 @@ class _NewsCard extends StatelessWidget {
                   if (item.actionPossible)
                     Expanded(
                       child: Tooltip(
-                        message: AppStrings.civicActionHint,
+                        message: strings.civicActionHint,
                         child: Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 10,
@@ -430,7 +497,7 @@ class _NewsCard extends StatelessWidget {
                               const SizedBox(width: 6),
                               Flexible(
                                 child: Text(
-                                  AppStrings.civicAction,
+                                  strings.civicAction,
                                   style: theme.textTheme.labelSmall?.copyWith(
                                     color: const Color(0xFF059669),
                                     fontWeight: FontWeight.w600,
@@ -446,7 +513,7 @@ class _NewsCard extends StatelessWidget {
                     const Spacer(),
                   TextButton(
                     onPressed: () => launchUrl(Uri.parse(item.link)),
-                    child: const Text(AppStrings.open),
+                    child: Text(strings.open),
                   ),
                 ],
               ),
@@ -465,10 +532,11 @@ class _LevelBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final strings = context.strings;
     final label = switch (level) {
-      FeedLevel.eu => AppStrings.levelEu,
-      FeedLevel.romania => AppStrings.levelRomania,
-      FeedLevel.local => AppStrings.levelLocal,
+      FeedLevel.eu => strings.levelEu,
+      FeedLevel.romania => strings.levelRomania,
+      FeedLevel.local => strings.levelLocal,
     };
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),

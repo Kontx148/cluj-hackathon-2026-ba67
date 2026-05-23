@@ -1,0 +1,43 @@
+# CivicAI — n8n + ingest API (local Docker)
+# Start: docker compose up -d
+
+services:
+  feed-api:
+    image: node:20-alpine
+    pull_policy: if_not_present
+    working_dir: /app
+    command: sh -c "npm install --omit=dev && node index.js"
+    volumes:
+      - ../tools/feed-api:/app
+      - ../data:/data
+    environment:
+      PORT: 3001
+      MOBILE_APP_DATA_DIR: /data
+      INGEST_API_KEY: ${INGEST_API_KEY:-civicai-dev-key}
+    ports:
+      - "3001:3001"
+    restart: unless-stopped
+
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:latest
+    pull_policy: if_not_present
+    ports:
+      - "5678:5678"
+    environment:
+      GENERIC_TIMEZONE: ${GENERIC_TIMEZONE:-Europe/Bucharest}
+      TZ: ${GENERIC_TIMEZONE:-Europe/Bucharest}
+      N8N_HOST: ${N8N_HOST:-localhost}
+      N8N_PORT: 5678
+      N8N_PROTOCOL: ${N8N_PROTOCOL:-http}
+      WEBHOOK_URL: ${WEBHOOK_URL:-http://localhost:5678/}
+      N8N_BASIC_AUTH_ACTIVE: ${N8N_BASIC_AUTH_ACTIVE:-true}
+      N8N_BASIC_AUTH_USER: ${N8N_BASIC_AUTH_USER:-admin}
+      N8N_BASIC_AUTH_PASSWORD: ${N8N_BASIC_AUTH_PASSWORD:-changeme}
+    volumes:
+      - n8n_data:/home/node/.n8n
+    depends_on:
+      - feed-api
+    restart: unless-stopped
+
+volumes:
+  n8n_data:

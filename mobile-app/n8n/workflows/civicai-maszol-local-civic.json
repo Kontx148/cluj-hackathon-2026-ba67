@@ -1,0 +1,123 @@
+{
+  "name": "CivicAI — Maszol local civic news",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 6
+            }
+          ]
+        }
+      },
+      "id": "f1a70004-0001-4000-8000-000000000001-001",
+      "name": "Every 6 hours",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://maszol.ro/rss"
+      },
+      "id": "f1a70004-0001-4000-8000-000000000001-002",
+      "name": "RSS Maszol",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.1,
+      "position": [
+        220,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const keywords = /cluj|primar|consiliu|HCL|taxa local|transport|tramv|autobuz|STCF|parc|construct|locuin|scoal|gradinit|spital|politie|strad|cartier|florest|turda|dej|consultare|buget local|trafic|locuitor|maszol|udmr|rmdsz|kolozs|monitorul/i;\n\nconst records = $input.all()\n  .map(({ json: item }) => item)\n  .filter((item) => keywords.test(`${item.title} ${item.contentSnippet || ''}`))\n  .slice(0, 20)\n  .map((item) => ({\n    sourceId: 'maszol',\n    sourceName: 'Maszol',\n    level: 'Local',\n    sourceLang: 'ro',\n    entityType: 'news',\n    feedCategory: 'news',\n    externalId: item.link,\n    title: item.title,\n    detailUrl: item.link,\n    description: String(item.contentSnippet || item.title || '')\n      .replace(/<[^>]+>/g, ' ')\n      .trim()\n      .slice(0, 500),\n    publishedAt: item.isoDate || item.pubDate || new Date().toISOString(),\n    fetchedAt: new Date().toISOString(),\n  }));\n\nreturn [{ json: { records } }];"
+      },
+      "id": "f1a70004-0001-4000-8000-000000000001-003",
+      "name": "Filter civic impact",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        440,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://feed-api:3001/api/ingest/raw",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Ingest-Key",
+              "value": "civicai-dev-key"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ records: $json.records, category: 'news', meta: { workflow: 'maszol-local-civic' } }) }}"
+      },
+      "id": "f1a70004-0001-4000-8000-000000000001-004",
+      "name": "Ingest merge",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        660,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Every 6 hours": {
+      "main": [
+        [
+          {
+            "node": "RSS Maszol",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Maszol": {
+      "main": [
+        [
+          {
+            "node": "Filter civic impact",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter civic impact": {
+      "main": [
+        [
+          {
+            "node": "Ingest merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

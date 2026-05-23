@@ -7,7 +7,8 @@ import '../config.dart';
 import '../models/feed_item.dart';
 
 class FeedService {
-  static const _assetPath = 'data/feed-items.json';
+  static const _newsAssetPath = 'data/news-items.json';
+  static const _lawAssetPath = 'data/law-items.json';
 
   Future<List<FeedItem>> fetchFeed() async {
     if (useRemoteFeedApi) {
@@ -17,8 +18,14 @@ class FeedService {
   }
 
   Future<List<FeedItem>> _fetchFromAssets() async {
-    final raw = await rootBundle.loadString(_assetPath);
-    return _parseItems(jsonDecode(raw) as Map<String, dynamic>);
+    final results = await Future.wait([
+      rootBundle.loadString(_newsAssetPath),
+      rootBundle.loadString(_lawAssetPath),
+    ]);
+
+    final news = _parseItems(jsonDecode(results[0]) as Map<String, dynamic>);
+    final laws = _parseItems(jsonDecode(results[1]) as Map<String, dynamic>);
+    return _sortItems([...news, ...laws]);
   }
 
   Future<List<FeedItem>> _fetchFromApi() async {
@@ -32,15 +39,16 @@ class FeedService {
 
   List<FeedItem> _parseItems(Map<String, dynamic> body) {
     final items = body['items'] as List<dynamic>? ?? [];
-    final parsed = items
+    return items
         .map((e) => FeedItem.fromJson(e as Map<String, dynamic>))
         .toList();
+  }
 
+  List<FeedItem> _sortItems(List<FeedItem> parsed) {
     parsed.sort(
       (a, b) =>
           DateTime.parse(b.publishedAt).compareTo(DateTime.parse(a.publishedAt)),
     );
-
     return parsed;
   }
 }

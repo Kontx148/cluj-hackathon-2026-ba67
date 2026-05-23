@@ -1,116 +1,1174 @@
 {
   "items": [
     {
-      "id": "eu-ai-act-001",
-      "title": "EU AI Act — transparency obligations for high-risk systems",
-      "link": "https://example.eu/ai-act/transparency",
-      "description": "Delegated acts on transparency and documentation for deployers of high-risk AI.",
-      "publishedAt": "2026-05-20T10:00:00Z",
-      "source": "EUR-Lex (dummy)",
-      "sourceId": "eur-lex",
-      "level": "EU",
-      "sourceLang": "en",
-      "entityType": "law",
-      "summary": "EU AI Act transparency rules apply to operators of high-risk AI systems; documentation and notices are required.",
-      "tags": ["#EU", "#digitalization", "#law-in-force"],
-      "importance": 4,
-      "actionPossible": false
-    },
-    {
-      "id": "eu-digital-002",
-      "title": "Proposal: Digital Identity Wallet — interoperability framework",
-      "link": "https://example.eu/digital-identity-wallet",
-      "description": "Trilogue negotiations; European Parliament plenary vote expected Q3 2026.",
-      "publishedAt": "2026-05-18T14:30:00Z",
-      "source": "European Parliament (dummy)",
-      "sourceId": "ep-legislative",
-      "level": "EU",
-      "sourceLang": "en",
+      "id": "ro-plx-senat-b246-2026",
+      "title": "B246 / 2026 — Propunere legislativă pentru abrogarea art.XXII din Legea nr.239/2025 privind stabilirea unor măsuri de redresare și …",
+      "link": "https://www.senat.ro/Legis/Lista.aspx?cod=27682",
+      "description": "Propunere legislativă pentru abrogarea art.XXII din Legea nr.239/2025 privind stabilirea unor măsuri de redresare și eficientizare a resurselor publice și pentru modificarea și completarea unor acte normative",
+      "publishedAt": "2026-05-23T14:42:41.012Z",
+      "source": "Senat",
+      "sourceId": "senat-plx",
+      "level": "Romania",
+      "sourceLang": "ro",
       "entityType": "bill",
-      "voteDate": "2026-09-15",
-      "summary": "The European digital identity wallet interoperability framework is in trilogue; plenary vote tentatively September 2026.",
-      "tags": ["#EU", "#digitalization", "#bill-proposal", "#vote-upcoming"],
-      "importance": 5,
+      "summary": "Propunere legislativă pentru abrogarea art.XXII din Legea nr.239/2025 privind stabilirea unor măsuri de redresare și eficientizare a resurselor publice și pentru modificarea și completarea unor acte normative",
+      "tags": [
+        "#Romania",
+        "#bill-proposal",
+        "#consultation"
+      ],
+      "importance": 3,
       "actionPossible": true
     },
     {
-      "id": "eu-ep-election-003",
-      "title": "MEP voting record: Green Deal industrial plan (dummy aggregate)",
-      "link": "https://example.eu/mep-votes/green-deal",
-      "description": "Aggregated stance of Romanian delegation MEPs on the industrial plan vote.",
-      "publishedAt": "2026-05-15T09:00:00Z",
-      "source": "VoteWatch (dummy)",
-      "sourceId": "votewatch",
-      "level": "EU",
-      "sourceLang": "en",
-      "entityType": "politician_stance",
-      "summary": "A majority of Romanian MEPs voted in favor of the Green Deal industrial package (dummy data).",
-      "tags": ["#EU", "#environment", "#representative-stance"],
-      "importance": 3,
-      "actionPossible": false
-    },
-    {
-      "id": "ro-budget-101",
-      "title": "Romania 2026 state budget — promulgated",
-      "link": "https://example.ro/laws/budget-2026",
-      "description": "The 2026 state budget was promulgated with allocations for health and education.",
-      "publishedAt": "2026-05-19T08:00:00Z",
-      "source": "Official Gazette (dummy)",
-      "sourceId": "monitorul-oficial",
+      "id": "ro-plx-senat-b247-2026",
+      "title": "B247 / 2026 — Propunere legislativă pentru modificarea și completarea Legii nr.168 din 07.08.2020 privind recunoașterea meritelor p…",
+      "link": "https://www.senat.ro/Legis/Lista.aspx?cod=27683",
+      "description": "Propunere legislativă pentru modificarea și completarea Legii nr.168 din 07.08.2020 privind recunoașterea meritelor personalului participant la acțiuni militare, misiuni și operații pe teritoriul sau în afara teritoriului statului român și acordarea unor drepturi acestuia, familiei acestuia și urmașilor celui decedat",
+      "publishedAt": "2026-05-23T14:42:41.012Z",
+      "source": "Senat",
+      "sourceId": "senat-plx",
       "level": "Romania",
-      "sourceLang": "en",
-      "entityType": "law",
-      "summary": "Romania's 2026 state budget is in force with increased health and education spending.",
-      "tags": ["#Romania", "#taxation", "#law-in-force"],
-      "importance": 4,
-      "actionPossible": false
-    },
-    {
-      "id": "ro-pension-bill-102",
-      "title": "Bill: special pensions — legal committee debate",
-      "link": "https://example.ro/cdep/plx/special-pensions",
-      "description": "Draft law on special pensions; favorable report postponed.",
-      "publishedAt": "2026-05-17T11:00:00Z",
-      "source": "Chamber of Deputies (dummy)",
-      "sourceId": "cdep",
-      "level": "Romania",
-      "sourceLang": "en",
+      "sourceLang": "ro",
       "entityType": "bill",
-      "voteDate": "2026-06-10",
-      "summary": "The special pensions bill was delayed in the legal committee; a chamber vote is possible in June 2026.",
-      "tags": ["#Romania", "#social-policy", "#bill-proposal", "#vote-upcoming"],
-      "importance": 5,
+      "summary": "Propunere legislativă pentru modificarea și completarea Legii nr.168 din 07.08.2020 privind recunoașterea meritelor personalului participant la acțiuni militare, misiuni și operații pe teritoriul sau în afara teritoriului statului român și acordarea unor drepturi acestuia, familiei acestuia și urmașilor celui decedat",
+      "tags": [
+        "#Romania",
+        "#bill-proposal",
+        "#consultation"
+      ],
+      "importance": 3,
       "actionPossible": true
     },
     {
-      "id": "ro-psd-program-103",
-      "title": "PSD governance program — digital and health priorities",
-      "link": "https://example.ro/parties/psd/program-2026",
-      "description": "Excerpt from the governance program: telemedicine and ANAF digitalization.",
-      "publishedAt": "2026-05-10T12:00:00Z",
-      "source": "PSD (dummy)",
-      "sourceId": "partid-psd",
+      "id": "ro-plx-senat-b248-2026",
+      "title": "B248 / 2026 — Propunere legislativă pentru modificarea și completarea Legii nr.168 din 07.08.2020 privind recunoașterea meritelor p…",
+      "link": "https://www.senat.ro/Legis/Lista.aspx?cod=27684",
+      "description": "Propunere legislativă pentru modificarea și completarea Legii nr.168 din 07.08.2020 privind recunoașterea meritelor personalului participant la acțiuni militare, misiuni și operații pe teritoriul sau în afara teritoriului statului român și acordarea unor drepturi acestuia, familiei acestuia și urmașilor celui decedat",
+      "publishedAt": "2026-05-23T14:42:41.012Z",
+      "source": "Senat",
+      "sourceId": "senat-plx",
       "level": "Romania",
-      "sourceLang": "en",
-      "entityType": "party_program",
-      "summary": "The PSD program emphasizes telemedicine and tax authority digitalization (dummy).",
-      "tags": ["#Romania", "#party-program", "#digitalization", "#healthcare"],
+      "sourceLang": "ro",
+      "entityType": "bill",
+      "summary": "Propunere legislativă pentru modificarea și completarea Legii nr.168 din 07.08.2020 privind recunoașterea meritelor personalului participant la acțiuni militare, misiuni și operații pe teritoriul sau în afara teritoriului statului român și acordarea unor drepturi acestuia, familiei acestuia și urmașilor celui decedat",
+      "tags": [
+        "#Romania",
+        "#bill-proposal",
+        "#consultation"
+      ],
       "importance": 3,
-      "actionPossible": false
+      "actionPossible": true
     },
     {
-      "id": "ro-aur-stance-104",
-      "title": "AUR: public position on tax reform",
-      "link": "https://example.ro/parties/aur/fiscal",
-      "description": "Party leader criticizes a planned VAT increase in the HoReCa sector.",
-      "publishedAt": "2026-05-16T16:00:00Z",
-      "source": "G4Media (dummy)",
+      "id": "ro-plx-senat-b252-2026",
+      "title": "B252 / 2026 — Propunere legislativă pentru completarea ordonanţei de urgenţă nr.195/2002 privind circulaţia pe drumurile publice",
+      "link": "https://www.senat.ro/Legis/Lista.aspx?cod=27688",
+      "description": "Propunere legislativă pentru completarea ordonanţei de urgenţă nr.195/2002 privind circulaţia pe drumurile publice",
+      "publishedAt": "2026-05-23T14:42:41.012Z",
+      "source": "Senat",
+      "sourceId": "senat-plx",
+      "level": "Romania",
+      "sourceLang": "ro",
+      "entityType": "bill",
+      "summary": "Propunere legislativă pentru completarea ordonanţei de urgenţă nr.195/2002 privind circulaţia pe drumurile publice",
+      "tags": [
+        "#Romania",
+        "#bill-proposal",
+        "#consultation"
+      ],
+      "importance": 3,
+      "actionPossible": true
+    },
+    {
+      "id": "ro-plx-senat-b253-2026",
+      "title": "B253 / 2026 — Propunere legislativă pentru modificarea şi completarea Legii nr.165/2018 privind acordarea biletelor de valoare şi m…",
+      "link": "https://www.senat.ro/Legis/Lista.aspx?cod=27689",
+      "description": "Propunere legislativă pentru modificarea şi completarea Legii nr.165/2018 privind acordarea biletelor de valoare şi modificarea Legii nr.227/2025 - Codul fiscal",
+      "publishedAt": "2026-05-23T14:42:41.012Z",
+      "source": "Senat",
+      "sourceId": "senat-plx",
+      "level": "Romania",
+      "sourceLang": "ro",
+      "entityType": "bill",
+      "summary": "Propunere legislativă pentru modificarea şi completarea Legii nr.165/2018 privind acordarea biletelor de valoare şi modificarea Legii nr.227/2025 - Codul fiscal",
+      "tags": [
+        "#Romania",
+        "#bill-proposal",
+        "#consultation"
+      ],
+      "importance": 3,
+      "actionPossible": true
+    },
+    {
+      "id": "ro-plx-senat-b254-2026",
+      "title": "B254 / 2026 — Propunere legislativă privind instituirea Medaliei &quot;Ilie Ilașcu&quot;",
+      "link": "https://www.senat.ro/Legis/Lista.aspx?cod=27690",
+      "description": "Propunere legislativă privind instituirea Medaliei &quot;Ilie Ilașcu&quot;",
+      "publishedAt": "2026-05-23T14:42:41.012Z",
+      "source": "Senat",
+      "sourceId": "senat-plx",
+      "level": "Romania",
+      "sourceLang": "ro",
+      "entityType": "bill",
+      "summary": "Propunere legislativă privind instituirea Medaliei &quot;Ilie Ilașcu&quot;",
+      "tags": [
+        "#Romania",
+        "#bill-proposal",
+        "#consultation"
+      ],
+      "importance": 3,
+      "actionPossible": true
+    },
+    {
+      "id": "ro-plx-senat-b255-2026",
+      "title": "B255 / 2026 — Propunere legislativă pentru completarea art.(37 indice 1) din Legea cetățeniei române nr.21/1991",
+      "link": "https://www.senat.ro/Legis/Lista.aspx?cod=27691",
+      "description": "Propunere legislativă pentru completarea art.(37 indice 1) din Legea cetățeniei române nr.21/1991",
+      "publishedAt": "2026-05-23T14:42:41.012Z",
+      "source": "Senat",
+      "sourceId": "senat-plx",
+      "level": "Romania",
+      "sourceLang": "ro",
+      "entityType": "bill",
+      "summary": "Propunere legislativă pentru completarea art.(37 indice 1) din Legea cetățeniei române nr.21/1991",
+      "tags": [
+        "#Romania",
+        "#bill-proposal",
+        "#consultation"
+      ],
+      "importance": 3,
+      "actionPossible": true
+    },
+    {
+      "id": "ro-plx-senat-b256-2026",
+      "title": "B256 / 2026 — Propunere legislativă privind protecția întreprinderilor publice românești împotriva preluărilor ostile și pentru asi…",
+      "link": "https://www.senat.ro/Legis/Lista.aspx?cod=27692",
+      "description": "Propunere legislativă privind protecția întreprinderilor publice românești împotriva preluărilor ostile și pentru asigurarea continuității lor",
+      "publishedAt": "2026-05-23T14:42:41.012Z",
+      "source": "Senat",
+      "sourceId": "senat-plx",
+      "level": "Romania",
+      "sourceLang": "ro",
+      "entityType": "bill",
+      "summary": "Propunere legislativă privind protecția întreprinderilor publice românești împotriva preluărilor ostile și pentru asigurarea continuității lor",
+      "tags": [
+        "#Romania",
+        "#bill-proposal",
+        "#consultation"
+      ],
+      "importance": 3,
+      "actionPossible": true
+    },
+    {
+      "id": "ro-plx-senat-b258-2026",
+      "title": "B258 / 2026 — Propunere legislativă pentru modificarea și completarea Ordonanței Guvernului nr.28/2008 privind registrul agricol",
+      "link": "https://www.senat.ro/Legis/Lista.aspx?cod=27694",
+      "description": "Propunere legislativă pentru modificarea și completarea Ordonanței Guvernului nr.28/2008 privind registrul agricol",
+      "publishedAt": "2026-05-23T14:42:41.012Z",
+      "source": "Senat",
+      "sourceId": "senat-plx",
+      "level": "Romania",
+      "sourceLang": "ro",
+      "entityType": "bill",
+      "summary": "Propunere legislativă pentru modificarea și completarea Ordonanței Guvernului nr.28/2008 privind registrul agricol",
+      "tags": [
+        "#Romania",
+        "#bill-proposal",
+        "#consultation"
+      ],
+      "importance": 3,
+      "actionPossible": true
+    },
+    {
+      "id": "ro-plx-senat-b259-2026",
+      "title": "B259 / 2026 — Propunere legislativă pentru modificarea și completarea Legii nr.273/2004 privind procedura adopției",
+      "link": "https://www.senat.ro/Legis/Lista.aspx?cod=27695",
+      "description": "Propunere legislativă pentru modificarea și completarea Legii nr.273/2004 privind procedura adopției",
+      "publishedAt": "2026-05-23T14:42:41.012Z",
+      "source": "Senat",
+      "sourceId": "senat-plx",
+      "level": "Romania",
+      "sourceLang": "ro",
+      "entityType": "bill",
+      "summary": "Propunere legislativă pentru modificarea și completarea Legii nr.273/2004 privind procedura adopției",
+      "tags": [
+        "#Romania",
+        "#bill-proposal",
+        "#consultation"
+      ],
+      "importance": 3,
+      "actionPossible": true
+    },
+    {
+      "id": "ro-plx-senat-b260-2026",
+      "title": "B260 / 2026 — Propunere legislativă pentru modificarea și completarea art.25 din Legea nr.227/2015 privind Codul fiscal, precum și …",
+      "link": "https://www.senat.ro/Legis/Lista.aspx?cod=27696",
+      "description": "Propunere legislativă pentru modificarea și completarea art.25 din Legea nr.227/2015 privind Codul fiscal, precum și completarea Legii nr.165/2018 privind acordarea biletelor de valoare",
+      "publishedAt": "2026-05-23T14:42:41.012Z",
+      "source": "Senat",
+      "sourceId": "senat-plx",
+      "level": "Romania",
+      "sourceLang": "ro",
+      "entityType": "bill",
+      "summary": "Propunere legislativă pentru modificarea și completarea art.25 din Legea nr.227/2015 privind Codul fiscal, precum și completarea Legii nr.165/2018 privind acordarea biletelor de valoare",
+      "tags": [
+        "#Romania",
+        "#bill-proposal",
+        "#consultation"
+      ],
+      "importance": 3,
+      "actionPossible": true
+    },
+    {
+      "id": "ro-plx-senat-b261-2026",
+      "title": "B261 / 2026 — Propunere legislativă pentru modificarea și completarea Legii 52/2011 privind exercitarea unor activități cu caracter…",
+      "link": "https://www.senat.ro/Legis/Lista.aspx?cod=27697",
+      "description": "Propunere legislativă pentru modificarea și completarea Legii 52/2011 privind exercitarea unor activități cu caracter ocazional desfășurate de zilieri",
+      "publishedAt": "2026-05-23T14:42:41.012Z",
+      "source": "Senat",
+      "sourceId": "senat-plx",
+      "level": "Romania",
+      "sourceLang": "ro",
+      "entityType": "bill",
+      "summary": "Propunere legislativă pentru modificarea și completarea Legii 52/2011 privind exercitarea unor activități cu caracter ocazional desfășurate de zilieri",
+      "tags": [
+        "#Romania",
+        "#bill-proposal",
+        "#consultation"
+      ],
+      "importance": 3,
+      "actionPossible": true
+    },
+    {
+      "id": "ro-plx-senat-b262-2026",
+      "title": "B262 / 2026 — Propunere legislativă pentru modificarea art.3 din Legea nr.61/1993 privind alocația de stat pentru copii, republicat…",
+      "link": "https://www.senat.ro/Legis/Lista.aspx?cod=27698",
+      "description": "Propunere legislativă pentru modificarea art.3 din Legea nr.61/1993 privind alocația de stat pentru copii, republicată, precum și modificarea și completarea art.(108 indice 1) din Legea învățământului preuniversitar nr.198/2023",
+      "publishedAt": "2026-05-23T14:42:41.012Z",
+      "source": "Senat",
+      "sourceId": "senat-plx",
+      "level": "Romania",
+      "sourceLang": "ro",
+      "entityType": "bill",
+      "summary": "Propunere legislativă pentru modificarea art.3 din Legea nr.61/1993 privind alocația de stat pentru copii, republicată, precum și modificarea și completarea art.(108 indice 1) din Legea învățământului preuniversitar nr.198/2023",
+      "tags": [
+        "#Romania",
+        "#bill-proposal",
+        "#consultation"
+      ],
+      "importance": 3,
+      "actionPossible": true
+    },
+    {
+      "id": "ro-plx-senat-b263-2026",
+      "title": "B263 / 2026 — Propunere legislativă pentru modificarea Legii nr.227/2015 privind Codul fiscal",
+      "link": "https://www.senat.ro/Legis/Lista.aspx?cod=27699",
+      "description": "Propunere legislativă pentru modificarea Legii nr.227/2015 privind Codul fiscal",
+      "publishedAt": "2026-05-23T14:42:41.012Z",
+      "source": "Senat",
+      "sourceId": "senat-plx",
+      "level": "Romania",
+      "sourceLang": "ro",
+      "entityType": "bill",
+      "summary": "Propunere legislativă pentru modificarea Legii nr.227/2015 privind Codul fiscal",
+      "tags": [
+        "#Romania",
+        "#bill-proposal",
+        "#consultation"
+      ],
+      "importance": 3,
+      "actionPossible": true
+    },
+    {
+      "id": "ro-plx-senat-b264-2026",
+      "title": "B264 / 2026 — Propunere legislativă pentru completarea Ordonanței de Urgență nr.194/2002 privind regimul străinilor în România și p…",
+      "link": "https://www.senat.ro/Legis/Lista.aspx?cod=27702",
+      "description": "Propunere legislativă pentru completarea Ordonanței de Urgență nr.194/2002 privind regimul străinilor în România și pentru modificarea art.14 din Legea nr.69/2000 privind educația fizică și sportul",
+      "publishedAt": "2026-05-23T14:42:41.012Z",
+      "source": "Senat",
+      "sourceId": "senat-plx",
+      "level": "Romania",
+      "sourceLang": "ro",
+      "entityType": "bill",
+      "summary": "Propunere legislativă pentru completarea Ordonanței de Urgență nr.194/2002 privind regimul străinilor în România și pentru modificarea art.14 din Legea nr.69/2000 privind educația fizică și sportul",
+      "tags": [
+        "#Romania",
+        "#bill-proposal",
+        "#consultation"
+      ],
+      "importance": 3,
+      "actionPossible": true
+    },
+    {
+      "id": "ro-plx-senat-b267-2026",
+      "title": "B267 / 2026 — Propunere legislativă pentru completarea Legii nr.207/2015 privind Codul de procedură fiscală și a Ordonanței de urge…",
+      "link": "https://www.senat.ro/Legis/Lista.aspx?cod=27703",
+      "description": "Propunere legislativă pentru completarea Legii nr.207/2015 privind Codul de procedură fiscală și a Ordonanței de urgență a Guvernului nr.158/2005 privind concediile și indemnizațiile de asigurări sociale de sănătate",
+      "publishedAt": "2026-05-23T14:42:41.012Z",
+      "source": "Senat",
+      "sourceId": "senat-plx",
+      "level": "Romania",
+      "sourceLang": "ro",
+      "entityType": "bill",
+      "summary": "Propunere legislativă pentru completarea Legii nr.207/2015 privind Codul de procedură fiscală și a Ordonanței de urgență a Guvernului nr.158/2005 privind concediile și indemnizațiile de asigurări sociale de sănătate",
+      "tags": [
+        "#Romania",
+        "#bill-proposal",
+        "#consultation"
+      ],
+      "importance": 3,
+      "actionPossible": true
+    },
+    {
+      "id": "ro-plx-senat-b268-2026",
+      "title": "B268 / 2026 — Propunere legislativă privind organizarea, funcționarea și administrarea Ghișeului Unic pentru Diaspora",
+      "link": "https://www.senat.ro/Legis/Lista.aspx?cod=27704",
+      "description": "Propunere legislativă privind organizarea, funcționarea și administrarea Ghișeului Unic pentru Diaspora",
+      "publishedAt": "2026-05-23T14:42:41.012Z",
+      "source": "Senat",
+      "sourceId": "senat-plx",
+      "level": "Romania",
+      "sourceLang": "ro",
+      "entityType": "bill",
+      "summary": "Propunere legislativă privind organizarea, funcționarea și administrarea Ghișeului Unic pentru Diaspora",
+      "tags": [
+        "#Romania",
+        "#bill-proposal",
+        "#consultation"
+      ],
+      "importance": 3,
+      "actionPossible": true
+    },
+    {
+      "id": "ro-plx-senat-b269-2026",
+      "title": "B269 / 2026 — Propunere legislativă pentru completarea art.30 alin.(1) din Legea nr.24/2000 privind normele de tehnică legislativă …",
+      "link": "https://www.senat.ro/Legis/Lista.aspx?cod=27705",
+      "description": "Propunere legislativă pentru completarea art.30 alin.(1) din Legea nr.24/2000 privind normele de tehnică legislativă pentru elaborarea actelor normative",
+      "publishedAt": "2026-05-23T14:42:41.012Z",
+      "source": "Senat",
+      "sourceId": "senat-plx",
+      "level": "Romania",
+      "sourceLang": "ro",
+      "entityType": "bill",
+      "summary": "Propunere legislativă pentru completarea art.30 alin.(1) din Legea nr.24/2000 privind normele de tehnică legislativă pentru elaborarea actelor normative",
+      "tags": [
+        "#Romania",
+        "#bill-proposal",
+        "#consultation"
+      ],
+      "importance": 3,
+      "actionPossible": true
+    },
+    {
+      "id": "ro-plx-senat-b271-2026",
+      "title": "B271 / 2026 — Propunere legislativă pentru modificarea și completarea Legii drepturilor pacientului nr.46/2003",
+      "link": "https://www.senat.ro/Legis/Lista.aspx?cod=27707",
+      "description": "Propunere legislativă pentru modificarea și completarea Legii drepturilor pacientului nr.46/2003",
+      "publishedAt": "2026-05-23T14:42:41.012Z",
+      "source": "Senat",
+      "sourceId": "senat-plx",
+      "level": "Romania",
+      "sourceLang": "ro",
+      "entityType": "bill",
+      "summary": "Propunere legislativă pentru modificarea și completarea Legii drepturilor pacientului nr.46/2003",
+      "tags": [
+        "#Romania",
+        "#bill-proposal",
+        "#consultation"
+      ],
+      "importance": 3,
+      "actionPossible": true
+    },
+    {
+      "id": "ro-plx-senat-b272-2026",
+      "title": "B272 / 2026 — Propunere legislativă pentru completarea Ordonanţei de urgenţă a Guvernului nr.97/2005 privind evidenţa, domiciliul, …",
+      "link": "https://www.senat.ro/Legis/Lista.aspx?cod=27708",
+      "description": "Propunere legislativă pentru completarea Ordonanţei de urgenţă a Guvernului nr.97/2005 privind evidenţa, domiciliul, reşedinţa şi actele de identitate ale cetăţenilor români",
+      "publishedAt": "2026-05-23T14:42:41.012Z",
+      "source": "Senat",
+      "sourceId": "senat-plx",
+      "level": "Romania",
+      "sourceLang": "ro",
+      "entityType": "bill",
+      "summary": "Propunere legislativă pentru completarea Ordonanţei de urgenţă a Guvernului nr.97/2005 privind evidenţa, domiciliul, reşedinţa şi actele de identitate ale cetăţenilor români",
+      "tags": [
+        "#Romania",
+        "#bill-proposal",
+        "#consultation"
+      ],
+      "importance": 3,
+      "actionPossible": true
+    },
+    {
+      "id": "ro-plx-senat-b273-2026",
+      "title": "B273 / 2026 — Propunere legislativă pentru stabilirea indicelui privind potențialul de reparare al echipamentelor electrice sau ele…",
+      "link": "https://www.senat.ro/Legis/Lista.aspx?cod=27709",
+      "description": "Propunere legislativă pentru stabilirea indicelui privind potențialul de reparare al echipamentelor electrice sau electronice",
+      "publishedAt": "2026-05-23T14:42:41.012Z",
+      "source": "Senat",
+      "sourceId": "senat-plx",
+      "level": "Romania",
+      "sourceLang": "ro",
+      "entityType": "bill",
+      "summary": "Propunere legislativă pentru stabilirea indicelui privind potențialul de reparare al echipamentelor electrice sau electronice",
+      "tags": [
+        "#Romania",
+        "#bill-proposal",
+        "#consultation"
+      ],
+      "importance": 3,
+      "actionPossible": true
+    },
+    {
+      "id": "ro-plx-senat-b279-2026",
+      "title": "B279 / 2026 — Propunere legislativă privind Aplicația Mobilă Unică și dreptul la servicii publice digitale complete, organizate dup…",
+      "link": "https://www.senat.ro/Legis/Lista.aspx?cod=27715",
+      "description": "Propunere legislativă privind Aplicația Mobilă Unică și dreptul la servicii publice digitale complete, organizate după nevoile cetățenilor",
+      "publishedAt": "2026-05-23T14:42:41.012Z",
+      "source": "Senat",
+      "sourceId": "senat-plx",
+      "level": "Romania",
+      "sourceLang": "ro",
+      "entityType": "bill",
+      "summary": "Propunere legislativă privind Aplicația Mobilă Unică și dreptul la servicii publice digitale complete, organizate după nevoile cetățenilor",
+      "tags": [
+        "#Romania",
+        "#bill-proposal",
+        "#consultation"
+      ],
+      "importance": 3,
+      "actionPossible": true
+    },
+    {
+      "id": "ro-plx-senat-b280-2026",
+      "title": "B280 / 2026 — Propunere legislativă pentru instituirea zilei de 8 septembrie ca &quot;Ziua Națională a Atletismului Românesc&quot;",
+      "link": "https://www.senat.ro/Legis/Lista.aspx?cod=27716",
+      "description": "Propunere legislativă pentru instituirea zilei de 8 septembrie ca &quot;Ziua Națională a Atletismului Românesc&quot;",
+      "publishedAt": "2026-05-23T14:42:41.012Z",
+      "source": "Senat",
+      "sourceId": "senat-plx",
+      "level": "Romania",
+      "sourceLang": "ro",
+      "entityType": "bill",
+      "summary": "Propunere legislativă pentru instituirea zilei de 8 septembrie ca &quot;Ziua Națională a Atletismului Românesc&quot;",
+      "tags": [
+        "#Romania",
+        "#bill-proposal",
+        "#consultation"
+      ],
+      "importance": 3,
+      "actionPossible": true
+    },
+    {
+      "id": "ro-plx-senat-b281-2026",
+      "title": "B281 / 2026 — Propunere legislativă pentru modificarea și completarea Legii nr.448/2006 privind protecția și promovarea drepturilor…",
+      "link": "https://www.senat.ro/Legis/Lista.aspx?cod=27717",
+      "description": "Propunere legislativă pentru modificarea și completarea Legii nr.448/2006 privind protecția și promovarea drepturilor persoanelor cu handicap",
+      "publishedAt": "2026-05-23T14:42:41.012Z",
+      "source": "Senat",
+      "sourceId": "senat-plx",
+      "level": "Romania",
+      "sourceLang": "ro",
+      "entityType": "bill",
+      "summary": "Propunere legislativă pentru modificarea și completarea Legii nr.448/2006 privind protecția și promovarea drepturilor persoanelor cu handicap",
+      "tags": [
+        "#Romania",
+        "#bill-proposal",
+        "#consultation"
+      ],
+      "importance": 3,
+      "actionPossible": true
+    },
+    {
+      "id": "ro-plx-senat-b282-2026",
+      "title": "B282 / 2026 — Propunere legislativă pentru modificarea și completarea Legii nr.145/2014 pentru stabilirea unor măsuri de reglementa…",
+      "link": "https://www.senat.ro/Legis/Lista.aspx?cod=27718",
+      "description": "Propunere legislativă pentru modificarea și completarea Legii nr.145/2014 pentru stabilirea unor măsuri de reglementare a pieței produselor din sectorul agricol",
+      "publishedAt": "2026-05-23T14:42:41.012Z",
+      "source": "Senat",
+      "sourceId": "senat-plx",
+      "level": "Romania",
+      "sourceLang": "ro",
+      "entityType": "bill",
+      "summary": "Propunere legislativă pentru modificarea și completarea Legii nr.145/2014 pentru stabilirea unor măsuri de reglementare a pieței produselor din sectorul agricol",
+      "tags": [
+        "#Romania",
+        "#bill-proposal",
+        "#consultation"
+      ],
+      "importance": 3,
+      "actionPossible": true
+    },
+    {
+      "id": "ro-plx-senat-b283-2026",
+      "title": "B283 / 2026 — Propunere legislativă privind etichetarea frontală de avertizare nutrițională a produselor alimentare preambalate cu …",
+      "link": "https://www.senat.ro/Legis/Lista.aspx?cod=27719",
+      "description": "Propunere legislativă privind etichetarea frontală de avertizare nutrițională a produselor alimentare preambalate cu conținut ridicat de zaharuri, sare, grăsimi saturate sau valoare energetică ridicată",
+      "publishedAt": "2026-05-23T14:42:41.012Z",
+      "source": "Senat",
+      "sourceId": "senat-plx",
+      "level": "Romania",
+      "sourceLang": "ro",
+      "entityType": "bill",
+      "summary": "Propunere legislativă privind etichetarea frontală de avertizare nutrițională a produselor alimentare preambalate cu conținut ridicat de zaharuri, sare, grăsimi saturate sau valoare energetică ridicată",
+      "tags": [
+        "#Romania",
+        "#bill-proposal",
+        "#consultation"
+      ],
+      "importance": 3,
+      "actionPossible": true
+    },
+    {
+      "id": "ro-plx-senat-b284-2026",
+      "title": "B284 / 2026 — Propunere legislativă pentru completarea art.22 din Legea minelor nr.85/2003",
+      "link": "https://www.senat.ro/Legis/Lista.aspx?cod=27720",
+      "description": "Propunere legislativă pentru completarea art.22 din Legea minelor nr.85/2003",
+      "publishedAt": "2026-05-23T14:42:41.012Z",
+      "source": "Senat",
+      "sourceId": "senat-plx",
+      "level": "Romania",
+      "sourceLang": "ro",
+      "entityType": "bill",
+      "summary": "Propunere legislativă pentru completarea art.22 din Legea minelor nr.85/2003",
+      "tags": [
+        "#Romania",
+        "#bill-proposal",
+        "#consultation"
+      ],
+      "importance": 3,
+      "actionPossible": true
+    },
+    {
+      "id": "ro-plx-senat-b285-2026",
+      "title": "B285 / 2026 — Propunere legislativă pentru modificarea art.127 din Legea nr.360/2023 privind sistemul public de pensii",
+      "link": "https://www.senat.ro/Legis/Lista.aspx?cod=27721",
+      "description": "Propunere legislativă pentru modificarea art.127 din Legea nr.360/2023 privind sistemul public de pensii",
+      "publishedAt": "2026-05-23T14:42:41.012Z",
+      "source": "Senat",
+      "sourceId": "senat-plx",
+      "level": "Romania",
+      "sourceLang": "ro",
+      "entityType": "bill",
+      "summary": "Propunere legislativă pentru modificarea art.127 din Legea nr.360/2023 privind sistemul public de pensii",
+      "tags": [
+        "#Romania",
+        "#bill-proposal",
+        "#consultation"
+      ],
+      "importance": 3,
+      "actionPossible": true
+    },
+    {
+      "id": "ro-plx-senat-b286-2026",
+      "title": "B286 / 2026 — Propunere legislativă pentru completarea art.XXIII din Legea nr.141/2025 privind unele măsuri fiscal-bugetare",
+      "link": "https://www.senat.ro/Legis/Lista.aspx?cod=27722",
+      "description": "Propunere legislativă pentru completarea art.XXIII din Legea nr.141/2025 privind unele măsuri fiscal-bugetare",
+      "publishedAt": "2026-05-23T14:42:41.012Z",
+      "source": "Senat",
+      "sourceId": "senat-plx",
+      "level": "Romania",
+      "sourceLang": "ro",
+      "entityType": "bill",
+      "summary": "Propunere legislativă pentru completarea art.XXIII din Legea nr.141/2025 privind unele măsuri fiscal-bugetare",
+      "tags": [
+        "#Romania",
+        "#bill-proposal",
+        "#consultation"
+      ],
+      "importance": 3,
+      "actionPossible": true
+    },
+    {
+      "id": "ro-plx-senat-b287-2026",
+      "title": "B287 / 2026 — Propunere legislativă pentru completarea Legii nr.448/2006 privind protecția și promovarea drepturilor persoanelor cu…",
+      "link": "https://www.senat.ro/Legis/Lista.aspx?cod=27723",
+      "description": "Propunere legislativă pentru completarea Legii nr.448/2006 privind protecția și promovarea drepturilor persoanelor cu handicap și a Ordonanței Guvernului nr.137/2000 privind prevenirea și sancționarea tuturor formelor de discriminare",
+      "publishedAt": "2026-05-23T14:42:41.012Z",
+      "source": "Senat",
+      "sourceId": "senat-plx",
+      "level": "Romania",
+      "sourceLang": "ro",
+      "entityType": "bill",
+      "summary": "Propunere legislativă pentru completarea Legii nr.448/2006 privind protecția și promovarea drepturilor persoanelor cu handicap și a Ordonanței Guvernului nr.137/2000 privind prevenirea și sancționarea tuturor formelor de discriminare",
+      "tags": [
+        "#Romania",
+        "#bill-proposal",
+        "#consultation"
+      ],
+      "importance": 3,
+      "actionPossible": true
+    },
+    {
+      "id": "g4media-https-www-g4media-ro-cum-iti-faci-apartamentul-s",
+      "title": "Cum îți faci apartamentul să arate bine fără să cheltui mult / Principii de design care funcționează cu orice buget",
+      "link": "https://www.g4media.ro/cum-iti-faci-apartamentul-sa-arate-bine-fara-sa-cheltui-mult-principii-de-design-care-functioneaza-cu-orice-buget.html",
+      "description": "Există o diferență mare între un apartament care arată bine în poze și unul în care te simți bine zi de zi. Primul se face cu bani și cu un fotograf priceput. Al doilea se face cu câteva principii de bază pe care designerii de interior le aplică indiferent de buget. Vestea bună este că […]\n© G4Media.ro.",
+      "publishedAt": "2026-05-23T14:42:21.000Z",
+      "source": "G4Media",
       "sourceId": "g4media",
       "level": "Romania",
+      "sourceLang": "ro",
+      "entityType": "news",
+      "summary": "Există o diferență mare între un apartament care arată bine în poze și unul în care te simți bine zi de zi. Primul se face cu bani și cu un fotograf priceput. Al doilea se face cu câteva principii de bază pe care designerii de interior le aplică indiferent de buget. Vestea bună este că […]\n© G4Media.ro.",
+      "tags": [
+        "#Romania",
+        "#bill-proposal"
+      ],
+      "importance": 2,
+      "actionPossible": false
+    },
+    {
+      "id": "digi24-https-www-digi24-ro-stiri-externe-ungaria-pune-o",
+      "title": "Ungaria pune o condiție Ucrainei înainte de a discuta despre aderarea la Uniunea Europeană",
+      "link": "https://www.digi24.ro/stiri/externe/ungaria-pune-o-conditie-ucrainei-inainte-de-a-discuta-despre-aderarea-la-uniunea-europeana-3782951",
+      "description": "Noul guvern ungar, condus de conservatorul Peter Magyar, care l-a înlocuit recent pe naţionalistul Viktor Orban, a cerut sâmbătă Ucrainei să restabilească drepturile minorităţii maghiare înainte de a negocia alte chestiuni, cum ar fi lansarea negocierilor în vederea unei eventuale aderări la UE, informează agenţia EFE, potrivit Agerpres.",
+      "publishedAt": "2026-05-23T14:37:59.000Z",
+      "source": "Digi24",
+      "sourceId": "digi24",
+      "level": "Romania",
+      "sourceLang": "ro",
+      "entityType": "news",
+      "summary": "Noul guvern ungar, condus de conservatorul Peter Magyar, care l-a înlocuit recent pe naţionalistul Viktor Orban, a cerut sâmbătă Ucrainei să restabilească drepturile minorităţii maghiare înainte de a negocia alte chestiuni, cum ar fi lansarea negocierilor în vederea unei eventuale aderări la UE, informează agenţia EFE, potrivit Agerpres.",
+      "tags": [
+        "#Romania",
+        "#bill-proposal"
+      ],
+      "importance": 2,
+      "actionPossible": false
+    },
+    {
+      "id": "g4media-https-www-g4media-ro-produsele-bio-intre-moda-si",
+      "title": "Produsele bio, între modă și realitate economică / De ce ajung consumatorii să plătească mai mult pentru eticheta „ecologic”",
+      "link": "https://www.g4media.ro/produsele-bio-intre-moda-si-realitate-economica-de-ce-ajung-consumatorii-sa-plateasca-mai-mult-pentru-eticheta-ecologic.html",
+      "description": "Produsele bio au devenit, în ultimii ani, aproape sinonime cu ideea de alimentație sănătoasă. Fructele și legumele ecologice, lactatele fără aditivi sau produsele cultivate fără pesticide sunt promovate drept alternative mai curate și mai prietenoase cu sănătatea. Însă, dincolo de imaginea construită în jurul acestora, apare o întrebare tot mai prezentă: merită diferența de preț? […]\n© G4Media.ro.",
+      "publishedAt": "2026-05-23T14:35:54.000Z",
+      "source": "G4Media",
+      "sourceId": "g4media",
+      "level": "Romania",
+      "sourceLang": "ro",
+      "entityType": "news",
+      "summary": "Produsele bio au devenit, în ultimii ani, aproape sinonime cu ideea de alimentație sănătoasă. Fructele și legumele ecologice, lactatele fără aditivi sau produsele cultivate fără pesticide sunt promovate drept alternative mai curate și mai prietenoase cu sănătatea. Însă, dincolo de imaginea construită în jurul acestora, apare o întrebare tot mai prezentă: merită diferența de preț? […]\n© G4Media.ro.",
+      "tags": [
+        "#Romania",
+        "#bill-proposal"
+      ],
+      "importance": 2,
+      "actionPossible": false
+    },
+    {
+      "id": "digi24-https-www-digi24-ro-stiri-incendiu-la-cet-vest-i",
+      "title": "Al doilea incendiu la CET Vest din Capitală, într-o lună: ard un transformator și o hală. Precizările Elcen",
+      "link": "https://www.digi24.ro/stiri/incendiu-la-cet-vest-in-sectorul-6-al-capitalei-arde-un-transformator-sunt-mari-degajari-de-fum-negru-3782777",
+      "description": "Pompierii ISU B-If intervin sâmbătă în Sectorul 6 al Capitalei, unde a luat foc un transformator electric, în incinta CET Vest, pe Bulevardul Timișoara. A fost emis mesaj RO-Alert. Acesta este al doilea incident de la termocentrala din Militari, după incendiul din luna aprilie care a distrus două transformatoare de mare putere.",
+      "publishedAt": "2026-05-23T14:18:33.000Z",
+      "source": "Digi24",
+      "sourceId": "digi24",
+      "level": "Romania",
+      "sourceLang": "ro",
+      "entityType": "news",
+      "summary": "Pompierii ISU B-If intervin sâmbătă în Sectorul 6 al Capitalei, unde a luat foc un transformator electric, în incinta CET Vest, pe Bulevardul Timișoara. A fost emis mesaj RO-Alert. Acesta este al doilea incident de la termocentrala din Militari, după incendiul din luna aprilie care a distrus două transformatoare de mare putere.",
+      "tags": [
+        "#Romania",
+        "#bill-proposal"
+      ],
+      "importance": 2,
+      "actionPossible": false
+    },
+    {
+      "id": "g4media-https-www-g4media-ro-premierul-ilie-bolojan-a-co",
+      "title": "Premierul Ilie Bolojan a convocat luni toți primarii din țară pentru a vedea ce proiecte din PNRR pot fi terminate până la termenul-limită 31 august",
+      "link": "https://www.g4media.ro/premierul-ilie-bolojan-a-convocat-luni-toti-primarii-din-tara-pentru-a-vedea-ce-proiecte-din-pnrr-pot-fi-terminate-pana-la-termenul-limita-31-august.html",
+      "description": "Premierul Ilie Bolojan a declarat sâmbătă la Iași că a convocat duminică prefecții și luni toți primarii din țară pentru a vedea care dintre cele circa 15.000 de proiecte finanțate de UE prin PNRR pot fi terminate până la termenul-limită de 31 august. Premierul a spus într-o declarație de presă că până la finalul lunii […]\n© G4Media.ro.",
+      "publishedAt": "2026-05-23T14:11:46.000Z",
+      "source": "G4Media",
+      "sourceId": "g4media",
+      "level": "Romania",
+      "sourceLang": "ro",
+      "entityType": "news",
+      "summary": "Premierul Ilie Bolojan a declarat sâmbătă la Iași că a convocat duminică prefecții și luni toți primarii din țară pentru a vedea care dintre cele circa 15.000 de proiecte finanțate de UE prin PNRR pot fi terminate până la termenul-limită de 31 august. Premierul a spus într-o declarație de presă că până la finalul lunii […]\n© G4Media.ro.",
+      "tags": [
+        "#Romania",
+        "#bill-proposal"
+      ],
+      "importance": 2,
+      "actionPossible": false
+    },
+    {
+      "id": "digi24-https-www-digi24-ro-stiri-externe-iranul-amenint",
+      "title": "Iranul amenință cu un răspuns „zdrobitor” dacă Trump va relua atacurile: „Ne-am reconstruit forțele armate”",
+      "link": "https://www.digi24.ro/stiri/externe/iranul-ameninta-cu-un-raspuns-zdrobitor-daca-trump-va-relua-atacurile-fortele-armate-s-au-reconstruit-pe-durata-armistitiului-3782899",
+      "description": "Principalul negociator iranian, preşedintele parlamentului, Mohammad Bagher Ghalibaf, a amenințat sâmbătă cu un răspuns „zdrobitor” în cazul în care Statele Unite vor relua războiul împotriva Iranului. Acesta susține că ţara sa şi-a „reconstruit” forţele armate pe durata armistiţiului în vigoare din 8 aprilie.",
+      "publishedAt": "2026-05-23T14:02:02.000Z",
+      "source": "Digi24",
+      "sourceId": "digi24",
+      "level": "Romania",
+      "sourceLang": "ro",
+      "entityType": "news",
+      "summary": "Principalul negociator iranian, preşedintele parlamentului, Mohammad Bagher Ghalibaf, a amenințat sâmbătă cu un răspuns „zdrobitor” în cazul în care Statele Unite vor relua războiul împotriva Iranului. Acesta susține că ţara sa şi-a „reconstruit” forţele armate pe durata armistiţiului în vigoare din 8 aprilie.",
+      "tags": [
+        "#Romania",
+        "#bill-proposal"
+      ],
+      "importance": 2,
+      "actionPossible": false
+    },
+    {
+      "id": "digi24-https-www-digi24-ro-stiri-externe-proteste-in-ma",
+      "title": "Proteste în Madrid, la reședința premierului Pedro Sanchez: manifestanții au forțat cordonul de securitate",
+      "link": "https://www.digi24.ro/stiri/externe/proteste-in-madrid-la-resedinta-premierului-pedro-sanchez-manifestantii-au-fortat-cordonul-de-securitate-3782933",
+      "description": "Zeci de mii de oameni s-au adunat, sâmbătă, la Madrid și au protestat în cadrul Marşului pentru Demnitate împotriva guvernului condus de premierul Pedro Sanchez, pe care îl acuză de corupție. Un grup restrâns de manifestanți a încercat să treacă de cordonul de securitate din jurul reședinței prim-ministrului, potrivit Agerpres, care citează Reuters.",
+      "publishedAt": "2026-05-23T13:58:39.000Z",
+      "source": "Digi24",
+      "sourceId": "digi24",
+      "level": "Romania",
+      "sourceLang": "ro",
+      "entityType": "news",
+      "summary": "Zeci de mii de oameni s-au adunat, sâmbătă, la Madrid și au protestat în cadrul Marşului pentru Demnitate împotriva guvernului condus de premierul Pedro Sanchez, pe care îl acuză de corupție. Un grup restrâns de manifestanți a încercat să treacă de cordonul de securitate din jurul reședinței prim-ministrului, potrivit Agerpres, care citează Reuters.",
+      "tags": [
+        "#Romania",
+        "#bill-proposal"
+      ],
+      "importance": 2,
+      "actionPossible": false
+    },
+    {
+      "id": "g4media-https-www-g4media-ro-telefoanele-mobile-interzis",
+      "title": "Telefoanele mobile, interzise și în pauze / Elevii vor fi obligați să își lase telefonul în spații speciale cât stau la școală, potrivit unui proiect de modificare a legii educației",
+      "link": "https://www.g4media.ro/telefoanele-mobile-interzise-si-in-pauze-elevii-vor-fi-obligati-sa-isi-lase-telefonul-in-spatii-speciale-cat-stau-la-scoala-potrivit-unui-proiect-de-modificare-a-legii-educatiei.html",
+      "description": "Folosirea telefoanelor mobile ar putea fi interzisă elevilor pe întreaga perioadă a desfășurării cursurilor școlare, inclusiv în pauze sau în timpul activităților organizate în afara școlii, potrivit unui proiect de lege de modificare a Legii învățământului preuniversitar, depus la Camera Deputaților. Proiectul prevede și obligativitatea depozitării dispozitivelor în spații special amenajate pe durata prezenței elevilor […]\n© G4Media.ro.",
+      "publishedAt": "2026-05-23T13:46:59.000Z",
+      "source": "G4Media",
+      "sourceId": "g4media",
+      "level": "Romania",
+      "sourceLang": "ro",
+      "entityType": "news",
+      "summary": "Folosirea telefoanelor mobile ar putea fi interzisă elevilor pe întreaga perioadă a desfășurării cursurilor școlare, inclusiv în pauze sau în timpul activităților organizate în afara școlii, potrivit unui proiect de lege de modificare a Legii învățământului preuniversitar, depus la Camera Deputaților. Proiectul prevede și obligativitatea depozitării dispozitivelor în spații special amenajate pe durata prezenței elevilor […]\n© G4Media.ro.",
+      "tags": [
+        "#Romania",
+        "#bill-proposal"
+      ],
+      "importance": 2,
+      "actionPossible": false
+    },
+    {
+      "id": "g4media-https-www-g4media-ro-guvernul-greciei-evita-sa-r",
+      "title": "Guvernul Greciei evită să răspundă direct la acuzațiile grave aduse de Laura Codruța Kovesi și transmite pe surse informația că șefa Parchetului European ar fi fost de acord cu modificările legislative / Kovesi a cerut Comisiei Europene sancțiuni maxime din cauza obstrucționării anchetelor",
+      "link": "https://www.g4media.ro/guvernul-greciei-evita-sa-raspunda-direct-la-acuzatiile-grave-aduse-de-laura-codruta-kovesi-si-transmite-pe-surse-informatia-ca-sefa-parchetului-european-ar-fi-fost-de-acord-cu-modificarile-legislativ.html",
+      "description": "Guvernul Greciei a evitat până la ora publicării acestui articol (sâmbătă după amiază) să dea un răspuns oficial la acuzațiile grave aduse de Laura Codruța Kovesi, după ce șefa Parchetului European a cerut Comisiei Europene să declanșeze procedura de suspendare a fondurilor europene pentru Atena ca urmare a obstrucționării anchetelor. În schimb, Ministerul Justiției din […]\n© G4Media.ro.",
+      "publishedAt": "2026-05-23T13:13:58.000Z",
+      "source": "G4Media",
+      "sourceId": "g4media",
+      "level": "Romania",
+      "sourceLang": "ro",
+      "entityType": "news",
+      "summary": "Guvernul Greciei a evitat până la ora publicării acestui articol (sâmbătă după amiază) să dea un răspuns oficial la acuzațiile grave aduse de Laura Codruța Kovesi, după ce șefa Parchetului European a cerut Comisiei Europene să declanșeze procedura de suspendare a fondurilor europene pentru Atena ca urmare a obstrucționării anchetelor. În schimb, Ministerul Justiției din […]\n© G4Media.ro.",
+      "tags": [
+        "#Romania",
+        "#bill-proposal"
+      ],
+      "importance": 2,
+      "actionPossible": false
+    },
+    {
+      "id": "digi24-https-www-digi24-ro-stiri-externe-republica-mold",
+      "title": "Republica Moldova, lovită de furtuni. Trenurile și rețeaua electrică au fost grav afectate. Cum intervine România",
+      "link": "https://www.digi24.ro/stiri/externe/republica-moldova-lovita-de-furtuni-trenurile-si-reteaua-electrica-au-fost-grav-afectate-cum-intervine-romania-3782879",
+      "description": "Ploile abundente au afectat, vineri seara, mai multe localităţi, inclusiv oraşe, de pe întreg teritoriul Republicii Moldova. Au fost înregistrare pene de curent, inundații, dar și avarii la infrastructura feroviară. Linia de înaltă tensiune care leagă România de Republica Moldova și Ucraina a căzut. Țara noastră ar urma să trimită energie în regim insularizat, potrivit Agerpres, care citează Radio Chişinău.",
+      "publishedAt": "2026-05-23T12:53:36.000Z",
+      "source": "Digi24",
+      "sourceId": "digi24",
+      "level": "Romania",
+      "sourceLang": "ro",
+      "entityType": "news",
+      "summary": "Ploile abundente au afectat, vineri seara, mai multe localităţi, inclusiv oraşe, de pe întreg teritoriul Republicii Moldova. Au fost înregistrare pene de curent, inundații, dar și avarii la infrastructura feroviară. Linia de înaltă tensiune care leagă România de Republica Moldova și Ucraina a căzut. Țara noastră ar urma să trimită energie în regim insularizat, potrivit Agerpres, care citează Radio Chişinău.",
+      "tags": [
+        "#Romania",
+        "#bill-proposal"
+      ],
+      "importance": 2,
+      "actionPossible": false
+    },
+    {
+      "id": "g4media-https-www-g4media-ro-linia-de-inalta-tensiune-ca",
+      "title": "Linia de înaltă tensiune care leagă România de Republica Moldova şi Ucraina a căzut noaptea trecută în urma intemperiilor",
+      "link": "https://www.g4media.ro/linia-de-inalta-tensiune-care-leaga-romania-de-republica-moldova-si-ucraina-a-cazut-noaptea-trecuta-in-urma-intemperiilor.html",
+      "description": "Linia de 400 kV care leagă România de Republica Moldova şi Ucraina a căzut noaptea trecută ca urmare a condiţiilor meteo nefavorabile. Locuitorii din Republica Moldova primesc curent electric în continuare, dar autorităţile le-au recomandat să nu risipeacă energia în orele de vârf. România ar urma să trimită energie în regim insularizat, prin liniiile de […]\n© G4Media.ro.",
+      "publishedAt": "2026-05-23T12:50:39.000Z",
+      "source": "G4Media",
+      "sourceId": "g4media",
+      "level": "Romania",
+      "sourceLang": "ro",
+      "entityType": "news",
+      "summary": "Linia de 400 kV care leagă România de Republica Moldova şi Ucraina a căzut noaptea trecută ca urmare a condiţiilor meteo nefavorabile. Locuitorii din Republica Moldova primesc curent electric în continuare, dar autorităţile le-au recomandat să nu risipeacă energia în orele de vârf. România ar urma să trimită energie în regim insularizat, prin liniiile de […]\n© G4Media.ro.",
+      "tags": [
+        "#Romania",
+        "#bill-proposal"
+      ],
+      "importance": 2,
+      "actionPossible": false
+    },
+    {
+      "id": "digi24-https-www-digi24-ro-stiri-actualitate-concert-cu",
+      "title": "Concert cu risc în București: Mii de fani ai artistului Max Korzh sunt pe străzi. Poliția este în alertă",
+      "link": "https://www.digi24.ro/stiri/actualitate/concert-cu-risc-in-bucuresti-mii-de-fani-ai-artistului-max-korzh-sunt-pe-strazi-politia-este-in-alerta-3782861",
+      "description": "Mega-concert în acestă seară în Capitală. Mii de fani ai artistului Max Korzh din Belarus sunt pe străzi, în drum spre Arena Națională. Zeci de mii de oameni, din 50 de țări, sunt așteptați la concert. Încă de zilele trecute în Capitală au venit tineri din Ucraina, Polonia, Lituania și Republica Moldova. Sunt măsuri stricte de securitate în zonă.",
+      "publishedAt": "2026-05-23T12:46:14.000Z",
+      "source": "Digi24",
+      "sourceId": "digi24",
+      "level": "Romania",
+      "sourceLang": "ro",
+      "entityType": "news",
+      "summary": "Mega-concert în acestă seară în Capitală. Mii de fani ai artistului Max Korzh din Belarus sunt pe străzi, în drum spre Arena Națională. Zeci de mii de oameni, din 50 de țări, sunt așteptați la concert. Încă de zilele trecute în Capitală au venit tineri din Ucraina, Polonia, Lituania și Republica Moldova. Sunt măsuri stricte de securitate în zonă.",
+      "tags": [
+        "#Romania",
+        "#bill-proposal"
+      ],
+      "importance": 2,
+      "actionPossible": false
+    },
+    {
+      "id": "digi24-https-www-digi24-ro-stiri-externe-ue-cum-catalog",
+      "title": "Cum răspunde Volodimir Zelenski propunerii ca Ucraina să devină membru „asociat” al Uniunii Europene: scrisoarea trimisă liderilor UE",
+      "link": "https://www.digi24.ro/stiri/externe/ue/cum-catalogheaza-zelenski-propunerea-ca-ucraina-sa-devina-membru-asociat-al-uniunii-europene-scrisoarea-trimisa-liderilor-ue-3782695",
+      "description": "Preşedintele ucrainean Volodimir Zelenski declară într-o scrisoare adresată liderilor Uniunii Europene că propunerea Germaniei de a acorda Ucrainei statutul de membru „asociat” al UE este „nedreaptă”, întrucât ar lăsa Kievul fără drept de vot în cadrul blocului comunitar, relatează Reuters.",
+      "publishedAt": "2026-05-23T12:12:13.000Z",
+      "source": "Digi24",
+      "sourceId": "digi24",
+      "level": "Romania",
+      "sourceLang": "ro",
+      "entityType": "news",
+      "summary": "Preşedintele ucrainean Volodimir Zelenski declară într-o scrisoare adresată liderilor Uniunii Europene că propunerea Germaniei de a acorda Ucrainei statutul de membru „asociat” al UE este „nedreaptă”, întrucât ar lăsa Kievul fără drept de vot în cadrul blocului comunitar, relatează Reuters.",
+      "tags": [
+        "#Romania",
+        "#bill-proposal"
+      ],
+      "importance": 2,
+      "actionPossible": false
+    },
+    {
+      "id": "digi24-https-www-digi24-ro-stiri-externe-rusia-vladimir",
+      "title": "Vladimir Putin amenință cu represalii după ce a acuzat Ucraina că a lovit un cămin studențesc",
+      "link": "https://www.digi24.ro/stiri/externe/rusia/vladimir-putin-ameninta-cu-represalii-dupa-ce-a-acuzat-ucraina-ca-a-lovit-o-camin-studentesc-3782821",
+      "description": "Președintele rus Vladimir Putin a promis represalii după ce a acuzat Ucraina că a lansat un atac mortal asupra unui cămin studențesc într-o zonă ocupată din estul Ucrainei, scrie BBC. Zece persoane au fost ucise și alte 38 rănite în urma atacului din timpul nopții din orașul Starobilsk, din regiunea Luhansk, a declarat guvernatorul local susținut de Rusia. Alte 11 persoane sunt în continuare date dispărute, a adăugat acesta.",
+      "publishedAt": "2026-05-23T12:05:35.000Z",
+      "source": "Digi24",
+      "sourceId": "digi24",
+      "level": "Romania",
+      "sourceLang": "ro",
+      "entityType": "news",
+      "summary": "Președintele rus Vladimir Putin a promis represalii după ce a acuzat Ucraina că a lansat un atac mortal asupra unui cămin studențesc într-o zonă ocupată din estul Ucrainei, scrie BBC. Zece persoane au fost ucise și alte 38 rănite în urma atacului din timpul nopții din orașul Starobilsk, din regiunea Luhansk, a declarat guvernatorul local susținut de Rusia. Alte 11 persoane sunt în continuare date dispărute, a adăugat acesta.",
+      "tags": [
+        "#Romania",
+        "#bill-proposal"
+      ],
+      "importance": 2,
+      "actionPossible": false
+    },
+    {
+      "id": "digi24-https-www-digi24-ro-stiri-actualitate-evenimente",
+      "title": "Accident grav în județul Olt: 7 oameni au fost răniți, dintre care 4 au fost transportați la spital",
+      "link": "https://www.digi24.ro/stiri/actualitate/evenimente/accident-grav-in-judetul-olt-7-oameni-au-fost-raniti-dintre-care-4-au-fost-transportati-la-spital-3782773",
+      "description": "Un accident rutier s-a produs sâmbătă, 23 mai, în comuna Brebeni, din județul Olt, unde trei autoturisme au fost implicate într-o coliziune. Șapte persoane au fost rănite, printre care și o fetiță de 11 ani. Aceasta, împreună cu alte 3 persoane, au fost transportate la spital pentru investigații suplimentare.",
+      "publishedAt": "2026-05-23T11:55:02.000Z",
+      "source": "Digi24",
+      "sourceId": "digi24",
+      "level": "Romania",
+      "sourceLang": "ro",
+      "entityType": "news",
+      "summary": "Un accident rutier s-a produs sâmbătă, 23 mai, în comuna Brebeni, din județul Olt, unde trei autoturisme au fost implicate într-o coliziune. Șapte persoane au fost rănite, printre care și o fetiță de 11 ani. Aceasta, împreună cu alte 3 persoane, au fost transportate la spital pentru investigații suplimentare.",
+      "tags": [
+        "#Romania",
+        "#bill-proposal"
+      ],
+      "importance": 2,
+      "actionPossible": false
+    },
+    {
+      "id": "maszol-https-maszol-ro-belfold-hamarosan-kezdodik-a-sze",
+      "title": "FRISSÍTVE – Elkezdődött a szentmise: benépesült a csíksomlyói nyereg (VIDEÓ)",
+      "link": "https://maszol.ro/belfold/Hamarosan-kezdodik-a-szentmise-benepesult-a-csiksomlyoi-nyereg-VIDEO",
+      "description": "A Hármashalom-oltár környéke már kora délelőtt benépesült, sokan jóval korábban érkeztek, hogy biztos pontot találjanak maguknak az ünnepi szentmise idejére.",
+      "publishedAt": "2026-05-23T10:39:33.000Z",
+      "source": "Maszol",
+      "sourceId": "maszol",
+      "level": "Local",
+      "sourceLang": "ro",
+      "entityType": "news",
+      "summary": "A Hármashalom-oltár környéke már kora délelőtt benépesült, sokan jóval korábban érkeztek, hogy biztos pontot találjanak maguknak az ünnepi szentmise idejére.",
+      "tags": [
+        "#Cluj",
+        "#bill-proposal"
+      ],
+      "importance": 2,
+      "actionPossible": false
+    },
+    {
+      "id": "digi24-https-www-digi24-ro-stiri-economie-energie-ce-se",
+      "title": "Ce se întâmplă cu centrala de la Iernut. Ilie Bolojan: „De acum înainte, mingea este în terenul echipei tehnice”",
+      "link": "https://www.digi24.ro/stiri/economie/energie/ce-se-intampla-cu-centrala-de-la-iernut-ilie-bolojan-de-acum-inainte-mingea-este-in-terenul-echipei-tehnice-3782761",
+      "description": "Premierul Ilie Bolojan a anunțat sâmbătă că Executivul a aprobat un memorandum în privința centralei electrice pe gaz de la Iernut. „Confirmă, la nivel guvernamental, că proiectul centralei de la Iernut, cu o putere de 430 MW, este de extremă urgență,” a transmis Ilie Bolojan. De asemenea, Guvernul va aproba, săptămâna viitoare, o hotărâre de guvern, „care va rezolva o problemă de proprietate privind un post de transformare necesar noii centrale”.",
+      "publishedAt": "2026-05-23T10:34:44.000Z",
+      "source": "Digi24",
+      "sourceId": "digi24",
+      "level": "Romania",
+      "sourceLang": "ro",
+      "entityType": "news",
+      "summary": "Premierul Ilie Bolojan a anunțat sâmbătă că Executivul a aprobat un memorandum în privința centralei electrice pe gaz de la Iernut. „Confirmă, la nivel guvernamental, că proiectul centralei de la Iernut, cu o putere de 430 MW, este de extremă urgență,” a transmis Ilie Bolojan. De asemenea, Guvernul va aproba, săptămâna viitoare, o hotărâre de guvern, „care va rezolva o problemă de proprietate privind un post de transformare necesar noii centrale”.",
+      "tags": [
+        "#Romania",
+        "#bill-proposal"
+      ],
+      "importance": 2,
+      "actionPossible": false
+    },
+    {
+      "id": "digi24-https-www-digi24-ro-stiri-externe-toate-trenuril",
+      "title": "Toate trenurile din Serbia au fost anulate sâmbătă, fără explicații, înaintea unui mare protest antiguvernamental organizat la Belgrad",
+      "link": "https://www.digi24.ro/stiri/externe/toate-trenurile-din-serbia-au-fost-anulate-sambata-fara-explicatii-inaintea-unui-mare-protest-antiguvernamental-organizat-la-belgrad-3782757",
+      "description": "Compania feroviară de stat din Serbia, Srbijavoz, a suspendat în zorii zilei de sâmbătă toate transporturile pe reţeaua feroviară a ţării, cu câteva ore înaintea unei mari manifestaţii antiguvernamentale programate pentru după-amiaza şi în cursul serii la Belgrad,  informează Agerpres.",
+      "publishedAt": "2026-05-23T10:34:00.000Z",
+      "source": "Digi24",
+      "sourceId": "digi24",
+      "level": "Romania",
+      "sourceLang": "ro",
+      "entityType": "news",
+      "summary": "Compania feroviară de stat din Serbia, Srbijavoz, a suspendat în zorii zilei de sâmbătă toate transporturile pe reţeaua feroviară a ţării, cu câteva ore înaintea unei mari manifestaţii antiguvernamentale programate pentru după-amiaza şi în cursul serii la Belgrad,  informează Agerpres.",
+      "tags": [
+        "#Romania",
+        "#bill-proposal"
+      ],
+      "importance": 2,
+      "actionPossible": false
+    },
+    {
+      "id": "digi24-https-www-digi24-ro-stiri-actualitate-educatie-a",
+      "title": "Are 90 de ani și este cea mai vârstnică studentă din România: „Au crezut că sunt bunica cuiva. Nu, dragă, sunt colega voastră”",
+      "link": "https://www.digi24.ro/stiri/actualitate/educatie/are-90-de-ani-si-este-cea-mai-varstnica-studenta-din-romania-au-crezut-ca-sunt-bunica-nu-draga-sunt-colega-voastra-3782583",
+      "description": "Nu e niciodată prea târziu să-ți urmezi visul. O femeie din Cluj-Napoca demonstrează asta la 90 de ani. La o vârstă la care mulți aleg liniștea pensiei, Amalia ne arată că setea de cunoaștere nu dispare niciodată. Este studentă în ultimul an la Facultatea de Teologie și merge la cursuri cu aceeași energie ca tinerii de lângă ea.",
+      "publishedAt": "2026-05-23T09:36:55.000Z",
+      "source": "Digi24",
+      "sourceId": "digi24",
+      "level": "Romania",
+      "sourceLang": "ro",
+      "entityType": "news",
+      "summary": "Nu e niciodată prea târziu să-ți urmezi visul. O femeie din Cluj-Napoca demonstrează asta la 90 de ani. La o vârstă la care mulți aleg liniștea pensiei, Amalia ne arată că setea de cunoaștere nu dispare niciodată. Este studentă în ultimul an la Facultatea de Teologie și merge la cursuri cu aceeași energie ca tinerii de lângă ea.",
+      "tags": [
+        "#Romania",
+        "#bill-proposal"
+      ],
+      "importance": 2,
+      "actionPossible": false
+    },
+    {
+      "id": "digi24-https-www-digi24-ro-stiri-noi-alerte-in-tulcea-d",
+      "title": "Noi alerte în Tulcea, din cauza atacurilor ruse cu drone asupra Ucrainei. Precizăprile MApN",
+      "link": "https://www.digi24.ro/stiri/noi-alerte-in-tulcea-din-cauza-atacurilor-ruse-cu-drone-asupra-ucrainei-precizaprile-mapn-3782615",
+      "description": "Locuitorii din nordul judeţului Tulcea au fost alertaţi, sâmbătă, după noi atacuri cu drone asupra unor obiective din Ucraina, în apropierea frontierei fluviale cu România, au transmis reprezentanţii Ministerului Apărării Naţionale. Ei au menţionat că nu au fost raportate drone în spaţiul aerian românesc.",
+      "publishedAt": "2026-05-23T08:16:04.000Z",
+      "source": "Digi24",
+      "sourceId": "digi24",
+      "level": "Romania",
+      "sourceLang": "ro",
+      "entityType": "news",
+      "summary": "Locuitorii din nordul judeţului Tulcea au fost alertaţi, sâmbătă, după noi atacuri cu drone asupra unor obiective din Ucraina, în apropierea frontierei fluviale cu România, au transmis reprezentanţii Ministerului Apărării Naţionale. Ei au menţionat că nu au fost raportate drone în spaţiul aerian românesc.",
+      "tags": [
+        "#Romania",
+        "#bill-proposal"
+      ],
+      "importance": 2,
+      "actionPossible": false
+    },
+    {
+      "id": "digi24-https-www-digi24-ro-stiri-externe-china-pregates",
+      "title": "China pregătește viitoarea forţă de muncă și deschide şcoli pentru roboţi umanoizi: „Îi învăţăm să gândească singuri”",
+      "link": "https://www.digi24.ro/stiri/externe/china-pregateste-viitoarea-forta-de-munca-si-deschide-scoli-pentru-roboti-umanoizi-ii-invatam-sa-gandeasca-singuri-3782623",
+      "description": "China accelerează dezvoltarea roboţilor umanoizi şi îi pregăteşte pentru integrarea în economie în centre speciale unde maşinile sunt antrenate să execute sarcini similare celor realizate de oameni, transmite CNBC.",
+      "publishedAt": "2026-05-23T08:14:09.000Z",
+      "source": "Digi24",
+      "sourceId": "digi24",
+      "level": "Romania",
+      "sourceLang": "ro",
+      "entityType": "news",
+      "summary": "China accelerează dezvoltarea roboţilor umanoizi şi îi pregăteşte pentru integrarea în economie în centre speciale unde maşinile sunt antrenate să execute sarcini similare celor realizate de oameni, transmite CNBC.",
+      "tags": [
+        "#Romania",
+        "#bill-proposal"
+      ],
+      "importance": 2,
+      "actionPossible": false
+    },
+    {
+      "id": "digi24-https-www-digi24-ro-magazin-timp-liber-vacante-b",
+      "title": "Bucureștiul și alte șapte orașe est-europene, în topul destinațiilor city-break ieftine recomandate britanicilor în 2026",
+      "link": "https://www.digi24.ro/magazin/timp-liber/vacante/bucurestiul-si-alte-sapte-orase-est-europene-in-topul-destinatiilor-city-break-ieftine-recomandate-britanicilor-in-2026-3782579",
+      "description": "Bucureștiul și alte șapte orașe din Europa de Est domină topul celor mai bune noi destinații city-break de anul acesta, realizat pe baza raportului calitate-preț de către Poșta britanică (Post Office, o organizație deținută de guvern, dar diferită de Royal Mail, n.r.) și publicat în tradiționalul său Barometru al costurilor urbane. Pe primul loc în acest top se află Sarajevo.",
+      "publishedAt": "2026-05-23T07:28:52.000Z",
+      "source": "Digi24",
+      "sourceId": "digi24",
+      "level": "Romania",
+      "sourceLang": "ro",
+      "entityType": "news",
+      "summary": "Bucureștiul și alte șapte orașe din Europa de Est domină topul celor mai bune noi destinații city-break de anul acesta, realizat pe baza raportului calitate-preț de către Poșta britanică (Post Office, o organizație deținută de guvern, dar diferită de Royal Mail, n.r.) și publicat în tradiționalul său Barometru al costurilor urbane. Pe primul loc în acest top se află Sarajevo.",
+      "tags": [
+        "#Romania",
+        "#bill-proposal"
+      ],
+      "importance": 2,
+      "actionPossible": false
+    },
+    {
+      "id": "digi24-https-www-digi24-ro-stiri-externe-cum-isi-arata-",
+      "title": "Cum își arată Donald Trump interesul pentru Groenlanda: postarea de pe Truth Social a președintelui SUA",
+      "link": "https://www.digi24.ro/stiri/externe/cum-isi-arata-donald-trump-interesul-pentru-groenlanda-postarea-de-pe-truth-social-a-presedintelui-sua-3782551",
+      "description": "Preşedintele SUA Donald Trump şi-a reafirmat într-un mod inedit interesul faţă de Groenlanda, printr-o imagine postată pe reţeaua sa, Truth Social, după ce, miercuri, trimisul special al Statelor Unite în Groenlanda, a declarat pentru AFP că Statele Unite trebuie să-şi consolideze prezenţa pe acest teritoriu autonom danez, iar joi groenlandezii au organizat un protest la adresa lui Trump în timp ce diplomaţii americani inaugurau un nou consulat.",
+      "publishedAt": "2026-05-23T06:25:35.000Z",
+      "source": "Digi24",
+      "sourceId": "digi24",
+      "level": "Romania",
+      "sourceLang": "ro",
+      "entityType": "news",
+      "summary": "Preşedintele SUA Donald Trump şi-a reafirmat într-un mod inedit interesul faţă de Groenlanda, printr-o imagine postată pe reţeaua sa, Truth Social, după ce, miercuri, trimisul special al Statelor Unite în Groenlanda, a declarat pentru AFP că Statele Unite trebuie să-şi consolideze prezenţa pe acest teritoriu autonom danez, iar joi groenlandezii au organizat un protest la adresa lui Trump în timp ce diplomaţii americani inaugurau un nou consulat.",
+      "tags": [
+        "#Romania",
+        "#bill-proposal"
+      ],
+      "importance": 2,
+      "actionPossible": false
+    },
+    {
+      "id": "digi24-https-www-digi24-ro-magazin-timp-liber-cultura-t",
+      "title": "Comoară ascunsă în urmă cu 3.000 de ani, descoperită în Prahova. Ar putea schimba radical teoriile despre epoca bronzului şi a fierului",
+      "link": "https://www.digi24.ro/magazin/timp-liber/cultura/tezaur/comoara-ascunsa-in-urma-cu-3-000-de-ani-descoperita-in-prahova-ar-putea-schimba-radical-teoriile-despre-epoca-bronzului-si-a-fierului-3782553",
+      "description": "Un tezaur ascuns acum 3.000 de ani a fost scos la lumină în Prahova de un bărbat, cu ajutorul unui detector. Cele trei coliere de aur, cu o greutate de peste 300 de grame, precum şi restul obiectelor găsite, au alertat comunitatea ştiinţifică. Arheologii susţin că descoperirea este una excepţională pentru România şi ar putea schimba radical teoriile actuale despre epoca bronzului şi a fierului, informează News.ro.",
+      "publishedAt": "2026-05-23T06:23:48.000Z",
+      "source": "Digi24",
+      "sourceId": "digi24",
+      "level": "Romania",
+      "sourceLang": "ro",
+      "entityType": "news",
+      "summary": "Un tezaur ascuns acum 3.000 de ani a fost scos la lumină în Prahova de un bărbat, cu ajutorul unui detector. Cele trei coliere de aur, cu o greutate de peste 300 de grame, precum şi restul obiectelor găsite, au alertat comunitatea ştiinţifică. Arheologii susţin că descoperirea este una excepţională pentru România şi ar putea schimba radical teoriile actuale despre epoca bronzului şi a fierului, informează News.ro.",
+      "tags": [
+        "#Romania",
+        "#bill-proposal"
+      ],
+      "importance": 2,
+      "actionPossible": false
+    },
+    {
+      "id": "digi24-https-www-digi24-ro-stiri-externe-ue-bulgaria-bl",
+      "title": "Bulgaria blochează aderarea Macedoniei de Nord la Uniunea Europeană",
+      "link": "https://www.digi24.ro/stiri/externe/ue/bulgaria-blocheaza-aderarea-macedoniei-de-nord-la-uniunea-europeana-3782531",
+      "description": "Ministerul de Externe al Bulgariei a transmis unul dintre cele mai clare răspunsuri instituţionale de până acum privind poziţia Sofiei faţă de parcursul european al Macedoniei de Nord, reafirmând că Bulgaria consideră pe deplin obligatoriu consensul european din iulie 2022 şi respinge orice tentativă de reinterpretare sau evitare a acestuia.",
+      "publishedAt": "2026-05-23T05:59:01.000Z",
+      "source": "Digi24",
+      "sourceId": "digi24",
+      "level": "Romania",
+      "sourceLang": "ro",
+      "entityType": "news",
+      "summary": "Ministerul de Externe al Bulgariei a transmis unul dintre cele mai clare răspunsuri instituţionale de până acum privind poziţia Sofiei faţă de parcursul european al Macedoniei de Nord, reafirmând că Bulgaria consideră pe deplin obligatoriu consensul european din iulie 2022 şi respinge orice tentativă de reinterpretare sau evitare a acestuia.",
+      "tags": [
+        "#Romania",
+        "#bill-proposal"
+      ],
+      "importance": 2,
+      "actionPossible": false
+    },
+    {
+      "id": "digi24-https-www-digi24-ro-stiri-economie-bani-afaceri-",
+      "title": "Noul trend printre comercianții din piețe: fructe și legume promovate pe rețelele sociale. Cum ajută clipurile online vânzările",
+      "link": "https://www.digi24.ro/stiri/economie/bani-afaceri/noul-trend-printre-comerciantii-din-piete-fructe-si-legume-promovate-pe-retelele-sociale-cum-ajuta-clipurile-online-vanzarile-3782221",
+      "description": "Micii producători au găsit o metodă modernă prin care își vând mai repede marfa: folosesc rețelele sociale, pentru a-și promova produsele. În acest fel clienții află, în timp real, ce găsesc în piețe și la ce prețuri. Prin fotografii și videoclipuri atractive, postate zilnic pe internet, comercianții reușesc să ajungă la un număr mult mai mare de consumatori, decât ar putea în mod obișnuit. Este și cazul lui Beatrice, cunoscută drept Căpșunica în Târgu Jiu.",
+      "publishedAt": "2026-05-23T05:00:57.000Z",
+      "source": "Digi24",
+      "sourceId": "digi24",
+      "level": "Romania",
+      "sourceLang": "ro",
+      "entityType": "news",
+      "summary": "Micii producători au găsit o metodă modernă prin care își vând mai repede marfa: folosesc rețelele sociale, pentru a-și promova produsele. În acest fel clienții află, în timp real, ce găsesc în piețe și la ce prețuri. Prin fotografii și videoclipuri atractive, postate zilnic pe internet, comercianții reușesc să ajungă la un număr mult mai mare de consumatori, decât ar putea în mod obișnuit. Este și cazul lui Beatrice, cunoscută drept Căpșunica în Târgu Jiu.",
+      "tags": [
+        "#Romania",
+        "#bill-proposal"
+      ],
+      "importance": 2,
+      "actionPossible": false
+    },
+    {
+      "id": "digi24-https-www-digi24-ro-stiri-un-baiat-de-14-ani-din",
+      "title": "Un băiat de 14 ani din Timiș se zbate între viață și moarte, după ce a căzut cu trotineta electrică. Mărturia cutremurătoare a familiei",
+      "link": "https://www.digi24.ro/stiri/un-baiat-de-14-ani-din-timis-se-zbate-intre-viata-si-moarte-dupa-ce-a-cazut-cu-trotineta-electrica-marturia-cutremuratoare-a-familiei-3782245",
+      "description": "Un adolescent de 14 ani din Timiș se zbate între viață și moarte la Terapie Intensivă, după ce a căzut cu trotineta electrică. Tragedia readuce în atenția publică un fenomen periculos: copiii care urcă pe astfel de vehicule fără echipament și fără să cunoască regulile de circulație. Cazurile în care adolescenții au fost la un pas de moarte din cauza trotinetelor s-au înmulțit alarmant. În ultimele zile, numai pe străzile din Timișoara, zeci de adolescenți au fost filmați cum gonesc pe trotinete,",
+      "publishedAt": "2026-05-23T05:00:39.000Z",
+      "source": "Digi24",
+      "sourceId": "digi24",
+      "level": "Romania",
+      "sourceLang": "ro",
+      "entityType": "news",
+      "summary": "Un adolescent de 14 ani din Timiș se zbate între viață și moarte la Terapie Intensivă, după ce a căzut cu trotineta electrică. Tragedia readuce în atenția publică un fenomen periculos: copiii care urcă pe astfel de vehicule fără echipament și fără să cunoască regulile de circulație. Cazurile în care adolescenții au fost la un pas de moarte din cauza trotinetelor s-au înmulțit alarmant. În ultimele zile, numai pe străzile din Timișoara, zeci de adolescenți au fost filmați cum gonesc pe trotinete,",
+      "tags": [
+        "#Romania",
+        "#bill-proposal"
+      ],
+      "importance": 2,
+      "actionPossible": false
+    },
+    {
+      "id": "digi24-https-www-digi24-ro-stiri-actualitate-social-ce-",
+      "title": "Ce drepturi au tinerii care se angajează. Regulile speciale pe care angajatorii sunt obligați să le respecte",
+      "link": "https://www.digi24.ro/stiri/actualitate/social/ce-drepturi-au-tinerii-care-se-angajeaza-regulile-speciale-pe-care-angajatorii-sunt-obligati-sa-le-respecte-3781241",
+      "description": "Codul muncii stabilește atât limitele de vârstă pentru încheierea unui contract, cât și măsurile de protecție aplicabile persoanelor sub 18 ani, iar angajatorii care nu respectă aceste prevederi riscă sancțiuni severe, inclusiv răspundere penală.",
+      "publishedAt": "2026-05-23T05:00:23.000Z",
+      "source": "Digi24",
+      "sourceId": "digi24",
+      "level": "Romania",
+      "sourceLang": "ro",
+      "entityType": "news",
+      "summary": "Codul muncii stabilește atât limitele de vârstă pentru încheierea unui contract, cât și măsurile de protecție aplicabile persoanelor sub 18 ani, iar angajatorii care nu respectă aceste prevederi riscă sancțiuni severe, inclusiv răspundere penală.",
+      "tags": [
+        "#Romania",
+        "#bill-proposal"
+      ],
+      "importance": 2,
+      "actionPossible": false
+    },
+    {
+      "id": "ep-thinktank-https-epthinktank-eu-2026-05-22-eu-mexico-trade-",
+      "title": "EU-Mexico trade and investment relations",
+      "link": "https://epthinktank.eu/2026/05/22/eu-mexico-trade-and-investment-relations/",
+      "description": "EU-Mexico trade in both goods and services continued to grow in 2025 and reached an all-time high of €86.8 billion in goods and €29.7 billion in services.",
+      "publishedAt": "2026-05-22T11:15:00.000Z",
+      "source": "EP Think Tank",
+      "sourceId": "ep-thinktank",
+      "level": "EU",
       "sourceLang": "en",
-      "entityType": "politician_stance",
-      "summary": "AUR opposes a planned VAT hike in HoReCa according to the party leader (dummy).",
-      "tags": ["#Romania", "#taxation", "#representative-stance"],
+      "entityType": "bill",
+      "summary": "EU-Mexico trade in both goods and services continued to grow in 2025 and reached an all-time high of €86.8 billion in goods and €29.7 billion in services.",
+      "tags": [
+        "#EU",
+        "#bill-proposal",
+        "#consultation"
+      ],
+      "importance": 3,
+      "actionPossible": true
+    },
+    {
+      "id": "ep-thinktank-https-epthinktank-eu-2026-05-21-industrial-accel",
+      "title": "Industrial Accelerator Act [EU Legislation in Progress]",
+      "link": "https://epthinktank.eu/2026/05/21/industrial-accelerator-act-eu-legislation-in-progress/",
+      "description": "The Industrial Accelerator Act aims to support ‘Made in EU’ industrial production of low-carbon products and technologies in light of global pressures.",
+      "publishedAt": "2026-05-21T12:00:00.000Z",
+      "source": "EP Think Tank",
+      "sourceId": "ep-thinktank",
+      "level": "EU",
+      "sourceLang": "en",
+      "entityType": "bill",
+      "summary": "The Industrial Accelerator Act aims to support ‘Made in EU’ industrial production of low-carbon products and technologies in light of global pressures.",
+      "tags": [
+        "#EU",
+        "#bill-proposal",
+        "#consultation"
+      ],
       "importance": 3,
       "actionPossible": true
     },
@@ -127,8 +1185,197 @@
       "entityType": "local_official",
       "voteDate": "2026-06-25",
       "summary": "Residents can comment on a proposed 12 km downtown bike lane network until late June.",
-      "tags": ["#Cluj", "#infrastructure", "#local-decision", "#consultation"],
+      "tags": [
+        "#Cluj",
+        "#infrastructure",
+        "#local-decision",
+        "#consultation"
+      ],
       "importance": 4,
+      "actionPossible": true
+    },
+    {
+      "id": "eu-ai-act-001",
+      "title": "EU AI Act — transparency obligations for high-risk systems",
+      "link": "https://example.eu/ai-act/transparency",
+      "description": "Delegated acts on transparency and documentation for deployers of high-risk AI.",
+      "publishedAt": "2026-05-20T10:00:00Z",
+      "source": "EUR-Lex (dummy)",
+      "sourceId": "eur-lex",
+      "level": "EU",
+      "sourceLang": "en",
+      "entityType": "law",
+      "summary": "EU AI Act transparency rules apply to operators of high-risk AI systems; documentation and notices are required.",
+      "tags": [
+        "#EU",
+        "#digitalization",
+        "#law-in-force"
+      ],
+      "importance": 4,
+      "actionPossible": false
+    },
+    {
+      "id": "ro-budget-101",
+      "title": "Romania 2026 state budget — promulgated",
+      "link": "https://example.ro/laws/budget-2026",
+      "description": "The 2026 state budget was promulgated with allocations for health and education.",
+      "publishedAt": "2026-05-19T08:00:00Z",
+      "source": "Official Gazette (dummy)",
+      "sourceId": "monitorul-oficial",
+      "level": "Romania",
+      "sourceLang": "en",
+      "entityType": "law",
+      "summary": "Romania's 2026 state budget is in force with increased health and education spending.",
+      "tags": [
+        "#Romania",
+        "#taxation",
+        "#law-in-force"
+      ],
+      "importance": 4,
+      "actionPossible": false
+    },
+    {
+      "id": "ep-thinktank-https-epthinktank-eu-2026-05-19-global-sumud-flo",
+      "title": "Global Sumud Flotilla – answering citizens’ concerns",
+      "link": "https://epthinktank.eu/2026/05/19/global-sumud-flotilla-answering-citizens-concerns-2/",
+      "description": "Citizens called on the European Union to condemn the interception by Israel of the Gaza-bound Global Sumud Flotilla and called for the immediate and unconditional release of Thiago Ávila and Saif Abu Keshek, members of the Flotilla. Many citizens wrote to the European Parliament on this subject in May 2026 to express their concerns on the issue. They called on Parliament to take the necessary action to ensure international law is respected and that those detained receive consular assistance.",
+      "publishedAt": "2026-05-19T06:30:00.000Z",
+      "source": "EP Think Tank",
+      "sourceId": "ep-thinktank",
+      "level": "EU",
+      "sourceLang": "en",
+      "entityType": "bill",
+      "summary": "Citizens called on the European Union to condemn the interception by Israel of the Gaza-bound Global Sumud Flotilla and called for the immediate and unconditional release of Thiago Ávila and Saif Abu Keshek, members of the Flotilla. Many citizens wrote to the European Parliament on this subject in May 2026 to express their concerns on the issue. They called on Parliament to take the necessary action to ensure international law is respected and that those detained receive consular assistance.",
+      "tags": [
+        "#EU",
+        "#bill-proposal",
+        "#consultation"
+      ],
+      "importance": 3,
+      "actionPossible": true
+    },
+    {
+      "id": "eu-digital-002",
+      "title": "Proposal: Digital Identity Wallet — interoperability framework",
+      "link": "https://example.eu/digital-identity-wallet",
+      "description": "Trilogue negotiations; European Parliament plenary vote expected Q3 2026.",
+      "publishedAt": "2026-05-18T14:30:00Z",
+      "source": "European Parliament (dummy)",
+      "sourceId": "ep-legislative",
+      "level": "EU",
+      "sourceLang": "en",
+      "entityType": "bill",
+      "voteDate": "2026-09-15",
+      "summary": "The European digital identity wallet interoperability framework is in trilogue; plenary vote tentatively September 2026.",
+      "tags": [
+        "#EU",
+        "#digitalization",
+        "#bill-proposal",
+        "#vote-upcoming"
+      ],
+      "importance": 5,
+      "actionPossible": true
+    },
+    {
+      "id": "ep-thinktank-https-epthinktank-eu-2026-05-18-nuclear-fusion-s",
+      "title": "Nuclear fusion: State of play",
+      "link": "https://epthinktank.eu/2026/05/18/nuclear-fusion-state-of-play/",
+      "description": "This briefing presents an overview of recent developments concerning nuclear fusion at global and EU level. It also examines key proposals related to the upcoming proposals in related to the upcoming EU multiannual financial framework for 2028-2034, and outlines its potential positive impact on the EU's competitiveness.",
+      "publishedAt": "2026-05-18T06:30:00.000Z",
+      "source": "EP Think Tank",
+      "sourceId": "ep-thinktank",
+      "level": "EU",
+      "sourceLang": "en",
+      "entityType": "bill",
+      "summary": "This briefing presents an overview of recent developments concerning nuclear fusion at global and EU level. It also examines key proposals related to the upcoming proposals in related to the upcoming EU multiannual financial framework for 2028-2034, and outlines its potential positive impact on the EU's competitiveness.",
+      "tags": [
+        "#EU",
+        "#bill-proposal",
+        "#consultation"
+      ],
+      "importance": 3,
+      "actionPossible": true
+    },
+    {
+      "id": "ro-pension-bill-102",
+      "title": "Bill: special pensions — legal committee debate",
+      "link": "https://example.ro/cdep/plx/special-pensions",
+      "description": "Draft law on special pensions; favorable report postponed.",
+      "publishedAt": "2026-05-17T11:00:00Z",
+      "source": "Chamber of Deputies (dummy)",
+      "sourceId": "cdep",
+      "level": "Romania",
+      "sourceLang": "en",
+      "entityType": "bill",
+      "voteDate": "2026-06-10",
+      "summary": "The special pensions bill was delayed in the legal committee; a chamber vote is possible in June 2026.",
+      "tags": [
+        "#Romania",
+        "#social-policy",
+        "#bill-proposal",
+        "#vote-upcoming"
+      ],
+      "importance": 5,
+      "actionPossible": true
+    },
+    {
+      "id": "ro-aur-stance-104",
+      "title": "AUR: public position on tax reform",
+      "link": "https://example.ro/parties/aur/fiscal",
+      "description": "Party leader criticizes a planned VAT increase in the HoReCa sector.",
+      "publishedAt": "2026-05-16T16:00:00Z",
+      "source": "G4Media (dummy)",
+      "sourceId": "g4media",
+      "level": "Romania",
+      "sourceLang": "en",
+      "entityType": "politician_stance",
+      "summary": "AUR opposes a planned VAT hike in HoReCa according to the party leader (dummy).",
+      "tags": [
+        "#Romania",
+        "#taxation",
+        "#representative-stance"
+      ],
+      "importance": 3,
+      "actionPossible": true
+    },
+    {
+      "id": "eu-ep-election-003",
+      "title": "MEP voting record: Green Deal industrial plan (dummy aggregate)",
+      "link": "https://example.eu/mep-votes/green-deal",
+      "description": "Aggregated stance of Romanian delegation MEPs on the industrial plan vote.",
+      "publishedAt": "2026-05-15T09:00:00Z",
+      "source": "VoteWatch (dummy)",
+      "sourceId": "votewatch",
+      "level": "EU",
+      "sourceLang": "en",
+      "entityType": "politician_stance",
+      "summary": "A majority of Romanian MEPs voted in favor of the Green Deal industrial package (dummy data).",
+      "tags": [
+        "#EU",
+        "#environment",
+        "#representative-stance"
+      ],
+      "importance": 3,
+      "actionPossible": false
+    },
+    {
+      "id": "ep-thinktank-https-epthinktank-eu-2026-05-15-european-parliam",
+      "title": "European Parliament action to advance gender equality",
+      "link": "https://epthinktank.eu/2026/05/15/european-parliament-action-to-advance-gender-equality/",
+      "description": "The European Parliament plays an important role in advancing gender equality in the European Union. Through resolutions, legislative work and political scrutiny, it has called for stronger action in areas including violence against women, equal pay, online abuse, representation in decision-making, and women's rights in conflict settings.",
+      "publishedAt": "2026-05-15T06:30:00.000Z",
+      "source": "EP Think Tank",
+      "sourceId": "ep-thinktank",
+      "level": "EU",
+      "sourceLang": "en",
+      "entityType": "bill",
+      "summary": "The European Parliament plays an important role in advancing gender equality in the European Union. Through resolutions, legislative work and political scrutiny, it has called for stronger action in areas including violence against women, equal pay, online abuse, representation in decision-making, and women's rights in conflict settings.",
+      "tags": [
+        "#EU",
+        "#bill-proposal",
+        "#consultation"
+      ],
+      "importance": 3,
       "actionPossible": true
     },
     {
@@ -143,9 +1390,53 @@
       "sourceLang": "en",
       "entityType": "politician_stance",
       "summary": "Mayor Emil Boc highlights mobility, parks, and digital city services for the next term.",
-      "tags": ["#Cluj", "#representative-stance", "#digitalization"],
+      "tags": [
+        "#Cluj",
+        "#representative-stance",
+        "#digitalization"
+      ],
       "importance": 3,
       "actionPossible": false
+    },
+    {
+      "id": "ep-thinktank-https-epthinktank-eu-2026-05-14-eu-action-on-gen",
+      "title": "EU action on gender equality",
+      "link": "https://epthinktank.eu/2026/05/14/eu-action-on-gender-equality/",
+      "description": "Citizens often turn to the European Parliament to ask how the European Union deals with gender equality.",
+      "publishedAt": "2026-05-14T06:30:00.000Z",
+      "source": "EP Think Tank",
+      "sourceId": "ep-thinktank",
+      "level": "EU",
+      "sourceLang": "en",
+      "entityType": "bill",
+      "summary": "Citizens often turn to the European Parliament to ask how the European Union deals with gender equality.",
+      "tags": [
+        "#EU",
+        "#bill-proposal",
+        "#consultation"
+      ],
+      "importance": 3,
+      "actionPossible": true
+    },
+    {
+      "id": "ep-thinktank-https-epthinktank-eu-2026-05-13-european-parliam",
+      "title": "European Parliament Plenary Session – May 2026",
+      "link": "https://epthinktank.eu/2026/05/13/european-parliament-plenary-session-may-2026/",
+      "description": "The agenda for the European Parliament’s May plenary session looks at global security and trade challenges, including the Middle East, Ukraine, UN reform, steel tariffs, foreign investment screening, AI in trade policy, cybercrime and victims’ rights. Members will also discuss rail and forestry reforms, ties with Uzbekistan, online video games, fisheries agreements, and honour the first European Order of Merit laureates.",
+      "publishedAt": "2026-05-13T14:30:00.000Z",
+      "source": "EP Think Tank",
+      "sourceId": "ep-thinktank",
+      "level": "EU",
+      "sourceLang": "en",
+      "entityType": "bill",
+      "summary": "The agenda for the European Parliament’s May plenary session looks at global security and trade challenges, including the Middle East, Ukraine, UN reform, steel tariffs, foreign investment screening, AI in trade policy, cybercrime and victims’ rights. Members will also discuss rail and forestry reforms, ties with Uzbekistan, online video games, fisheries agreements, and honour the first European Order of Merit laureates.",
+      "tags": [
+        "#EU",
+        "#bill-proposal",
+        "#consultation"
+      ],
+      "importance": 3,
+      "actionPossible": true
     },
     {
       "id": "local-council-203",
@@ -159,9 +1450,55 @@
       "sourceLang": "en",
       "entityType": "politician_stance",
       "summary": "Council candidate Anna Kovacs pledges school upgrades and bilingual kindergartens in Cluj.",
-      "tags": ["#Cluj", "#education", "#representative-stance", "#local-decision"],
+      "tags": [
+        "#Cluj",
+        "#education",
+        "#representative-stance",
+        "#local-decision"
+      ],
       "importance": 3,
       "actionPossible": true
+    },
+    {
+      "id": "ep-thinktank-https-epthinktank-eu-2026-05-11-health-and-wellb",
+      "title": "Health and wellbeing in the age of artificial intelligence",
+      "link": "https://epthinktank.eu/2026/05/11/health-and-wellbeing-in-the-age-of-artificial-intelligence/",
+      "description": "Artificial intelligence offers opportunities to make healthcare more effective, more accessible for all, with better outcomes for patients and national health systems. While AI offers wellbeing benefits for vulnerable groups such as older adults, young people, and children, it also carries significant risks that require careful management.",
+      "publishedAt": "2026-05-11T06:30:00.000Z",
+      "source": "EP Think Tank",
+      "sourceId": "ep-thinktank",
+      "level": "EU",
+      "sourceLang": "en",
+      "entityType": "bill",
+      "summary": "Artificial intelligence offers opportunities to make healthcare more effective, more accessible for all, with better outcomes for patients and national health systems. While AI offers wellbeing benefits for vulnerable groups such as older adults, young people, and children, it also carries significant risks that require careful management.",
+      "tags": [
+        "#EU",
+        "#bill-proposal",
+        "#consultation"
+      ],
+      "importance": 3,
+      "actionPossible": true
+    },
+    {
+      "id": "ro-psd-program-103",
+      "title": "PSD governance program — digital and health priorities",
+      "link": "https://example.ro/parties/psd/program-2026",
+      "description": "Excerpt from the governance program: telemedicine and ANAF digitalization.",
+      "publishedAt": "2026-05-10T12:00:00Z",
+      "source": "PSD (dummy)",
+      "sourceId": "partid-psd",
+      "level": "Romania",
+      "sourceLang": "en",
+      "entityType": "party_program",
+      "summary": "The PSD program emphasizes telemedicine and tax authority digitalization (dummy).",
+      "tags": [
+        "#Romania",
+        "#party-program",
+        "#digitalization",
+        "#healthcare"
+      ],
+      "importance": 3,
+      "actionPossible": false
     },
     {
       "id": "local-mayor-debate-204",
@@ -175,14 +1512,61 @@
       "sourceLang": "en",
       "entityType": "local_official",
       "summary": "Three mayoral candidates debated extending tram line 14 and adding night patrols.",
-      "tags": ["#Cluj", "#public-safety", "#infrastructure", "#vote-upcoming"],
+      "tags": [
+        "#Cluj",
+        "#public-safety",
+        "#infrastructure",
+        "#vote-upcoming"
+      ],
       "importance": 4,
+      "actionPossible": true
+    },
+    {
+      "id": "ep-thinktank-https-epthinktank-eu-2026-05-08-parliaments-past",
+      "title": "Parliament’s past: a defining declaration",
+      "link": "https://epthinktank.eu/2026/05/08/parliaments-past-a-defining-declaration/",
+      "description": "On 9 May 2026, Brussels will be brimming with activities, music, talks and exhibitions; as the corridors of the European Parliament, alongside the other EU institutions, open to the public.",
+      "publishedAt": "2026-05-08T06:30:00.000Z",
+      "source": "EP Think Tank",
+      "sourceId": "ep-thinktank",
+      "level": "EU",
+      "sourceLang": "en",
+      "entityType": "bill",
+      "summary": "On 9 May 2026, Brussels will be brimming with activities, music, talks and exhibitions; as the corridors of the European Parliament, alongside the other EU institutions, open to the public.",
+      "tags": [
+        "#EU",
+        "#bill-proposal",
+        "#consultation"
+      ],
+      "importance": 3,
+      "actionPossible": true
+    },
+    {
+      "id": "ep-thinktank-https-epthinktank-eu-2026-05-07-hungarys-anti-lg",
+      "title": "Hungary’s anti-LGBTI law and EU values:                  The CJEU’s landmark Article 2 TEU judgment",
+      "link": "https://epthinktank.eu/2026/05/07/hungarys-anti-lgbti-law-and-eu-values-the-cjeus-landmark-article-2-teu-judgment/",
+      "description": "On 21 April 2026, the CJEU adopted its judgment in case C-769/22 Commission v. Hungary. This is the first time that the Court found a violation of human dignity, as well as for an autonomous violation of Article 2 of the Treaty on European Union (TEU) on values of the Union.",
+      "publishedAt": "2026-05-07T06:30:00.000Z",
+      "source": "EP Think Tank",
+      "sourceId": "ep-thinktank",
+      "level": "EU",
+      "sourceLang": "en",
+      "entityType": "bill",
+      "summary": "On 21 April 2026, the CJEU adopted its judgment in case C-769/22 Commission v. Hungary. This is the first time that the Court found a violation of human dignity, as well as for an autonomous violation of Article 2 of the Treaty on European Union (TEU) on values of the Union.",
+      "tags": [
+        "#EU",
+        "#bill-proposal",
+        "#consultation"
+      ],
+      "importance": 3,
       "actionPossible": true
     }
   ],
   "meta": {
-    "source": "dummy-seed",
-    "updatedAt": "2026-05-23T12:00:00Z",
-    "note": "Replace via n8n POST /api/ingest/feed or by editing mobile-app/data/feed-items.json"
+    "source": "n8n-law-gather",
+    "updatedAt": "2026-05-23T14:42:58.133Z",
+    "note": "Replace via n8n POST /api/ingest/raw or by editing this file",
+    "workflow": "cdep-plx",
+    "lastIngestCount": 0
   }
 }

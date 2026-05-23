@@ -6,7 +6,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "dev": "node --watch index.js"
+    "dev": "node --watch index.js",
+    "translate-laws": "node scripts/translate-law-items.js"
   },
   "engines": {
     "node": ">=18"
