@@ -19,10 +19,6 @@ RUN npm install --omit=dev && npm cache clean --force
 
 COPY --from=builder /app/dist ./dist
 
-# Per-validator chain JSON lives under /data; mount a named volume for it.
-RUN mkdir -p /data
-VOLUME ["/data"]
-
 # Default port; gets overridden via env at runtime
-EXPOSE 4101
+EXPOSE 4001
 CMD ["node", "dist/index.js"]
