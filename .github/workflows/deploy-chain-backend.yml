@@ -49,13 +49,60 @@ jobs:
             CONSENSUS_THRESHOLD=2
             EOF
 
+            docker compose -p chainbackend down
             docker compose -p chainbackend up --build -d
 
             docker compose -p chainbackend ps
 
-            curl -f http://localhost:4001/health
-            curl -f http://localhost:4002/health
-            curl -f http://localhost:4001/validators/status
+            echo "Waiting for ChainBackend services..."
+
+            for i in {1..30}; do
+              if curl -fsS http://localhost:4001/health; then
+                echo "gateway-1 healthy"
+                break
+              fi
+
+              echo "gateway-1 not ready yet... retry $i/30"
+              sleep 2
+
+              if [ "$i" -eq 30 ]; then
+                echo "gateway-1 failed"
+                docker compose -p chainbackend logs gateway-1 --tail=100
+                exit 1
+              fi
+            done
+
+            for i in {1..30}; do
+              if curl -fsS http://localhost:4002/health; then
+                echo "gateway-2 healthy"
+                break
+              fi
+
+              echo "gateway-2 not ready yet... retry $i/30"
+              sleep 2
+
+              if [ "$i" -eq 30 ]; then
+                echo "gateway-2 failed"
+                docker compose -p chainbackend logs gateway-2 --tail=100
+                exit 1
+              fi
+            done
+
+            for i in {1..30}; do
+              if curl -fsS http://localhost:4001/validators/status; then
+                echo "validators endpoint healthy"
+                break
+              fi
+
+              echo "validators endpoint not ready yet... retry $i/30"
+              sleep 2
+
+              if [ "$i" -eq 30 ]; then
+                echo "validators endpoint failed"
+                docker compose -p chainbackend logs --tail=150
+                exit 1
+              fi
+            done
 
             echo "Deploying CivicAI n8n..."
 
@@ -72,11 +119,33 @@ jobs:
             N8N_BASIC_AUTH_PASSWORD=${{ secrets.N8N_BASIC_AUTH_PASSWORD }}
             EOF
 
+            docker compose -p civicai-n8n down
             docker compose -p civicai-n8n up --build -d
 
             docker compose -p civicai-n8n ps
 
-            curl -f http://localhost:3001/health || true
-            curl -f http://localhost:5678 || true
+            echo "Waiting for CivicAI n8n services..."
+
+            for i in {1..30}; do
+              if curl -fsS http://localhost:5678; then
+                echo "n8n healthy"
+                break
+              fi
+
+              echo "n8n not ready yet... retry $i/30"
+              sleep 2
+
+              if [ "$i" -eq 30 ]; then
+                echo "n8n failed"
+                docker compose -p civicai-n8n logs --tail=150
+                exit 1
+              fi
+            done
+
+            if curl -fsS http://localhost:3001/health; then
+              echo "feed-api healthy"
+            else
+              echo "feed-api health check failed or not exposed, continuing..."
+            fi
 
             echo "Deployment finished."
