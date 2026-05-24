@@ -1,8 +1,44 @@
 {
-  "items": [],
+  "items": [
+    {
+      "id": "senat-plx-12345",
+      "title": "PLX 123/2026 — Propunere privind protecția consumatorilor",
+      "title_en": "PLX 123/2026 — Consumer protection proposal",
+      "link": "https://www.senat.ro/Legis/Lista.aspx?cod=12345",
+      "description": "Propunere legislativă pentru modificarea Codului consumului.",
+      "publishedAt": "2026-05-20T10:00:00Z",
+      "source": "Senat — consultare publică",
+      "sourceId": "senat-plx",
+      "level": "Romania",
+      "sourceLang": "ro",
+      "feedCategory": "law",
+      "entityType": "bill",
+      "importance": 4,
+      "actionPossible": true,
+      "tags": ["#consumatori", "#economie"],
+      "plain_summary": "Pe scurt: proiectul propune reguli mai clare pentru returnarea produselor cumpărate online și sancțiuni mai mari pentru practici înșelătoare. Consultarea publică este deschisă până la finalul lunii.",
+      "plain_summary_en": "In short: the bill proposes clearer rules for returning online purchases and stronger penalties for misleading practices. Public consultation is open until the end of the month."
+    },
+    {
+      "id": "senat-plx-67890",
+      "title": "PLX 456/2026 — Lege privind energia regenerabilă",
+      "link": "https://www.senat.ro/Legis/Lista.aspx?cod=67890",
+      "description": "Inițiativă legislativă pentru stimulente fiscale energie verde.",
+      "publishedAt": "2026-05-18T08:00:00Z",
+      "source": "Senat — consultare publică",
+      "sourceId": "senat-plx",
+      "level": "Romania",
+      "sourceLang": "ro",
+      "feedCategory": "law",
+      "entityType": "bill",
+      "importance": 3,
+      "actionPossible": false,
+      "tags": ["#mediu"]
+    }
+  ],
   "meta": {
     "feed": "law",
-    "updatedAt": "2026-05-24T08:12:40.442Z",
-    "reset": true
+    "source": "local-test-seed",
+    "updatedAt": "2026-05-24T12:00:00.000Z"
   }
 }

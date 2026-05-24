@@ -60,6 +60,11 @@ each validator persisting its own copy of the chain. Consensus is
 * **Writes go through 2-of-3 consensus.** If validator-3 is down, a write
   driven by `gateway-1` still succeeds because `validator-1` and
   `validator-2` reach the threshold.
+* **Election-level digital ID encryption.** When an election is proposed,
+  the gateway generates an RSA-OAEP/SHA-256 election key pair. The public
+  key is available at `GET /elections/:id/public-key`; validators persist
+  the private key in their local election state so they can decrypt
+  `encryptedDigitalId` during vote validation.
 
 ### Election lifecycle
 
@@ -150,9 +155,9 @@ Express + TypeScript service. Holds the canonical state.
 
 ### Vote encryption formats
 
-The voter (or front-end) encrypts the vote against the election's public
-key. Three formats are accepted by the validators; the **first form is
-preferred** because it binds the ciphertext to the election:
+The voter (or front-end) encrypts the vote vector against the election's
+public key. Three formats are accepted by the validators; the **first
+form is preferred** because it binds the ciphertext to the election:
 
 ```
 1. mock-enc:<electionId>:[1,0,0]            ← preferred
@@ -168,6 +173,24 @@ A vote vector must:
 
 `[1,1,0]`, `[0,0,0]`, `[2,0,0]` are all rejected at prepare time across
 every validator with reasons surfaced in the response.
+
+### Digital ID encryption
+
+The mobile app must never send a raw `digitalId` to the gateway. The flow is:
+
+1. `GET /elections/:electionId/public-key`
+2. Encrypt the local digital ID with RSA-OAEP/SHA-256 using that public key.
+3. Submit the vote with `encryptedDigitalId` (base64 ciphertext).
+4. Validators decrypt using the election private key and check their local
+   `eligible-voters.json`.
+
+If the decrypted ID is not present locally, validators reject the vote with
+`VOTER_NOT_ELIGIBLE`. Validators never log or return the decrypted ID; they
+only include a SHA-256 `digitalIdHash` in the committed vote transaction.
+
+Each eligible digital ID may vote **once per election**. A second vote with
+the same decrypted ID (even under a fresh `anonymousTokenHash`) is rejected
+with HTTP **409** (`Digital ID already voted in this election`).
 
 ---
 
@@ -194,6 +217,7 @@ every validator with reasons surfaced in the response.
 | `VALIDATOR_ID`           | `validator-1`, `validator-2`, `validator-3`                |
 | `VALIDATOR_PRIVATE_KEY`  | Mock private key used for "signing"                        |
 | `CHAIN_STORAGE_PATH`     | `/data/validator-1-chain.json` (etc.)                      |
+| `ELIGIBILITY_LIST_PATH`  | `/app/data/eligible-voters.json`                           |
 | `CONSENSUS_THRESHOLD`    | `2`                                                        |
 | `VALIDATOR_URLS`         | Same value as the gateways (kept for future peer sync)     |
 
@@ -245,7 +269,7 @@ cannot approve on behalf of another institution).
 | `POST /elections/:id/open` / `/freeze` / `/tally`     | Any institution or admin                 |
 | `POST /elections/:id/request-threshold-decryption`    | Any institution or admin                 |
 | `POST /elections/:id/finish`                          | Any institution or admin                 |
-| `POST /votes`                                         | Open (gated by token + proof on chain)   |
+| `POST /votes`                                         | Open (gated by encrypted digital ID, token, and proof) |
 | `GET  /chain/...`, `GET /elections/...`               | Public                                   |
 
 > **TODO:** replace header API keys with mTLS + signed requests bound to
@@ -264,6 +288,7 @@ cannot approve on behalf of another institution).
 * `POST /elections/proposals` – propose a new election (AEP)
 * `GET  /elections` – list (majority-agreed)
 * `GET  /elections/:id` – single election (cleartext tally only after FINISHED)
+* `GET  /elections/:id/public-key` – RSA public key for mobile digital ID encryption
 * `POST /elections/:id/approve`
 * `POST /elections/:id/open`
 * `POST /elections/:id/freeze`
@@ -287,7 +312,7 @@ cannot approve on behalf of another institution).
 
 * `GET  /health`
 * `GET  /status`
-* `GET  /chain` (`/blocks`, `/blocks/:n`, `/transactions/:hash`, `/elections/:id`, `/elections/:id/transactions`, `/verify`)
+* `GET  /chain` (`/blocks`, `/blocks/:n`, `/blocks/by-hash/:blockHash`, `/transactions/:hash`, `/elections/:id`, `/elections/:id/transactions`, `/verify`)
 * `GET  /elections`, `GET /elections/:id`
 * `POST /consensus/prepare`
 * `POST /consensus/commit`
@@ -331,9 +356,9 @@ curl -X POST http://localhost:4001/elections/proposals \
     "type": "PRESIDENTIAL",
     "districts": ["CJ-01", "B-01", "BV-01"],
     "candidates": [
-      { "id": "candidate-a", "name": "Candidate A" },
+      { "id": "candidate-a", "name": "Candidate A", "subtext": "Party list line (optional)", "photoUrl": "" },
       { "id": "candidate-b", "name": "Candidate B" },
-      { "id": "candidate-c", "name": "Candidate C" }
+      { "id": "candidate-c", "name": "Candidate C", "subtext": "Independent" }
     ],
     "startsAt": "2029-11-10T07:00:00Z",
     "endsAt":   "2029-11-10T21:00:00Z",
@@ -341,13 +366,20 @@ curl -X POST http://localhost:4001/elections/proposals \
   }'
 ```
 
-If `electionPublicKey` is omitted, the gateway fills in
-`mock-public-key:<electionId>` for you.
+The gateway generates an RSA-OAEP/SHA-256 election key pair at proposal
+time. Validators receive and store the private key in their local election
+state; clients only fetch the public key.
 
 ### 4. Read the election via gateway-2 (proves gateways are interchangeable)
 
 ```bash
 curl http://localhost:4002/elections/RO-PRESIDENTIAL-2029
+```
+
+Fetch the public key that the mobile app will use for digital ID encryption:
+
+```bash
+curl http://localhost:4001/elections/RO-PRESIDENTIAL-2029/public-key
 ```
 
 ### 5. Approve with BEC and COURT
@@ -369,21 +401,28 @@ curl -X POST http://localhost:4001/elections/RO-PRESIDENTIAL-2029/open \
 
 ### 7. Cast votes
 
+The `encryptedDigitalId` values below must be RSA-OAEP/SHA-256 ciphertexts
+created with the election public key. In the mobile app, use
+`ElectionKeyService` + `DigitalIdEncryptionService`; for backend smoke
+testing, run `node scripts/digital-id-smoke.js` after the services are up.
+
 ```bash
 # token-001 → candidate-a (CJ-01) via gateway-1
 curl -X POST http://localhost:4001/votes -H "Content-Type: application/json" -d '{
   "electionId":"RO-PRESIDENTIAL-2029","districtId":"CJ-01",
   "anonymousTokenHash":"token-hash-001",
-  "encryptedVote":"mock-enc:RO-PRESIDENTIAL-2029:[1,0,0]",
-  "proof":"mock-zk-proof","timestamp":"2029-11-10T12:30:00Z"
+  "candidateId":"candidate-a",
+  "encryptedDigitalId":"<base64-rsa-oaep-ciphertext-for-RO123456789>",
+  "voterProof":"mock-zk-proof","timestamp":"2029-11-10T12:30:00Z"
 }'
 
 # token-002 → candidate-b (B-01) via gateway-2
 curl -X POST http://localhost:4002/votes -H "Content-Type: application/json" -d '{
   "electionId":"RO-PRESIDENTIAL-2029","districtId":"B-01",
   "anonymousTokenHash":"token-hash-002",
-  "encryptedVote":"mock-enc:RO-PRESIDENTIAL-2029:[0,1,0]",
-  "proof":"mock-zk-proof","timestamp":"2029-11-10T13:00:00Z"
+  "candidateId":"candidate-b",
+  "encryptedDigitalId":"<base64-rsa-oaep-ciphertext-for-RO987654321>",
+  "voterProof":"mock-zk-proof","timestamp":"2029-11-10T13:00:00Z"
 }'
 
 # token-003 → candidate-a (CJ-01) via gateway-1
@@ -391,7 +430,8 @@ curl -X POST http://localhost:4001/votes -H "Content-Type: application/json" -d 
   "electionId":"RO-PRESIDENTIAL-2029","districtId":"CJ-01",
   "anonymousTokenHash":"token-hash-003",
   "encryptedVote":"mock-enc:RO-PRESIDENTIAL-2029:[1,0,0]",
-  "proof":"mock-zk-proof","timestamp":"2029-11-10T13:30:00Z"
+  "encryptedDigitalId":"<base64-rsa-oaep-ciphertext-for-RO123456789>",
+  "voterProof":"mock-zk-proof","timestamp":"2029-11-10T13:30:00Z"
 }'
 
 # token-004 → candidate-c (BV-01) via gateway-2
@@ -399,18 +439,50 @@ curl -X POST http://localhost:4002/votes -H "Content-Type: application/json" -d 
   "electionId":"RO-PRESIDENTIAL-2029","districtId":"BV-01",
   "anonymousTokenHash":"token-hash-004",
   "encryptedVote":"mock-enc:RO-PRESIDENTIAL-2029:[0,0,1]",
-  "proof":"mock-zk-proof","timestamp":"2029-11-10T14:00:00Z"
+  "encryptedDigitalId":"<base64-rsa-oaep-ciphertext-for-RO987654321>",
+  "voterProof":"mock-zk-proof","timestamp":"2029-11-10T14:00:00Z"
 }'
 ```
 
+The `candidateId` form is accepted as a convenience for mobile clients and
+is normalized by validators into the existing mock encrypted vote format.
+Existing `encryptedVote` payloads still work, but they must now also include
+`encryptedDigitalId`.
+
+### 7b. Run the encrypted digital ID smoke script
+
+This script covers key generation, encrypt/decrypt, local eligibility JSON,
+eligible-voter acceptance, and ineligible-voter rejection through the live
+gateway/validator consensus path:
+
+```bash
+GATEWAY_BASE=http://localhost:4001 node scripts/digital-id-smoke.js
+```
+
+On Windows PowerShell:
+
+```powershell
+$env:GATEWAY_BASE = "http://127.0.0.1:4001"
+node scripts/digital-id-smoke.js
+```
+
+Expected final line:
+
+```text
+OK: key generation, encryption/decryption, eligibility, accept, and reject checks passed
+```
+
 ### 8. Invalid vector `[1,1,0]` is rejected
+
+Use `[1,1,0]` in the `encryptedVote` field to verify vector rejection:
 
 ```bash
 curl -i -X POST http://localhost:4001/votes -H "Content-Type: application/json" -d '{
   "electionId":"RO-PRESIDENTIAL-2029","districtId":"CJ-01",
   "anonymousTokenHash":"token-hash-005",
   "encryptedVote":"mock-enc:RO-PRESIDENTIAL-2029:[1,1,0]",
-  "proof":"mock-zk-proof","timestamp":"2029-11-10T15:00:00Z"
+  "encryptedDigitalId":"<base64-rsa-oaep-ciphertext-for-RO123456789>",
+  "voterProof":"mock-zk-proof","timestamp":"2029-11-10T15:00:00Z"
 }'
 ```
 
@@ -423,7 +495,8 @@ curl -i -X POST http://localhost:4001/votes -H "Content-Type: application/json" 
   "electionId":"RO-PRESIDENTIAL-2029","districtId":"CJ-01",
   "anonymousTokenHash":"token-hash-001",
   "encryptedVote":"mock-enc:RO-PRESIDENTIAL-2029:[0,1,0]",
-  "proof":"mock-zk-proof","timestamp":"2029-11-10T15:00:00Z"
+  "encryptedDigitalId":"<base64-rsa-oaep-ciphertext-for-RO123456789>",
+  "voterProof":"mock-zk-proof","timestamp":"2029-11-10T15:00:00Z"
 }'
 ```
 
@@ -567,8 +640,9 @@ validator-3 entry is marked unreachable. Bring it back up later with
 | Validator signatures       | `sha256(VALIDATOR_ID \|\| privKey \|\| canonicalContent)`                  | Real digital signatures, optionally aggregated (BLS) for compact blocks                  |
 | Consensus protocol         | 2-phase prepare/commit "agree on payload, then commit" round-trip          | Real BFT (PBFT / HotStuff / Tendermint) with view changes, equivocation handling, etc.   |
 | Mempool / batching         | One transaction per block                                                  | Mempool, leader-proposed batches, rate limits                                            |
-| Election public key        | Auto-generated `mock-public-key:<electionId>`                              | Distributed Key Generation (Pedersen / Feldman) between validators                       |
-| Encrypted vote             | `mock-enc:<electionId>:[1,0,0]`                                            | Threshold ElGamal / Paillier ciphertext over a one-hot vote vector                       |
+| Election digital ID key    | RSA-OAEP/SHA-256 key pair generated by the gateway and stored by validators | Distributed Key Generation (Pedersen / Feldman) between validators                       |
+| Encrypted digital ID       | Mobile encrypts `digitalId` with election public key; validators decrypt locally | Anonymous credentials / blind signatures / zero-knowledge eligibility checks         |
+| Encrypted vote             | `mock-enc:<electionId>:[1,0,0]` or `candidateId` convenience form           | Threshold ElGamal / Paillier ciphertext over a one-hot vote vector                       |
 | Homomorphic aggregation    | Sum of mock vectors + opaque hash placeholder                              | Real homomorphic addition of ciphertexts; aggregate stays encrypted                      |
 | Threshold decryption       | Each validator returns `sha256(ID \|\| privKey \|\| eid \|\| aggregate)`   | Pedersen-DKG / Shamir threshold ElGamal partial decryption + Lagrange combination        |
 | Citizen anonymity / token  | Pre-issued `anonymousTokenHash` from out-of-band                           | zk-SNARK / blind signature based eligibility proofs over a citizen registry              |

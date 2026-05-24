@@ -10,6 +10,10 @@ export type ElectionStatus =
 export interface Candidate {
   id: string;
   name: string;
+  /** Optional party / list line shown under the name in the ballot UI. */
+  subtext?: string;
+  /** Optional portrait URL; clients fall back to initials when absent. */
+  photoUrl?: string;
 }
 
 export interface Approval {
@@ -69,6 +73,7 @@ export interface Election {
   endsAt: string;
   requiredApprovals: number;
   electionPublicKey: string;
+  electionPrivateKey: string;
   status: ElectionStatus;
   proposedBy: string;
   proposedAt: string;
@@ -129,5 +134,7 @@ export interface Block {
 export interface ValidatorState {
   elections: Record<string, Election>;
   usedTokensByElection: Record<string, string[]>;
+  /** SHA-256 of decrypted digital IDs that already voted in each election. */
+  usedDigitalIdHashesByElection: Record<string, string[]>;
   blocks: Block[];
 }

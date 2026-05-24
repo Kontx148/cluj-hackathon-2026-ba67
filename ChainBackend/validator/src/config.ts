@@ -9,6 +9,9 @@ export const config = {
 
   consensusThreshold: Number(process.env.CONSENSUS_THRESHOLD || 2),
 
+  eligibilityListPath:
+    process.env.ELIGIBILITY_LIST_PATH || './data/eligible-voters.json',
+
   /**
    * URLs of every validator (including this one). Currently unused by the
    * prototype – kept for parity with the gateway config and to enable a

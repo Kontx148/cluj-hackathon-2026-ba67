@@ -18,7 +18,9 @@ Docker Compose: **n8n** + **feed-api**. Workflows fetch civic data and merge int
 
 **Total in `workflows/`:** 6 JSON files — import the **5 active** ones (2 law + 3 news).
 
-Each workflow POSTs to `POST /api/ingest/raw` with `category: law` or `category: news`. Ingest merges by item `id`.
+Each workflow POSTs to `POST /api/ingest/raw` with `category: law` or `category: news`. Law feeds **replace** on each run; news **merge** by item `id`.
+
+**CI deploy:** GitHub Actions only re-imports workflows when JSON files under `workflows/` change (or when you run deploy manually with **Import n8n workflows** checked). Pushes that only touch code/backend will **not** overwrite live n8n workflows.
 
 ---
 

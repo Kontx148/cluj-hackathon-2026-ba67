@@ -48,6 +48,17 @@ router.get('/blocks/:blockNumber', (req, res) => {
   });
 });
 
+router.get('/blocks/by-hash/:blockHash', (req, res) => {
+  const hash = req.params.blockHash;
+  const b = storage.state.blocks.find((x) => x.blockHash === hash);
+  if (!b) return res.status(404).json({ error: 'Block not found' });
+  const map = statusMap();
+  res.json({
+    ...b,
+    transactions: b.transactions.map((t) => publicTransactionView(t, map)),
+  });
+});
+
 router.get('/transactions/:transactionHash', (req, res) => {
   const hash = req.params.transactionHash;
   const map = statusMap();

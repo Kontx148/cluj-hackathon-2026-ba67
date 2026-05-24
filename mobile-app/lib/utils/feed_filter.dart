@@ -30,7 +30,7 @@ class FeedFilters {
       }
       if (level != null && item.level != level) return false;
       if (tag != null && !item.tags.contains(tag)) return false;
-      if (importance != null && item.importance != importance) return false;
+      if (importance != null && item.importance < importance!) return false;
       return true;
     }).toList();
   }

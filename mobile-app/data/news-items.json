@@ -1,8 +1,24 @@
 {
-  "items": [],
+  "items": [
+    {
+      "id": "g4media-test-1",
+      "title": "Guvernul anunță măsuri noi pentru transparență bugetară",
+      "title_en": "Government announces new budget transparency measures",
+      "link": "https://www.g4media.ro/example",
+      "description": "Executivul propune publicarea lunară a cheltuielilor ministeriale.",
+      "publishedAt": "2026-05-22T14:00:00Z",
+      "source": "G4Media",
+      "sourceId": "g4media",
+      "level": "Romania",
+      "sourceLang": "ro",
+      "feedCategory": "news",
+      "importance": 3,
+      "tags": ["#guvern", "#buget"]
+    }
+  ],
   "meta": {
     "feed": "news",
-    "updatedAt": "2026-05-24T08:12:40.448Z",
-    "reset": true
+    "source": "local-test-seed",
+    "updatedAt": "2026-05-24T12:00:00.000Z"
   }
 }

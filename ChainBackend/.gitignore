@@ -3,5 +3,7 @@ dist/
 .env
 .env.local
 data/
+!validator/data/
+!validator/data/eligible-voters.json
 *.log
 .DS_Store

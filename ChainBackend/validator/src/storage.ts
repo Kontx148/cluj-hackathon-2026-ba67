@@ -16,6 +16,7 @@ class StorageImpl {
   state: ValidatorState = {
     elections: {},
     usedTokensByElection: {},
+    usedDigitalIdHashesByElection: {},
     blocks: [],
   };
 
@@ -27,6 +28,7 @@ class StorageImpl {
         this.state = {
           elections: parsed.elections || {},
           usedTokensByElection: parsed.usedTokensByElection || {},
+          usedDigitalIdHashesByElection: parsed.usedDigitalIdHashesByElection || {},
           blocks: parsed.blocks || [],
         };
         console.log(

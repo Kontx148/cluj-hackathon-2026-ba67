@@ -8,6 +8,11 @@ on:
         description: Branch to deploy
         required: false
         default: main
+      import_n8n_workflows:
+        description: Force re-import n8n workflows from repo JSON (overwrites matching workflow IDs)
+        required: false
+        default: false
+        type: boolean
 
 jobs:
   deploy:
@@ -19,11 +24,12 @@ jobs:
         env:
           GCP_SERVICE_ACCOUNT_JSON: ${{ secrets.GCP_SERVICE_ACCOUNT_JSON }}
           DEPLOY_BRANCH: ${{ github.event.inputs.branch || github.ref_name }}
+          FORCE_IMPORT_WORKFLOWS: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.import_n8n_workflows == true && 'true' || 'false' }}
         with:
           host: ${{ secrets.DO_HOST }}
           username: root
           key: ${{ secrets.DO_SSH_KEY }}
-          envs: GCP_SERVICE_ACCOUNT_JSON,DEPLOY_BRANCH
+          envs: GCP_SERVICE_ACCOUNT_JSON,DEPLOY_BRANCH,FORCE_IMPORT_WORKFLOWS
           script: |
             set -e
 
@@ -36,11 +42,15 @@ jobs:
 
             cd "$REPO_DIR"
 
+            PREV_HEAD=$(git rev-parse HEAD)
+
             git fetch origin "${DEPLOY_BRANCH}"
             git checkout "${DEPLOY_BRANCH}"
             git reset --hard "origin/${DEPLOY_BRANCH}"
 
-            echo "Deployed branch: ${DEPLOY_BRANCH}"
+            NEW_HEAD=$(git rev-parse HEAD)
+
+            echo "Deployed branch: ${DEPLOY_BRANCH} (${PREV_HEAD:0:7} -> ${NEW_HEAD:0:7})"
 
             echo "Deploying ChainBackend..."
 
@@ -157,13 +167,25 @@ jobs:
               fi
             done
 
-            echo "Importing n8n workflows..."
+            echo "Checking n8n workflow import..."
 
-            if [ -d "$REPO_DIR/mobile-app/n8n/workflows" ]; then
-              docker compose -p civicai-n8n exec -T n8n n8n import:workflow --separate --input=/workflows || true
-              docker compose -p civicai-n8n restart n8n
+            SHOULD_IMPORT=false
+            if [ "$FORCE_IMPORT_WORKFLOWS" = "true" ]; then
+              SHOULD_IMPORT=true
+              echo "Force-import enabled (workflow_dispatch)."
+            elif git diff --name-only "$PREV_HEAD" "$NEW_HEAD" -- mobile-app/n8n/workflows/ | grep -q .; then
+              SHOULD_IMPORT=true
+              echo "Workflow JSON changed in this deploy:"
+              git diff --name-only "$PREV_HEAD" "$NEW_HEAD" -- mobile-app/n8n/workflows/
             else
-              echo "No workflows folder found, skipping workflow import."
+              echo "No workflow JSON changes — skipping n8n import (live n8n workflows preserved)."
+            fi
+
+            if [ "$SHOULD_IMPORT" = "true" ] && [ -d "$REPO_DIR/mobile-app/n8n/workflows" ]; then
+              echo "Importing n8n workflows from repo..."
+              docker compose -p civicai-n8n exec -T n8n n8n import:workflow --separate --input=/workflows
+              docker compose -p civicai-n8n restart n8n
+              echo "n8n workflows imported."
             fi
 
             echo "Checking feed-api..."

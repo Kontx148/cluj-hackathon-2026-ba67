@@ -7,6 +7,7 @@ RUN npm install
 
 COPY tsconfig.json ./
 COPY src ./src
+COPY data ./data
 RUN npm run build
 
 # --- Runtime stage ---
@@ -18,6 +19,7 @@ COPY package*.json ./
 RUN npm install --omit=dev && npm cache clean --force
 
 COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/data ./data
 
 # Per-validator chain JSON lives under /data; mount a named volume for it.
 RUN mkdir -p /data

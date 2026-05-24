@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../l10n/locale_scope.dart';
 import '../models/feed_item.dart';
+import '../theme.dart';
 import '../utils/feed_item_localization.dart';
-import '../widgets/importance_indicator.dart';
 
 class LawDetailScreen extends StatelessWidget {
   const LawDetailScreen({super.key, required this.item});
@@ -18,67 +19,120 @@ class LawDetailScreen extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(strings.lawDetailTitle),
       ),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  item.source,
-                  style: theme.textTheme.labelSmall,
-                ),
-              ),
-              ImportanceBadge(level: item.importance),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Text(
-            item.localizedTitle(locale),
-            style: theme.textTheme.headlineSmall,
-          ),
-          if (item.actionPossible) ...[
-            const SizedBox(height: 12),
-            _InfoBanner(
-              icon: Icons.campaign_outlined,
-              text: strings.civicAction,
-              color: const Color(0xFF059669),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surface,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: theme.colorScheme.outline),
             ),
-          ],
-          const SizedBox(height: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        item.source,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                    _ImportanceDots(value: item.importance),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  item.localizedTitle(locale),
+                  style: theme.textTheme.titleLarge?.copyWith(fontSize: 18),
+                ),
+                if (item.actionPossible) ...[
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: CivicPalette.statusEmeraldBg,
+                      borderRadius: BorderRadius.circular(999),
+                      border: Border.all(color: const Color(0xFFA7F3D0)),
+                    ),
+                    child: Text(
+                      strings.civicAction,
+                      style: const TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w800,
+                        color: CivicPalette.statusEmeraldFg,
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
           Text(
             strings.lawSummaryHeading,
-            style: theme.textTheme.titleMedium,
+            style: theme.textTheme.titleLarge?.copyWith(fontSize: 14),
           ),
           const SizedBox(height: 8),
-          Text(
-            item.localizedPlainSummary(locale) ?? strings.lawSummaryPending,
-            style: theme.textTheme.bodyLarge?.copyWith(
-              height: 1.45,
-              fontStyle: item.hasPlainSummary ? null : FontStyle.italic,
-              color: item.hasPlainSummary
-                  ? null
-                  : theme.colorScheme.onSurfaceVariant,
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surface,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: theme.colorScheme.outline),
+            ),
+            child: Text(
+              item.localizedPlainSummary(locale) ?? strings.lawSummaryPending,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                height: 1.5,
+                fontStyle: item.hasPlainSummary ? null : FontStyle.italic,
+                color: item.hasPlainSummary
+                    ? null
+                    : theme.colorScheme.onSurfaceVariant,
+              ),
             ),
           ),
           if (item.tags.isNotEmpty) ...[
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
             Text(
               strings.filterTopics,
-              style: theme.textTheme.titleMedium,
+              style: theme.textTheme.titleLarge?.copyWith(fontSize: 14),
             ),
             const SizedBox(height: 8),
             Wrap(
-              spacing: 8,
-              runSpacing: 8,
+              spacing: 6,
+              runSpacing: 6,
               children: item.tags
                   .map(
-                    (tag) => Chip(
-                      label: Text(
+                    (tag) => Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: CivicPalette.muted,
+                        borderRadius: BorderRadius.circular(999),
+                      ),
+                      child: Text(
                         tag.startsWith('#') ? tag.substring(1) : tag,
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: theme.textTheme.bodyMedium?.color,
+                        ),
                       ),
                     ),
                   )
@@ -86,10 +140,20 @@ class LawDetailScreen extends StatelessWidget {
             ),
           ],
           const SizedBox(height: 24),
-          FilledButton.icon(
-            onPressed: () => launchUrl(Uri.parse(item.link)),
-            icon: const Icon(Icons.open_in_new),
-            label: Text(strings.lawOfficialSource),
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton.icon(
+              onPressed: () => launchUrl(
+                Uri.parse(item.link),
+                mode: LaunchMode.externalApplication,
+              ),
+              icon: const HugeIcon(
+                icon: HugeIcons.strokeRoundedLinkSquare01,
+                color: CivicPalette.onPrimary,
+                size: 16,
+              ),
+              label: Text(strings.lawOfficialSource),
+            ),
           ),
         ],
       ),
@@ -97,42 +161,33 @@ class LawDetailScreen extends StatelessWidget {
   }
 }
 
-class _InfoBanner extends StatelessWidget {
-  const _InfoBanner({
-    required this.icon,
-    required this.text,
-    required this.color,
-  });
+class _ImportanceDots extends StatelessWidget {
+  const _ImportanceDots({required this.value});
 
-  final IconData icon;
-  final String text;
-  final Color color;
+  final int value;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withValues(alpha: 0.35)),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, size: 18, color: color),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              text,
-              style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    color: color,
-                    fontWeight: FontWeight.w600,
-                  ),
+    final theme = Theme.of(context);
+    final clamped = value.clamp(1, 5);
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: List.generate(5, (i) {
+        final filled = i < clamped;
+        return Padding(
+          padding: const EdgeInsets.only(left: 3),
+          child: Container(
+            width: 6,
+            height: 6,
+            decoration: BoxDecoration(
+              color: filled
+                  ? theme.colorScheme.primary
+                  : theme.colorScheme.outline,
+              shape: BoxShape.circle,
             ),
           ),
-        ],
-      ),
+        );
+      }),
     );
   }
 }

@@ -2,6 +2,8 @@ import { Router } from 'express';
 import { authenticate } from '../auth';
 import { readMajority } from '../chain-aggregate';
 import { runConsensus } from '../consensus';
+import { electionKeyService } from '../election-key-service';
+import { redactPrivateElectionKeys } from '../redact';
 import { aggregateTally, requestThresholdDecryption } from '../tally-flow';
 
 const router = Router();
@@ -42,10 +44,8 @@ router.post(
     }
 
     const requiredApprovals = Number(body.requiredApprovals ?? 2);
-    const electionPublicKey =
-      typeof body.electionPublicKey === 'string' && body.electionPublicKey.length > 0
-        ? body.electionPublicKey
-        : `mock-public-key:${body.electionId}`;
+    const { electionPublicKey, electionPrivateKey } =
+      electionKeyService.generateElectionKeyPair();
 
     const consensus = await runConsensus({
       type: 'ELECTION_PROPOSED',
@@ -59,16 +59,20 @@ router.post(
         endsAt: body.endsAt,
         requiredApprovals,
         electionPublicKey,
+        electionPrivateKey,
         proposedBy,
       },
     });
     if (!consensus.ok) {
-      return res.status(502).json({ error: consensus.reason, consensus });
+      return res.status(502).json({
+        error: consensus.reason,
+        consensus: redactPrivateElectionKeys(consensus),
+      });
     }
     res.status(201).json({
       electionId: body.electionId,
       electionPublicKey,
-      consensus,
+      consensus: redactPrivateElectionKeys(consensus),
     });
   },
 );
@@ -78,6 +82,20 @@ router.get('/', async (_req, res) => {
   if (!view.result) return res.status(502).json(view);
   res.json({
     elections: view.result.elections,
+    consistent: view.consistent,
+    warning: view.warning,
+    responsiveValidators: view.responsiveValidators,
+    totalValidators: view.totalValidators,
+  });
+});
+
+router.get('/:id/public-key', async (req, res) => {
+  const view = await readMajority<{ electionId: string; publicKey: string }>(
+    `/elections/${encodeURIComponent(req.params.id)}/public-key`,
+  );
+  if (!view.result) return res.status(404).json(view);
+  res.json({
+    ...view.result,
     consistent: view.consistent,
     warning: view.warning,
     responsiveValidators: view.responsiveValidators,

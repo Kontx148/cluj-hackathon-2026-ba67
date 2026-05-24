@@ -1,5 +1,6 @@
 import { config } from './config';
 import { computeAggregate } from './tally';
+import { validatorVoteVerificationService } from './validator-vote-verification-service';
 import { decodeVote } from './vote-vector';
 import type { ActionPayload, ValidatorState } from './types';
 
@@ -48,6 +49,7 @@ export function validateAction(
         'startsAt',
         'endsAt',
         'electionPublicKey',
+        'electionPrivateKey',
         'proposedBy',
         'requiredApprovals',
       ];
@@ -60,13 +62,26 @@ export function validateAction(
       if (!Array.isArray(data.candidates) || (data.candidates as unknown[]).length === 0) {
         return { ok: false, error: 'data.candidates must be a non-empty array' };
       }
-      const candidates = data.candidates as Array<{ id?: unknown; name?: unknown }>;
+      const candidates = data.candidates as Array<{
+        id?: unknown;
+        name?: unknown;
+        subtext?: unknown;
+        photoUrl?: unknown;
+      }>;
       if (
         !candidates.every(
           (c) => c && typeof c.id === 'string' && typeof c.name === 'string',
         )
       ) {
         return { ok: false, error: 'each candidate must have a string id and name' };
+      }
+      for (const c of candidates) {
+        if (c.subtext != null && typeof c.subtext !== 'string') {
+          return { ok: false, error: 'candidate subtext must be a string when provided' };
+        }
+        if (c.photoUrl != null && typeof c.photoUrl !== 'string') {
+          return { ok: false, error: 'candidate photoUrl must be a string when provided' };
+        }
       }
       if (
         Number.isNaN(Date.parse(String(data.startsAt))) ||
@@ -120,8 +135,11 @@ export function validateAction(
       }
       const districtId = String(data.districtId || '');
       const anonymousTokenHash = String(data.anonymousTokenHash || '');
-      const encryptedVote = data.encryptedVote;
-      const proof = String(data.proof || '');
+      const candidateId = String(data.candidateId || '');
+      const encryptedVote =
+        data.encryptedVote || (candidateId ? `mock-encrypted:${candidateId}` : '');
+      const proof = String(data.proof || data.voterProof || '');
+      const encryptedDigitalId = data.encryptedDigitalId;
       const voteTimestamp = String(data.voteTimestamp || data.timestamp || '');
 
       if (!districtId) return { ok: false, error: 'data.districtId required' };
@@ -130,7 +148,14 @@ export function validateAction(
       }
       if (!anonymousTokenHash) return { ok: false, error: 'data.anonymousTokenHash required' };
       if (!encryptedVote) return { ok: false, error: 'data.encryptedVote required' };
-      if (!proof) return { ok: false, error: 'data.proof required' };
+      if (!proof) return { ok: false, error: 'data.proof (or voterProof) required' };
+      const digitalIdCheck = validatorVoteVerificationService.verifyEncryptedDigitalId(
+        e,
+        encryptedDigitalId,
+      );
+      if (!digitalIdCheck.ok) {
+        return { ok: false, error: digitalIdCheck.error };
+      }
       if (!voteTimestamp) return { ok: false, error: 'data.voteTimestamp (or timestamp) required' };
 
       const ts = Date.parse(voteTimestamp);
@@ -141,8 +166,47 @@ export function validateAction(
       }
 
       const used = state.usedTokensByElection[action.electionId] || [];
-      if (used.includes(anonymousTokenHash)) {
+      const tokenAlreadyUsed = used.includes(anonymousTokenHash);
+      const usedDigitalIds =
+        state.usedDigitalIdHashesByElection[action.electionId] || [];
+      const digitalIdAlreadyUsed = usedDigitalIds.includes(
+        digitalIdCheck.digitalIdHash,
+      );
+      // #region agent log
+      fetch('http://host.docker.internal:7528/ingest/9b39a962-5f44-4917-9c64-0e70bdd0a08a', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Debug-Session-Id': '3c82ea',
+        },
+        body: JSON.stringify({
+          sessionId: '3c82ea',
+          location: 'validate.ts:VOTE_CAST',
+          message: 'duplicate-vote checks',
+          data: {
+            electionId: action.electionId,
+            anonymousTokenHashPrefix: anonymousTokenHash.slice(0, 12),
+            digitalIdHashPrefix: digitalIdCheck.digitalIdHash.slice(0, 12),
+            tokenAlreadyUsed,
+            digitalIdAlreadyUsed,
+            usedTokenCount: used.length,
+            usedDigitalIdCount: usedDigitalIds.length,
+            checksDigitalIdHash: true,
+          },
+          timestamp: Date.now(),
+          hypothesisId: 'A',
+          runId: 'post-fix',
+        }),
+      }).catch(() => {});
+      // #endregion
+      if (tokenAlreadyUsed) {
         return { ok: false, error: 'Token already used. Re-voting is not supported.' };
+      }
+      if (digitalIdAlreadyUsed) {
+        return {
+          ok: false,
+          error: 'Digital ID already voted in this election. Re-voting is not supported.',
+        };
       }
 
       const decoded = decodeVote(encryptedVote, action.electionId, e.candidates);
@@ -158,7 +222,10 @@ export function validateAction(
           data: {
             districtId,
             anonymousTokenHash,
+            candidateId: candidateId || undefined,
             encryptedVote,
+            encryptedDigitalId,
+            digitalIdHash: digitalIdCheck.digitalIdHash,
             proof,
             voteTimestamp,
           },
