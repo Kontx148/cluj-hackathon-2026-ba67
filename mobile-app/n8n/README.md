@@ -83,7 +83,7 @@ Workflow JSON still uses `http://feed-api:3001` between containers — leave tha
 |------|--------|-------|
 | `civicai-senat-romania.json` | [senat.ro/legiproiect](https://www.senat.ro/legiproiect.aspx) | Fetch → **feed-api Gemini simplify** → ingest |
 
-**Senat simplify:** `POST /api/simplify/records` via **Vertex AI** (Gemini on GCP). Fetches **5 bills max** per run (`SENAT_FETCH_LIMIT=5`). Romanian `plain_summary` + English `plain_summary_en`. Verify: `curl http://localhost:3001/api/health/llm`.
+**Senat simplify:** `POST /api/simplify/records` via **Vertex AI** (Gemini on GCP). Fetches **20 bills max** per run (`SENAT_FETCH_LIMIT=20`). Romanian `plain_summary` + English `plain_summary_en`. Verify: `curl http://localhost:3001/api/health/llm`.
 
 | `civicai-cdep-romania.json` | [cdep.ro](https://www.cdep.ro/) | `GET /api/fetch/cdep` (best-effort; may return no records) |
 

@@ -1,24 +1,267 @@
 {
   "items": [
     {
-      "id": "g4media-test-1",
-      "title": "Guvernul anunță măsuri noi pentru transparență bugetară",
-      "title_en": "Government announces new budget transparency measures",
-      "link": "https://www.g4media.ro/example",
-      "description": "Executivul propune publicarea lunară a cheltuielilor ministeriale.",
-      "publishedAt": "2026-05-22T14:00:00Z",
-      "source": "G4Media",
+      "id": "ro-aur-stance-104",
+      "title": "AUR: public position on tax reform",
+      "link": "https://example.ro/parties/aur/fiscal",
+      "description": "Party leader criticizes a planned VAT increase in the HoReCa sector.",
+      "publishedAt": "2026-05-16T16:00:00Z",
+      "source": "G4Media (dummy)",
+      "sourceId": "g4media",
+      "level": "Romania",
+      "sourceLang": "en",
+      "entityType": "politician_stance",
+      "summary": "AUR opposes a planned VAT hike in HoReCa according to the party leader (dummy).",
+      "tags": [
+        "#Romania",
+        "#taxation",
+        "#representative-stance"
+      ],
+      "importance": 3,
+      "actionPossible": true,
+      "feedCategory": "news"
+    },
+    {
+      "id": "ro-aur-stance-104-ro",
+      "title": "AUR: poziție publică privind reforma fiscală",
+      "link": "https://example.ro/parties/aur/fiscal",
+      "description": "Liderul partidului critică o majorare planificată a TVA în sectorul HoReCa.",
+      "publishedAt": "2026-05-16T16:00:00Z",
+      "source": "G4Media (demo)",
       "sourceId": "g4media",
       "level": "Romania",
       "sourceLang": "ro",
-      "feedCategory": "news",
+      "entityType": "politician_stance",
+      "summary": "AUR se opune unei creșteri planificate a TVA în HoReCa, potrivit liderului partidului (demo).",
+      "tags": [
+        "#Romania",
+        "#taxation",
+        "#representative-stance"
+      ],
       "importance": 3,
-      "tags": ["#guvern", "#buget"]
+      "actionPossible": true,
+      "feedCategory": "news"
+    },
+    {
+      "id": "eu-ep-election-003",
+      "title": "MEP voting record: Green Deal industrial plan (dummy aggregate)",
+      "link": "https://example.eu/mep-votes/green-deal",
+      "description": "Aggregated stance of Romanian delegation MEPs on the industrial plan vote.",
+      "publishedAt": "2026-05-15T09:00:00Z",
+      "source": "VoteWatch (dummy)",
+      "sourceId": "votewatch",
+      "level": "EU",
+      "sourceLang": "en",
+      "entityType": "politician_stance",
+      "summary": "A majority of Romanian MEPs voted in favor of the Green Deal industrial package (dummy data).",
+      "tags": [
+        "#EU",
+        "#environment",
+        "#representative-stance"
+      ],
+      "importance": 3,
+      "actionPossible": false,
+      "feedCategory": "news"
+    },
+    {
+      "id": "eu-ep-election-003-ro",
+      "title": "Record de vot al eurodeputaților: planul industrial Green Deal (agregat demo)",
+      "link": "https://example.eu/mep-votes/green-deal",
+      "description": "Poziția agregată a eurodeputaților din delegația română la votul privind planul industrial.",
+      "publishedAt": "2026-05-15T09:00:00Z",
+      "source": "VoteWatch (demo)",
+      "sourceId": "votewatch",
+      "level": "EU",
+      "sourceLang": "ro",
+      "entityType": "politician_stance",
+      "summary": "O majoritate a eurodeputaților români au votat favorabil pachetului industrial Green Deal (date demo).",
+      "tags": [
+        "#EU",
+        "#environment",
+        "#representative-stance"
+      ],
+      "importance": 3,
+      "actionPossible": false,
+      "feedCategory": "news"
+    },
+    {
+      "id": "local-mayor-202",
+      "title": "Mayor Emil Boc: priorities for the 2026–2030 local term",
+      "link": "https://example.ro/cluj/boc-priorities",
+      "description": "Mobility, green spaces, and digital public services in the mayor's plan.",
+      "publishedAt": "2026-05-14T10:00:00Z",
+      "source": "Monitorul de Cluj (dummy)",
+      "sourceId": "monitorul-cluj",
+      "level": "Local",
+      "sourceLang": "en",
+      "entityType": "politician_stance",
+      "summary": "Mayor Emil Boc highlights mobility, parks, and digital city services for the next term.",
+      "tags": [
+        "#Cluj",
+        "#representative-stance",
+        "#digitalization"
+      ],
+      "importance": 3,
+      "actionPossible": false,
+      "feedCategory": "news"
+    },
+    {
+      "id": "local-mayor-202-ro",
+      "title": "Primarul Emil Boc: priorități pentru mandatul local 2026–2030",
+      "link": "https://example.ro/cluj/boc-priorities",
+      "description": "Mobilitate, spații verzi și servicii publice digitale în planul primarului.",
+      "publishedAt": "2026-05-14T10:00:00Z",
+      "source": "Monitorul de Cluj (demo)",
+      "sourceId": "monitorul-cluj",
+      "level": "Local",
+      "sourceLang": "ro",
+      "entityType": "politician_stance",
+      "summary": "Primarul Emil Boc evidențiază mobilitatea, parcurile și serviciile digitale pentru următorul mandat.",
+      "tags": [
+        "#Cluj",
+        "#representative-stance",
+        "#digitalization"
+      ],
+      "importance": 3,
+      "actionPossible": false,
+      "feedCategory": "news"
+    },
+    {
+      "id": "local-council-203",
+      "title": "Council candidate Anna Kovacs — education infrastructure platform",
+      "link": "https://example.ro/cluj/kovacs-anna-education",
+      "description": "Local election candidate promises school refurbishment and bilingual kindergartens.",
+      "publishedAt": "2026-05-12T18:00:00Z",
+      "source": "Maszol (dummy)",
+      "sourceId": "maszol",
+      "level": "Local",
+      "sourceLang": "en",
+      "entityType": "politician_stance",
+      "summary": "Council candidate Anna Kovacs pledges school upgrades and bilingual kindergartens in Cluj.",
+      "tags": [
+        "#Cluj",
+        "#education",
+        "#representative-stance",
+        "#local-decision"
+      ],
+      "importance": 3,
+      "actionPossible": true,
+      "feedCategory": "news"
+    },
+    {
+      "id": "local-council-203-ro",
+      "title": "Candidat consiliu local Anna Kovacs — platformă pentru infrastructura educațională",
+      "link": "https://example.ro/cluj/kovacs-anna-education",
+      "description": "Candidat la alegerile locale promite reabilitarea școlilor și grădinițe bilingve.",
+      "publishedAt": "2026-05-12T18:00:00Z",
+      "source": "Maszol (demo)",
+      "sourceId": "maszol",
+      "level": "Local",
+      "sourceLang": "ro",
+      "entityType": "politician_stance",
+      "summary": "Candidata Anna Kovacs promite modernizarea școlilor și grădinițe bilingve în Cluj.",
+      "tags": [
+        "#Cluj",
+        "#education",
+        "#representative-stance",
+        "#local-decision"
+      ],
+      "importance": 3,
+      "actionPossible": true,
+      "feedCategory": "news"
+    },
+    {
+      "id": "ro-psd-program-103",
+      "title": "PSD governance program — digital and health priorities",
+      "link": "https://example.ro/parties/psd/program-2026",
+      "description": "Excerpt from the governance program: telemedicine and ANAF digitalization.",
+      "publishedAt": "2026-05-10T12:00:00Z",
+      "source": "PSD (dummy)",
+      "sourceId": "partid-psd",
+      "level": "Romania",
+      "sourceLang": "en",
+      "entityType": "party_program",
+      "summary": "The PSD program emphasizes telemedicine and tax authority digitalization (dummy).",
+      "tags": [
+        "#Romania",
+        "#party-program",
+        "#digitalization",
+        "#healthcare"
+      ],
+      "importance": 3,
+      "actionPossible": false,
+      "feedCategory": "news"
+    },
+    {
+      "id": "ro-psd-program-103-ro",
+      "title": "Program de guvernare PSD — priorități digitale și de sănătate",
+      "link": "https://example.ro/parties/psd/program-2026",
+      "description": "Extras din programul de guvernare: telemedicină și digitalizarea ANAF.",
+      "publishedAt": "2026-05-10T12:00:00Z",
+      "source": "PSD (demo)",
+      "sourceId": "partid-psd",
+      "level": "Romania",
+      "sourceLang": "ro",
+      "entityType": "party_program",
+      "summary": "Programul PSD pune accent pe telemedicină și digitalizarea autorității fiscale (demo).",
+      "tags": [
+        "#Romania",
+        "#party-program",
+        "#digitalization",
+        "#healthcare"
+      ],
+      "importance": 3,
+      "actionPossible": false,
+      "feedCategory": "news"
+    },
+    {
+      "id": "local-mayor-debate-204",
+      "title": "Mayoral debate: public safety and public transit",
+      "link": "https://example.ro/cluj/mayoral-debate",
+      "description": "Three candidates debated tram line 14 and night police patrols.",
+      "publishedAt": "2026-05-08T20:00:00Z",
+      "source": "Transtelex (dummy)",
+      "sourceId": "transtelex",
+      "level": "Local",
+      "sourceLang": "en",
+      "entityType": "local_official",
+      "summary": "Three mayoral candidates debated extending tram line 14 and adding night patrols.",
+      "tags": [
+        "#Cluj",
+        "#public-safety",
+        "#infrastructure",
+        "#vote-upcoming"
+      ],
+      "importance": 4,
+      "actionPossible": true,
+      "feedCategory": "news"
+    },
+    {
+      "id": "local-mayor-debate-204-ro",
+      "title": "Dezbatere pentru primărie: siguranță publică și transport public",
+      "link": "https://example.ro/cluj/mayoral-debate",
+      "description": "Trei candidați au dezbătut linia de tramvai 14 și patrulele de poliție nocturnă.",
+      "publishedAt": "2026-05-08T20:00:00Z",
+      "source": "Transtelex (demo)",
+      "sourceId": "transtelex",
+      "level": "Local",
+      "sourceLang": "ro",
+      "entityType": "local_official",
+      "summary": "Trei candidați la primărie au dezbătut extinderea liniei de tramvai 14 și patrule nocturne.",
+      "tags": [
+        "#Cluj",
+        "#public-safety",
+        "#infrastructure",
+        "#vote-upcoming"
+      ],
+      "importance": 4,
+      "actionPossible": true,
+      "feedCategory": "news"
     }
   ],
   "meta": {
     "feed": "news",
-    "source": "local-test-seed",
-    "updatedAt": "2026-05-24T12:00:00.000Z"
+    "source": "cloud-sync",
+    "updatedAt": "2026-05-24T08:41:57.940826Z"
   }
 }

@@ -29,9 +29,9 @@ void main() {
     expect(roBill.localizedSummary(AppLocale.en), contains('Legislative proposal'));
   });
 
-  test('prefers Gemini plain summary for law preview', () {
-    const withPlain = FeedItem(
-      id: '2',
+  test('renders structured TL;DR preview', () {
+    const structured = FeedItem(
+      id: '3',
       title: 'B1',
       link: 'https://example.com',
       description: 'Official text',
@@ -41,16 +41,12 @@ void main() {
       level: FeedLevel.romania,
       sourceLang: 'ro',
       feedCategory: 'law',
-      plainSummary: 'Pe scurt: această lege schimbă regulile fiscale.',
-      plainSummaryEn: 'In short: this bill changes tax rules.',
+      plainSummary:
+          '{"tldr":["Punct unu scurt","Punct doi scurt","Punct trei scurt"],"sections":[{"title":"Ce propune","body":"Detalii."},{"title":"Cine e afectat","body":"Cetatenii."}]}',
     );
-    expect(
-      withPlain.localizedPlainSummary(AppLocale.ro),
-      contains('Pe scurt'),
-    );
-    expect(
-      withPlain.localizedLawPreview(AppLocale.en),
-      contains('In short'),
-    );
+    final parsed = structured.localizedStructuredSummary(AppLocale.ro);
+    expect(parsed?.tldr, hasLength(3));
+    expect(parsed?.sections, hasLength(2));
+    expect(structured.localizedLawPreview(AppLocale.ro), contains('Punct unu'));
   });
 }

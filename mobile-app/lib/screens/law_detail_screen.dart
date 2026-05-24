@@ -6,6 +6,7 @@ import '../l10n/locale_scope.dart';
 import '../models/feed_item.dart';
 import '../theme.dart';
 import '../utils/feed_item_localization.dart';
+import '../widgets/law_summary_body.dart';
 
 class LawDetailScreen extends StatelessWidget {
   const LawDetailScreen({super.key, required this.item});
@@ -81,29 +82,10 @@ class LawDetailScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          Text(
-            strings.lawSummaryHeading,
-            style: theme.textTheme.titleLarge?.copyWith(fontSize: 14),
-          ),
-          const SizedBox(height: 8),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: theme.colorScheme.surface,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: theme.colorScheme.outline),
-            ),
-            child: Text(
-              item.localizedPlainSummary(locale) ?? strings.lawSummaryPending,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                height: 1.5,
-                fontStyle: item.hasPlainSummary ? null : FontStyle.italic,
-                color: item.hasPlainSummary
-                    ? null
-                    : theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
+          LawSummaryBody(
+            summary: item.localizedStructuredSummary(locale),
+            strings: strings,
+            pending: !item.hasPlainSummary,
           ),
           if (item.tags.isNotEmpty) ...[
             const SizedBox(height: 16),

@@ -1,5 +1,6 @@
 import '../l10n/app_locale.dart';
 import '../models/feed_item.dart';
+import '../models/law_plain_summary.dart';
 
 extension FeedItemLocalization on FeedItem {
   String localizedTitle(AppLocale locale) {
@@ -37,13 +38,16 @@ extension FeedItemLocalization on FeedItem {
     return text != null && text.isNotEmpty ? text : null;
   }
 
-  /// Card/detail preview for laws — plain summary only.
+  /// Structured plain summary (JSON) or legacy prose wrapper.
+  LawPlainSummary? localizedStructuredSummary(AppLocale locale) {
+    return LawPlainSummary.parse(localizedPlainSummary(locale));
+  }
+
+  /// Card/detail preview for laws — TL;DR bullets or first section.
   String? localizedLawPreview(AppLocale locale) {
-    final plain = localizedPlainSummary(locale);
-    if (plain == null) return null;
-    final firstParagraph = plain.split('\n').first.trim();
-    return firstParagraph.length > 220
-        ? '${firstParagraph.substring(0, 217)}…'
-        : firstParagraph;
+    final structured = localizedStructuredSummary(locale);
+    if (structured == null) return null;
+    final preview = structured.previewText.trim();
+    return preview.isEmpty ? null : preview;
   }
 }

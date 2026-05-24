@@ -22,9 +22,9 @@ class FeedFilters {
       if (section != null && feedSectionForItem(item) != section) {
         return false;
       }
-      // Upcoming votes are Romanian official sources only — UI language must not hide them.
+      // Laws are always Romanian official sources — never hide by UI language.
       if (language != null &&
-          section != FeedSection.laws &&
+          feedSectionForItem(item) != FeedSection.laws &&
           item.sourceLang != language!.code) {
         return false;
       }

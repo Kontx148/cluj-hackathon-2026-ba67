@@ -33,7 +33,7 @@ async function geminiSimplify(rec) {
 
   const system = [
     'You explain Romanian legislation to everyday citizens.',
-    'Return strict JSON with keys: plain_summary (Romanian, 120-220 words), plain_summary_en (English, 120-220 words).',
+    'Return strict JSON with keys plain_summary and plain_summary_en. Each value is an object: { tldr: [3-5 short bullet strings], sections: [{ title, body }, ...] } (2-4 sections). Romanian plain_summary; English plain_summary_en.',
     'Be neutral and practical. Do not invent dates or outcomes.',
   ].join(' ');
 

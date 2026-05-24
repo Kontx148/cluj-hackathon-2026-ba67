@@ -648,7 +648,128 @@ class _CivicCard extends StatelessWidget {
         ? (item.localizedLawPreview(locale) ?? strings.lawSummaryPending)
         : item.localizedSummary(locale);
 
-    final card = Container(
+    final tagsSection = Wrap(
+      spacing: 6,
+      runSpacing: 6,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: [
+        if (item.actionPossible)
+          Tooltip(
+            message: strings.civicActionHint,
+            child: Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 8,
+                vertical: 3,
+              ),
+              decoration: BoxDecoration(
+                color: CivicPalette.statusEmeraldBg,
+                borderRadius: BorderRadius.circular(999),
+                border: Border.all(
+                  color: const Color(0xFFA7F3D0),
+                ),
+              ),
+              child: Text(
+                strings.civicAction,
+                style: const TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w800,
+                  color: CivicPalette.statusEmeraldFg,
+                ),
+              ),
+            ),
+          ),
+        for (final t in item.tags.take(3))
+          Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 8,
+              vertical: 3,
+            ),
+            decoration: BoxDecoration(
+              color: CivicPalette.muted,
+              borderRadius: BorderRadius.circular(999),
+            ),
+            child: Text(
+              t.startsWith('#') ? t.substring(1) : t,
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w600,
+                color: theme.textTheme.bodyMedium?.color,
+              ),
+            ),
+          ),
+      ],
+    );
+
+    final actionRow = Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        if (isLaw) ...[
+          _CardLinkAction(
+            label: strings.readSummary,
+            icon: HugeIcons.strokeRoundedBookOpen01,
+            onTap: openDetail,
+          ),
+          const SizedBox(width: 12),
+        ],
+        _CardLinkAction(
+          label: strings.open,
+          icon: HugeIcons.strokeRoundedLinkSquare01,
+          onTap: () => launchUrl(
+            Uri.parse(item.link),
+            mode: LaunchMode.externalApplication,
+          ),
+        ),
+      ],
+    );
+
+    final mainBody = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                item.source,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            const SizedBox(width: 8),
+            _LevelGlyph(level: item.level),
+            const SizedBox(width: 8),
+            _ImportanceDots(value: item.importance),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Text(
+          item.localizedTitle(locale),
+          style: theme.textTheme.titleLarge?.copyWith(fontSize: 14),
+          maxLines: 3,
+          overflow: TextOverflow.ellipsis,
+        ),
+        const SizedBox(height: 6),
+        Text(
+          previewText,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            fontStyle: isLaw && !item.hasPlainSummary
+                ? FontStyle.italic
+                : null,
+            color: isLaw && !item.hasPlainSummary
+                ? theme.colorScheme.onSurfaceVariant
+                : null,
+          ),
+          maxLines: 4,
+          overflow: TextOverflow.ellipsis,
+        ),
+        const SizedBox(height: 12),
+        tagsSection,
+      ],
+    );
+
+    return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
@@ -658,129 +779,18 @@ class _CivicCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  item.source,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-              const SizedBox(width: 8),
-              _LevelGlyph(level: item.level),
-              const SizedBox(width: 8),
-              _ImportanceDots(value: item.importance),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            item.localizedTitle(locale),
-            style: theme.textTheme.titleLarge?.copyWith(fontSize: 14),
-            maxLines: 3,
-            overflow: TextOverflow.ellipsis,
-          ),
-          const SizedBox(height: 6),
-          Text(
-            previewText,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              fontStyle: isLaw && !item.hasPlainSummary
-                  ? FontStyle.italic
-                  : null,
-              color: isLaw && !item.hasPlainSummary
-                  ? theme.colorScheme.onSurfaceVariant
-                  : null,
-            ),
-            maxLines: 4,
-            overflow: TextOverflow.ellipsis,
-          ),
-          const SizedBox(height: 12),
-          Wrap(
-            spacing: 6,
-            runSpacing: 6,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: [
-              if (item.actionPossible)
-                Tooltip(
-                  message: strings.civicActionHint,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 3,
-                    ),
-                    decoration: BoxDecoration(
-                      color: CivicPalette.statusEmeraldBg,
-                      borderRadius: BorderRadius.circular(999),
-                      border: Border.all(
-                        color: const Color(0xFFA7F3D0),
-                      ),
-                    ),
-                    child: Text(
-                      strings.civicAction,
-                      style: const TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w800,
-                        color: CivicPalette.statusEmeraldFg,
-                      ),
-                    ),
-                  ),
-                ),
-              for (final t in item.tags.take(3))
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 3,
-                  ),
-                  decoration: BoxDecoration(
-                    color: CivicPalette.muted,
-                    borderRadius: BorderRadius.circular(999),
-                  ),
-                  child: Text(
-                    t.startsWith('#') ? t.substring(1) : t,
-                    style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w600,
-                      color: theme.textTheme.bodyMedium?.color,
-                    ),
-                  ),
-                ),
-            ],
-          ),
+          if (isLaw)
+            GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: openDetail,
+              child: mainBody,
+            )
+          else
+            mainBody,
           const SizedBox(height: 10),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              if (isLaw) ...[
-                _CardLinkAction(
-                  label: strings.readSummary,
-                  icon: HugeIcons.strokeRoundedBookOpen01,
-                  onTap: openDetail,
-                ),
-                const SizedBox(width: 12),
-              ],
-              _CardLinkAction(
-                label: strings.open,
-                icon: HugeIcons.strokeRoundedLinkSquare01,
-                onTap: () => launchUrl(
-                  Uri.parse(item.link),
-                  mode: LaunchMode.externalApplication,
-                ),
-              ),
-            ],
-          ),
+          actionRow,
         ],
       ),
-    );
-
-    if (!isLaw) return card;
-
-    return InkWell(
-      borderRadius: BorderRadius.circular(20),
-      onTap: openDetail,
-      child: card,
     );
   }
 }
@@ -799,29 +809,32 @@ class _CardLinkAction extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return InkWell(
-      borderRadius: BorderRadius.circular(8),
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            HugeIcon(
-              icon: icon,
-              color: theme.colorScheme.primary,
-              size: 11,
+      child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 44, minWidth: 44),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                HugeIcon(
+                  icon: icon,
+                  color: theme.colorScheme.primary,
+                  size: 11,
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: theme.colorScheme.primary,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(width: 4),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w700,
-                color: theme.colorScheme.primary,
-              ),
-            ),
-          ],
         ),
       ),
     );

@@ -18,7 +18,7 @@ services:
       PORT: 3001
       MOBILE_APP_DATA_DIR: /data
       INGEST_API_KEY: ${INGEST_API_KEY:-civicai-dev-key}
-      SENAT_FETCH_LIMIT: ${SENAT_FETCH_LIMIT:-5}
+      SENAT_FETCH_LIMIT: ${SENAT_FETCH_LIMIT:-20}
       # Vertex / LLM secrets come from env_file only (GCP_PROJECT_ID, GOOGLE_APPLICATION_CREDENTIALS, …)
     ports:
       - "3001:3001"

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../config.dart';
 import '../models/feed_item.dart';
@@ -9,18 +10,42 @@ import '../models/feed_item.dart';
 class FeedService {
   static const _newsAssetPath = 'data/news-items.json';
   static const _lawAssetPath = 'data/law-items.json';
+  static const _cacheKey = 'civic_feed_cache_v1';
 
   Future<List<FeedItem>> fetchFeed() async {
-    // The remote feed API is only used when CIVIC_FEED_API_BASE is set at
-    // compile time.  The bundled JSON is the default and always the fallback.
     if (useRemoteFeedApi) {
       try {
-        return await _fetchFromApi();
+        final items = await _fetchFromApi();
+        await _saveCache(items);
+        return items;
       } catch (_) {
-        // Fall through to bundled assets.
+        final cached = await _loadCache();
+        if (cached != null && cached.isNotEmpty) {
+          return cached;
+        }
       }
     }
     return _fetchFromAssets();
+  }
+
+  Future<void> _saveCache(List<FeedItem> items) async {
+    final prefs = await SharedPreferences.getInstance();
+    final payload = items.map(_itemToJson).toList();
+    await prefs.setString(_cacheKey, jsonEncode(payload));
+  }
+
+  Future<List<FeedItem>?> _loadCache() async {
+    final prefs = await SharedPreferences.getInstance();
+    final raw = prefs.getString(_cacheKey);
+    if (raw == null || raw.isEmpty) return null;
+    try {
+      final list = jsonDecode(raw) as List<dynamic>;
+      return list
+          .map((e) => FeedItem.fromJson(e as Map<String, dynamic>))
+          .toList();
+    } catch (_) {
+      return null;
+    }
   }
 
   Future<List<FeedItem>> _fetchFromAssets() async {
@@ -61,5 +86,34 @@ class FeedService {
           .compareTo(DateTime.parse(a.publishedAt)),
     );
     return parsed;
+  }
+
+  Map<String, dynamic> _itemToJson(FeedItem item) {
+    return {
+      'id': item.id,
+      'title': item.title,
+      'link': item.link,
+      'description': item.description,
+      'publishedAt': item.publishedAt,
+      'source': item.source,
+      'sourceId': item.sourceId,
+      'level': switch (item.level) {
+        FeedLevel.eu => 'EU',
+        FeedLevel.romania => 'Romania',
+        FeedLevel.local => 'Local',
+      },
+      'sourceLang': item.sourceLang,
+      if (item.titleEn != null) 'title_en': item.titleEn,
+      if (item.descriptionEn != null) 'description_en': item.descriptionEn,
+      if (item.summary != null) 'summary': item.summary,
+      'tags': item.tags,
+      'importance': item.importance,
+      'actionPossible': item.actionPossible,
+      if (item.entityType != null) 'entityType': item.entityType,
+      if (item.voteDate != null) 'voteDate': item.voteDate,
+      if (item.feedCategory != null) 'feedCategory': item.feedCategory,
+      if (item.plainSummary != null) 'plain_summary': item.plainSummary,
+      if (item.plainSummaryEn != null) 'plain_summary_en': item.plainSummaryEn,
+    };
   }
 }

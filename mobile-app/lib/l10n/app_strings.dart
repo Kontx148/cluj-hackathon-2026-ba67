@@ -231,6 +231,8 @@ class AppStrings {
       ? 'Ce înseamnă, pe înțelesul tuturor'
       : 'What it means in plain language';
 
+  String get lawTldrHeading => _ro ? 'Pe scurt' : 'TL;DR';
+
   String get lawSummaryPending => _ro
       ? 'Rezumatul simplificat nu este disponibil. Rulează workflow-ul Senat (Vertex AI).'
       : 'Plain-language summary not available. Run the Senat workflow (Vertex AI).';

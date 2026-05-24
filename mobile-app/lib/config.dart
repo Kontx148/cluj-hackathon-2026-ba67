@@ -18,15 +18,23 @@ final String gatewayBase = _resolveGatewayBase();
 /// Kept for backwards compat — same as [gatewayBase].
 final String apiBase = gatewayBase;
 
-/// The civic feed **always** uses bundled assets in this build.
-/// No remote feed API is wired up; set this only if you add a live feed
-/// backend and want to override the bundled JSON.
-const String civicFeedApiBase = String.fromEnvironment(
-  'CIVIC_FEED_API_BASE',
-  defaultValue: '',
-);
+/// Civic feed API (n8n / feed-api on :3001).
+///
+/// Defaults to the hosted feed-api at `165.232.67.137:3001` so release builds
+/// on a phone (no Mac attached) still load live data over Wi‑Fi/cellular.
+/// Override for local Docker:
+///   `flutter run --dart-define=CIVIC_FEED_API_BASE=http://10.0.2.2:3001`
+/// Bundled JSON only (no network):
+///   `flutter run --dart-define=CIVIC_FEED_API_BASE=bundled`
+const String _feedFromEnv = String.fromEnvironment('CIVIC_FEED_API_BASE');
 
-/// Whether to fetch the civic feed from a remote API instead of bundled assets.
-/// This is `false` by default — the bundled JSON is always used unless you
-/// explicitly provide a CIVIC_FEED_API_BASE at compile time.
+String _resolveFeedApiBase() {
+  if (_feedFromEnv == 'bundled') return '';
+  if (_feedFromEnv.isNotEmpty) return _feedFromEnv;
+  return 'http://165.232.67.137:3001';
+}
+
+final String civicFeedApiBase = _resolveFeedApiBase();
+
+/// Fetch from feed-api when a base URL is configured (default: production VPS).
 bool get useRemoteFeedApi => civicFeedApiBase.isNotEmpty;
