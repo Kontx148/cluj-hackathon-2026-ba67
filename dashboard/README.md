@@ -59,19 +59,16 @@ closes and are never written to disk.
 
 ## Production (DigitalOcean)
 
-Deployed automatically by `.github/workflows/deploy-chain-backend.yml` on push to
-`main`, after ChainBackend is healthy.
+Deployed with **ChainBackend** in one step (`docker compose -p chainbackend up`
+from `.github/workflows/deploy-chain-backend.yml`). The `dashboard` service is
+defined in `ChainBackend/docker-compose.yml` (build context `../dashboard`).
 
-- **URL:** `http://<DO_HOST>:5173/` (same host as the gateways; port **5173**)
-- The container nginx proxies `/gw/*` → `gateway-1:4001` on the Docker network
-  so the browser never needs CORS.
-- Build-time env is written on the server from `DO_HOST` — no extra GitHub
-  secrets beyond the existing deploy set.
+- **URL:** `http://<DO_HOST>:5173/`
+- nginx proxies `/gw/*` → `gateway-1:4001` on `chain-net`
+- Build args come from `DASHBOARD_PUBLIC_HOST` in ChainBackend `.env` (set from
+  the `DO_HOST` GitHub secret)
 
 Open **port 5173** on the droplet firewall if the UI is unreachable.
-
-Operator API keys in the credential bar must match the keys configured on the
-gateways (`CHAIN_*_API_KEY` GitHub secrets → ChainBackend `.env`).
 
 ## Upgrade seams
 

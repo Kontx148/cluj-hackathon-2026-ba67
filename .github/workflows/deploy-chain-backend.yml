@@ -41,7 +41,14 @@ jobs:
             BEC_API_KEY=${{ secrets.CHAIN_BEC_API_KEY }}
             COURT_API_KEY=${{ secrets.CHAIN_COURT_API_KEY }}
             CONSENSUS_THRESHOLD=2
+            DASHBOARD_PUBLIC_HOST=${{ secrets.DO_HOST }}
             EOF
+
+            if [ ! -f "$REPO_DIR/dashboard/package.json" ]; then
+              echo "ERROR: dashboard/ is missing from the repo checkout."
+              ls -la "$REPO_DIR"
+              exit 1
+            fi
 
             docker compose -p chainbackend down
             docker compose -p chainbackend up --build -d
@@ -98,6 +105,24 @@ jobs:
               fi
             done
 
+            echo "Waiting for operations dashboard..."
+
+            for i in {1..60}; do
+              if curl -fsS http://localhost:5173/ >/dev/null; then
+                echo "dashboard healthy"
+                break
+              fi
+
+              echo "dashboard not ready yet... retry $i/60"
+              sleep 3
+
+              if [ "$i" -eq 60 ]; then
+                echo "dashboard failed"
+                docker compose -p chainbackend logs dashboard --tail=100
+                exit 1
+              fi
+            done
+
             echo "Deploying CivicAI n8n..."
 
             cd "$REPO_DIR/mobile-app/n8n"
@@ -121,16 +146,17 @@ jobs:
 
             echo "Waiting for CivicAI n8n services..."
 
-            for i in {1..30}; do
-              if curl -fsS http://localhost:5678; then
-                echo "n8n healthy"
+            for i in {1..45}; do
+              code=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:5678/ || true)
+              if [ "$code" = "200" ] || [ "$code" = "401" ] || [ "$code" = "302" ]; then
+                echo "n8n healthy (HTTP $code)"
                 break
               fi
 
-              echo "n8n not ready yet... retry $i/30"
-              sleep 2
+              echo "n8n not ready yet... retry $i/45 (HTTP $code)"
+              sleep 3
 
-              if [ "$i" -eq 30 ]; then
+              if [ "$i" -eq 45 ]; then
                 echo "n8n failed"
                 docker compose -p civicai-n8n logs --tail=150
                 exit 1
@@ -148,49 +174,17 @@ jobs:
 
             echo "Checking feed-api..."
 
-            if curl -fsS http://localhost:3001/health; then
+            if curl -fsS http://localhost:3001/api/health; then
               echo "feed-api healthy"
             else
               echo "feed-api health check failed or not exposed, continuing..."
             fi
 
-            echo "Deploying operations dashboard..."
-
-            cd "$REPO_DIR/dashboard"
-
             DO_PUBLIC_HOST="${{ secrets.DO_HOST }}"
-
-            cat > .env << EOF
-            VITE_GATEWAY_URL=/gw
-            VITE_GATEWAY_PUBLIC_URL=http://${DO_PUBLIC_HOST}:4001
-            VITE_GATEWAY_2_URL=http://${DO_PUBLIC_HOST}:4002
-            VITE_VALIDATOR_PUBLIC_HOST=${DO_PUBLIC_HOST}
-            EOF
-
-            docker compose -p dashboard down || true
-            docker compose -p dashboard up --build -d
-
-            docker compose -p dashboard ps
-
-            for i in {1..30}; do
-              if curl -fsS http://localhost:5173/ >/dev/null; then
-                echo "dashboard healthy"
-                break
-              fi
-
-              echo "dashboard not ready yet... retry $i/30"
-              sleep 2
-
-              if [ "$i" -eq 30 ]; then
-                echo "dashboard failed"
-                docker compose -p dashboard logs --tail=100
-                exit 1
-              fi
-            done
 
             echo "Deployment finished."
             echo "Dashboard: http://${DO_PUBLIC_HOST}:5173/"
             echo "Gateway 1: http://${DO_PUBLIC_HOST}:4001/health"
             echo "Gateway 2: http://${DO_PUBLIC_HOST}:4002/health"
             echo "n8n:       http://${DO_PUBLIC_HOST}:5678/"
-            echo "Feed API:  http://${DO_PUBLIC_HOST}:3001/health"
+            echo "Feed API:  http://${DO_PUBLIC_HOST}:3001/api/health"

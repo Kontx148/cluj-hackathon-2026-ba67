@@ -1,4 +1,4 @@
-# 2 gateways + 3 validators
+# 2 gateways + 3 validators + operations dashboard (../dashboard)
 #
 # - gateways are stateless replaceable entry points (front-end can use either)
 # - validators each persist their own copy of the chain JSON
@@ -115,6 +115,24 @@ services:
       COURT_API_KEY: dev-court-key
     ports:
       - "4002:4002"
+    networks:
+      - chain-net
+
+  dashboard:
+    build:
+      context: ../dashboard
+      dockerfile: Dockerfile
+      args:
+        VITE_GATEWAY_URL: /gw
+        VITE_GATEWAY_PUBLIC_URL: http://${DASHBOARD_PUBLIC_HOST:-localhost}:4001
+        VITE_GATEWAY_2_URL: http://${DASHBOARD_PUBLIC_HOST:-localhost}:4002
+        VITE_VALIDATOR_PUBLIC_HOST: ${DASHBOARD_PUBLIC_HOST:-localhost}
+    container_name: election-dashboard
+    restart: unless-stopped
+    depends_on:
+      - gateway-1
+    ports:
+      - "5173:80"
     networks:
       - chain-net
 
