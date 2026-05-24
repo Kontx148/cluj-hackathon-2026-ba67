@@ -1,0 +1,78 @@
+{
+  "name": "CivicAI — EP Think Tank (paused — out of RO/local focus)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [{ "field": "hours", "hoursInterval": 6 }]
+        }
+      },
+      "id": "f1a10001-0001-4000-8000-000000000001",
+      "name": "Every 6 hours",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "url": "https://epthinktank.eu/feed/"
+      },
+      "id": "f1a10001-0001-4000-8000-000000000002",
+      "name": "RSS EP Think Tank",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.1,
+      "position": [220, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "const records = $input.all().map(({ json: item }) => ({\n  sourceId: 'ep-thinktank',\n  sourceName: 'EP Think Tank',\n  level: 'EU',\n  sourceLang: 'en',\n  entityType: 'bill',\n  externalId: item.link || item.guid,\n  title: item.title,\n  detailUrl: item.link,\n  description: String(item.contentSnippet || item.content || item.title || '')\n    .replace(/<[^>]+>/g, ' ')\n    .replace(/\\s+/g, ' ')\n    .trim()\n    .slice(0, 500),\n  publishedAt: item.isoDate || item.pubDate || new Date().toISOString(),\n  fetchedAt: new Date().toISOString(),\n}));\n\nreturn [{ json: { records } }];"
+      },
+      "id": "f1a10001-0001-4000-8000-000000000003",
+      "name": "To raw records",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [440, 0]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://feed-api:3001/api/ingest/raw",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Ingest-Key",
+              "value": "civicai-dev-key"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ records: $json.records, category: 'news', meta: { workflow: 'ep-thinktank' } }) }}"
+      },
+      "id": "f1a10001-0001-4000-8000-000000000004",
+      "name": "Ingest merge",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [660, 0]
+    }
+  ],
+  "connections": {
+    "Every 6 hours": {
+      "main": [[{ "node": "RSS EP Think Tank", "type": "main", "index": 0 }]]
+    },
+    "RSS EP Think Tank": {
+      "main": [[{ "node": "To raw records", "type": "main", "index": 0 }]]
+    },
+    "To raw records": {
+      "main": [[{ "node": "Ingest merge", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" },
+  "meta": { "templateCredsSetupCompleted": true }
+}

@@ -1,0 +1,10 @@
+[
+  {
+    "digitalId": "RO123456789",
+    "name": "Test User 1"
+  },
+  {
+    "digitalId": "RO987654321",
+    "name": "Test User 2"
+  }
+]

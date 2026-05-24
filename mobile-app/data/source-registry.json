@@ -1,0 +1,84 @@
+{
+  "version": 1,
+  "description": "Active n8n workflows by pillar. All ingest into the same JSON files; dedupe by item id.",
+  "workflowCounts": {
+    "law": 2,
+    "news": 3,
+    "paused": 1
+  },
+  "pillars": {
+    "upcomingVotes": {
+      "label": "Upcoming Romanian votes",
+      "feedCategory": "law",
+      "targetFile": "law-items.json",
+      "defaultLevel": "Romania",
+      "sources": [
+        {
+          "id": "senat-plx",
+          "name": "Senat — public consultation",
+          "url": "https://www.senat.ro/legiproiect.aspx",
+          "access": "feed-api GET /api/fetch/senat",
+          "workflow": "civicai-senat-romania.json",
+          "status": "active"
+        },
+        {
+          "id": "cdep-plx",
+          "name": "Camera Deputaților — bill listing",
+          "url": "https://www.cdep.ro/",
+          "access": "feed-api GET /api/fetch/cdep",
+          "workflow": "civicai-cdep-romania.json",
+          "status": "active"
+        }
+      ]
+    },
+    "romaniaCivicNews": {
+      "label": "Romanian civic news",
+      "feedCategory": "news",
+      "targetFile": "news-items.json",
+      "defaultLevel": "Romania",
+      "keywordSet": "romaniaNational",
+      "sources": [
+        {
+          "id": "g4media",
+          "name": "G4Media",
+          "rss": "https://www.g4media.ro/feed",
+          "workflow": "civicai-g4media-ro-civic.json",
+          "status": "active"
+        },
+        {
+          "id": "digi24",
+          "name": "Digi24",
+          "rss": "https://www.digi24.ro/rss",
+          "workflow": "civicai-digi24-ro-civic.json",
+          "status": "active"
+        }
+      ]
+    },
+    "localCivicNews": {
+      "label": "Local civic news (Cluj area)",
+      "feedCategory": "news",
+      "targetFile": "news-items.json",
+      "defaultLevel": "Local",
+      "keywordSet": "localCluj",
+      "sources": [
+        {
+          "id": "maszol",
+          "name": "Maszol",
+          "rss": "https://maszol.ro/rss",
+          "workflow": "civicai-maszol-local-civic.json",
+          "status": "active"
+        }
+      ]
+    }
+  },
+  "paused": [
+    {
+      "id": "ep-thinktank",
+      "name": "EP Think Tank",
+      "workflow": "civicai-ep-thinktank.json",
+      "feedCategory": "news",
+      "status": "paused",
+      "note": "EU — out of current RO/local focus"
+    }
+  ]
+}

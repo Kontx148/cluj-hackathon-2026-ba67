@@ -1,4 +1,13 @@
-version: "3.9"
+# 2 gateways + 3 validators
+#
+# - gateways are stateless replaceable entry points (front-end can use either)
+# - validators each persist their own copy of the chain JSON
+# - 2-of-3 consensus is enforced by both phases (prepare + commit)
+#
+# Validators are exposed to localhost in this prototype for debugging /
+# direct API exploration. In production they would be internal-only and
+# only the gateways would face the internet (typically behind APIM /
+# Front Door / a load balancer).
 
 services:
   validator-1:
@@ -10,8 +19,14 @@ services:
       PORT: 4101
       VALIDATOR_ID: validator-1
       VALIDATOR_PRIVATE_KEY: mock-validator-1-key
+      CHAIN_STORAGE_PATH: /data/validator-1-chain.json
+      ELIGIBILITY_LIST_PATH: /app/data/eligible-voters.json
+      CONSENSUS_THRESHOLD: 2
+      VALIDATOR_URLS: http://validator-1:4101,http://validator-2:4102,http://validator-3:4103
     ports:
       - "4101:4101"
+    volumes:
+      - validator-1-data:/data
     networks:
       - chain-net
 
@@ -24,35 +39,82 @@ services:
       PORT: 4102
       VALIDATOR_ID: validator-2
       VALIDATOR_PRIVATE_KEY: mock-validator-2-key
+      CHAIN_STORAGE_PATH: /data/validator-2-chain.json
+      ELIGIBILITY_LIST_PATH: /app/data/eligible-voters.json
+      CONSENSUS_THRESHOLD: 2
+      VALIDATOR_URLS: http://validator-1:4101,http://validator-2:4102,http://validator-3:4103
     ports:
       - "4102:4102"
+    volumes:
+      - validator-2-data:/data
     networks:
       - chain-net
 
-  chain-backend:
+  validator-3:
     build:
-      context: ./chain-backend
-    container_name: chain-backend
+      context: ./validator
+    container_name: validator-3
+    restart: unless-stopped
+    environment:
+      PORT: 4103
+      VALIDATOR_ID: validator-3
+      VALIDATOR_PRIVATE_KEY: mock-validator-3-key
+      CHAIN_STORAGE_PATH: /data/validator-3-chain.json
+      ELIGIBILITY_LIST_PATH: /app/data/eligible-voters.json
+      CONSENSUS_THRESHOLD: 2
+      VALIDATOR_URLS: http://validator-1:4101,http://validator-2:4102,http://validator-3:4103
+    ports:
+      - "4103:4103"
+    volumes:
+      - validator-3-data:/data
+    networks:
+      - chain-net
+
+  gateway-1:
+    build:
+      context: ./gateway
+    container_name: gateway-1
     restart: unless-stopped
     depends_on:
       - validator-1
       - validator-2
+      - validator-3
     environment:
-      PORT: 4000
+      PORT: 4001
       NODE_ENV: development
-      VALIDATOR_1_URL: http://validator-1:4101
-      VALIDATOR_2_URL: http://validator-2:4102
+      GATEWAY_ID: gateway-1
+      VALIDATOR_URLS: http://validator-1:4101,http://validator-2:4102,http://validator-3:4103
       CONSENSUS_THRESHOLD: 2
-      CHAIN_STORAGE_MODE: file
-      CHAIN_STORAGE_PATH: /data/chain.json
       ADMIN_API_KEY: dev-admin-key
       AEP_API_KEY: dev-aep-key
       BEC_API_KEY: dev-bec-key
       COURT_API_KEY: dev-court-key
     ports:
-      - "4000:4000"
-    volumes:
-      - chain-data:/data
+      - "4001:4001"
+    networks:
+      - chain-net
+
+  gateway-2:
+    build:
+      context: ./gateway
+    container_name: gateway-2
+    restart: unless-stopped
+    depends_on:
+      - validator-1
+      - validator-2
+      - validator-3
+    environment:
+      PORT: 4002
+      NODE_ENV: development
+      GATEWAY_ID: gateway-2
+      VALIDATOR_URLS: http://validator-1:4101,http://validator-2:4102,http://validator-3:4103
+      CONSENSUS_THRESHOLD: 2
+      ADMIN_API_KEY: dev-admin-key
+      AEP_API_KEY: dev-aep-key
+      BEC_API_KEY: dev-bec-key
+      COURT_API_KEY: dev-court-key
+    ports:
+      - "4002:4002"
     networks:
       - chain-net
 
@@ -61,4 +123,6 @@ networks:
     driver: bridge
 
 volumes:
-  chain-data:
+  validator-1-data:
+  validator-2-data:
+  validator-3-data:

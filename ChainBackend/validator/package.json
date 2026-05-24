@@ -1,8 +1,8 @@
 {
   "name": "validator",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
-  "description": "Mock independent validator node for the election chain prototype",
+  "description": "Independent validator node: stores its own chain copy and participates in 2-of-3 consensus",
   "main": "dist/index.js",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",

@@ -1,0 +1,72 @@
+{
+  "name": "CivicAI — G4Media RO civic news",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [{ "field": "hours", "hoursInterval": 4 }]
+        }
+      },
+      "id": "f1a30001-0001-4000-8000-000000000001",
+      "name": "Every 4 hours",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "url": "https://www.g4media.ro/feed"
+      },
+      "id": "f1a30001-0001-4000-8000-000000000002",
+      "name": "RSS G4Media",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.1,
+      "position": [220, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "const keywords = /salari|pensii|pensie|tax|tva|impozit|sanat|spital|medic|invatam|scoal|universit|locuin|chiri|energie|electric|gaze|pret|inflat|protest|guvern|parlament|cetat|consum|drepturi|munc[aă]|somaj|reform|buget|subvent|acciz|copii|familie|infrastruct|drum|autostr|corupt|justit|democrat|aleger|vot|lege|ordonan|proiect|senat|deputat|minister|PNL|PSD|AUR|USR/i;\n\nconst records = $input.all()\n  .map(({ json: item }) => item)\n  .filter((item) => keywords.test(`${item.title} ${item.contentSnippet || ''}`))\n  .slice(0, 20)\n  .map((item) => ({\n    sourceId: 'g4media',\n    sourceName: 'G4Media',\n    level: 'Romania',\n    sourceLang: 'ro',\n    entityType: 'news',\n    feedCategory: 'news',\n    externalId: item.link,\n    title: item.title,\n    detailUrl: item.link,\n    description: String(item.contentSnippet || item.title || '')\n      .replace(/<[^>]+>/g, ' ')\n      .trim()\n      .slice(0, 500),\n    publishedAt: item.isoDate || item.pubDate || new Date().toISOString(),\n    fetchedAt: new Date().toISOString(),\n  }));\n\nreturn [{ json: { records } }];"
+      },
+      "id": "f1a30001-0001-4000-8000-000000000003",
+      "name": "Filter civic impact",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [440, 0]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://feed-api:3001/api/ingest/raw",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "X-Ingest-Key", "value": "civicai-dev-key" },
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ records: $json.records, category: 'news', meta: { workflow: 'g4media-ro-civic' } }) }}"
+      },
+      "id": "f1a30001-0001-4000-8000-000000000004",
+      "name": "Ingest merge",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [660, 0]
+    }
+  ],
+  "connections": {
+    "Every 4 hours": {
+      "main": [[{ "node": "RSS G4Media", "type": "main", "index": 0 }]]
+    },
+    "RSS G4Media": {
+      "main": [[{ "node": "Filter civic impact", "type": "main", "index": 0 }]]
+    },
+    "Filter civic impact": {
+      "main": [[{ "node": "Ingest merge", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" },
+  "meta": { "templateCredsSetupCompleted": true }
+}

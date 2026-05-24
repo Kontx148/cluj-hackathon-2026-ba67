@@ -1,56 +1,30 @@
-# CivicAI — Cluj Hackathon 2026
+# cluj-hackathon-2026-ba67
 
-Decentralized civic engagement platform (vision): digital-ID-based anonymous voting, law explainability, and AI-assisted political news — starting with an English MVP **feed** (EU / Romania / Local).
+Built for Cluj Hackathon 2026.
 
-## Repo layout
+## Election Chain Backend
 
-| Path | Description |
-|------|-------------|
-| `mobile-app/` | Flutter app, [`data/`](mobile-app/data/) (feed JSON), [`design/`](mobile-app/design/) specs |
-| `mobile-app.zip` | Original design bundle archive (optional) |
+The permissioned, blockchain-style election chain backend lives in
+[`ChainBackend/`](./ChainBackend/). It is a self-contained Docker Compose
+project with **5 services**: 2 stateless gateways and 3 validators that
+each persist their own copy of the chain. Writes go through a 2-of-3
+consensus. Election proposals generate an RSA election key pair; mobile
+clients fetch the public key and submit only encrypted digital IDs.
 
-The mobile app is self-contained (no separate `services/` folder).
-
-## Prerequisites
-
-- [Flutter SDK](https://docs.flutter.dev/get-started/install)
-- **iOS:** Mac with Xcode, Apple ID for signing
-- **Android:** Android Studio or SDK + USB debugging on the device
-
-One-time in the app folder:
+To run it:
 
 ```bash
-cd mobile-app
-flutter create . --project-name civicai --org com.clujhackathon.civicai
-flutter pub get
+cd ChainBackend
+docker compose up --build
 ```
 
-## Run on iOS (iPhone, works after unplugging)
+* `gateway-1`   → http://localhost:4001
+* `gateway-2`   → http://localhost:4002
+* `validator-1` → http://localhost:4101
+* `validator-2` → http://localhost:4102
+* `validator-3` → http://localhost:4103
 
-Use a **release** build (not debug). Full steps: [mobile-app/README.md — Run on iOS](mobile-app/README.md#run-on-ios-physical-iphone-works-unplugged)
-
-```bash
-cd mobile-app
-flutter devices                                    # copy your iPhone id
-flutter build ios --release
-flutter install --release -d <your-iphone-id>      # omit -d if only one device
-```
-
-Unplug and open **CivicAI** from the home screen. Set signing in `ios/Runner.xcworkspace` if the build fails.
-
-## Run on Android (phone or emulator)
-
-Full steps: [mobile-app/README.md — Run on Android](mobile-app/README.md#run-on-android-physical-phone-or-emulator)
-
-```bash
-cd mobile-app
-flutter devices
-flutter build apk --release
-flutter install --release -d <android-device-id>
-```
-
-Unplug (physical phone) and open the app from the launcher.
-
-## Design reference
-
-Inside `mobile-app/design/`: `DESIGN.md`, `FLUTTER_SPEC.md`
+See [`ChainBackend/README.md`](./ChainBackend/README.md) for the full API
+reference, environment variables, and an end-to-end test flow with `curl`
+(propose → approve → open → vote → freeze → tally → threshold-decrypt →
+finish → verify).
