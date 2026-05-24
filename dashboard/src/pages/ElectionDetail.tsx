@@ -236,8 +236,23 @@ export function ElectionDetailPage() {
         ) : (
           <ul className="candidate-summary">
             {candidates.map((c) => (
-              <li key={c.id}>
-                <code>{c.id}</code> — <span>{c.name}</span>
+              <li key={c.id} className="candidate-summary__item">
+                {c.photoUrl ? (
+                  <img
+                    src={c.photoUrl}
+                    alt=""
+                    className="candidate-summary__photo"
+                  />
+                ) : (
+                  <div className="candidate-summary__photo candidate-summary__photo--empty" />
+                )}
+                <div>
+                  <strong>{c.name}</strong>
+                  <div className="muted small">
+                    <code>{c.id}</code>
+                    {c.subtext ? ` · ${c.subtext}` : ''}
+                  </div>
+                </div>
               </li>
             ))}
           </ul>

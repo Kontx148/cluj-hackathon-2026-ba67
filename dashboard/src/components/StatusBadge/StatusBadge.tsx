@@ -1,13 +1,13 @@
 import type { ElectionStatus } from '../../constants';
 
 const STATUS_CLASS: Record<ElectionStatus, string> = {
-  PROPOSED: 'badge badge--blue',
-  APPROVED: 'badge badge--blue',
-  OPEN: 'badge badge--green',
+  PROPOSED: 'badge badge--amber',
+  APPROVED: 'badge badge--green',
+  OPEN: 'badge badge--primary',
   FROZEN: 'badge badge--grey',
   TALLYING: 'badge badge--amber',
-  DECRYPTED: 'badge badge--amber',
-  FINISHED: 'badge badge--teal',
+  DECRYPTED: 'badge badge--green',
+  FINISHED: 'badge badge--grey',
 };
 
 export function StatusBadge({ status }: { status: ElectionStatus | string }) {

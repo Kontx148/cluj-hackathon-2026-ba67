@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { CREDENTIAL_STORAGE_KEYS, GATEWAY_URLS } from '../../api/client';
+import { CREDENTIAL_STORAGE_KEYS } from '../../api/client';
 import {
   DEMO_API_KEYS,
   INSTITUTIONS,
@@ -82,8 +82,8 @@ export function CredentialBar() {
           ◆
         </span>
         <div>
-          <div className="credential-bar__title">Election Chain</div>
-          <div className="credential-bar__subtitle">Operations console</div>
+          <div className="credential-bar__title">Votera</div>
+          <div className="credential-bar__subtitle">Operations</div>
         </div>
       </div>
 
@@ -135,22 +135,6 @@ export function CredentialBar() {
           )}
         </div>
       </form>
-
-      <div className="credential-bar__meta">
-        <div>
-          <span className="credential-bar__label">Gateway A</span>
-          <code>{GATEWAY_URLS.primary || '—'}</code>
-        </div>
-        <div>
-          <span className="credential-bar__label">Gateway B</span>
-          <code>{GATEWAY_URLS.secondary || '—'}</code>
-        </div>
-        <div className="credential-bar__hint">
-          Demo keys: <code>dev-admin-key</code>, <code>dev-aep-key</code>,{' '}
-          <code>dev-bec-key</code>, <code>dev-court-key</code>. Stored in
-          sessionStorage only.
-        </div>
-      </div>
     </header>
   );
 }

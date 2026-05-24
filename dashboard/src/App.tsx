@@ -1,4 +1,5 @@
 import { Route, Routes, useLocation } from 'react-router-dom';
+import { AppFooter } from './components/AppFooter/AppFooter';
 import { CredentialBar } from './components/CredentialBar/CredentialBar';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { ToastViewport } from './components/Toast/ToastViewport';
@@ -41,6 +42,7 @@ export function App() {
       <main className="app__content">
         <RoutedContent />
       </main>
+      <AppFooter />
       <ToastViewport />
     </div>
   );

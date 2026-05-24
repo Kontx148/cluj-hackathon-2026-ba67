@@ -1,6 +1,7 @@
 import { Fragment, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import type { ChainBlock, ChainTransaction } from '../../api/types';
+import type { ChainBlock } from '../../api/types';
+import { TransactionDetail } from '../TransactionDetail/TransactionDetail';
 
 const PAGE_SIZE_OPTIONS = [5, 10] as const;
 type PageSize = (typeof PAGE_SIZE_OPTIONS)[number];
@@ -27,10 +28,6 @@ function formatTimestamp(iso: string | undefined): string {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return iso;
   return d.toLocaleString();
-}
-
-function txElectionId(tx: ChainTransaction): string | undefined {
-  return typeof tx.electionId === 'string' ? tx.electionId : undefined;
 }
 
 /**
@@ -77,37 +74,6 @@ function ChainArrow() {
         />
       </svg>
     </div>
-  );
-}
-
-function TransactionRow({
-  tx,
-  highlighted,
-}: {
-  tx: ChainTransaction;
-  highlighted: boolean;
-}) {
-  const eid = txElectionId(tx);
-  return (
-    <li
-      className={`block-card__tx ${
-        highlighted ? 'block-card__tx--highlight' : ''
-      }`}
-    >
-      <span className="block-card__tx-type">{tx.type}</span>
-      {eid && (
-        <Link
-          to={`/elections/${encodeURIComponent(eid)}`}
-          className="block-card__tx-election"
-          title={`Open election ${eid}`}
-        >
-          {eid}
-        </Link>
-      )}
-      <code className="block-card__tx-hash hash">
-        {truncateHash(tx.transactionHash, 8, 6)}
-      </code>
-    </li>
   );
 }
 
@@ -200,19 +166,22 @@ function BlockCard({
             Genesis / empty block
           </div>
         ) : (
-          <ul className="block-card__tx-list">
+          <div className="block-card__tx-list">
             {txs.map((tx, i) => (
-              <TransactionRow
+              <div
                 key={tx.transactionHash ?? `${block.blockNumber}-${i}`}
-                tx={tx}
-                highlighted={
-                  !!highlightTxHashes &&
-                  !!tx.transactionHash &&
+                className={
+                  highlightTxHashes &&
+                  tx.transactionHash &&
                   highlightTxHashes.has(tx.transactionHash)
+                    ? 'block-card__tx-wrap block-card__tx-wrap--highlight'
+                    : 'block-card__tx-wrap'
                 }
-              />
+              >
+                <TransactionDetail tx={tx} />
+              </div>
             ))}
-          </ul>
+          </div>
         )}
       </div>
     </article>

@@ -103,21 +103,47 @@ export function ProposeElectionPage() {
     setCandidates((cs) => cs.filter((_, i) => i !== index));
   }
 
-  function updateCandidate(index: number, field: keyof Candidate, value: string) {
+  function updateCandidate(
+    index: number,
+    field: keyof Candidate,
+    value: string,
+  ) {
     setCandidates((cs) =>
-      cs.map((c, i) => (i === index ? { ...c, [field]: value } : c)),
+      cs.map((c, i) => {
+        if (i !== index) return c;
+        const next = { ...c, [field]: value };
+        if (field === 'subtext' || field === 'photoUrl') {
+          const trimmed = value.trim();
+          if (!trimmed) {
+            const { subtext, photoUrl, ...rest } = next;
+            void subtext;
+            void photoUrl;
+            return rest;
+          }
+        }
+        return next;
+      }),
     );
   }
 
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (validationError) return;
+    const cleanedCandidates = candidates.map((c) => {
+      const row: Candidate = { id: c.id.trim(), name: c.name.trim() };
+      const sub = c.subtext?.trim();
+      const photo = c.photoUrl?.trim();
+      if (sub) row.subtext = sub;
+      if (photo) row.photoUrl = photo;
+      return row;
+    });
+
     const payload: ProposeElectionPayload = {
       electionId,
       name,
       type,
       districts,
-      candidates,
+      candidates: cleanedCandidates,
       startsAt: toIsoOrEmpty(startsAtLocal),
       endsAt: toIsoOrEmpty(endsAtLocal),
       requiredApprovals,
@@ -262,24 +288,54 @@ export function ProposeElectionPage() {
           <legend>Candidates</legend>
           <ul className="candidate-list">
             {candidates.map((c, i) => (
-              <li key={i} className="candidate-list__item">
-                <input
-                  type="text"
-                  value={c.id}
-                  onChange={(e) => updateCandidate(i, 'id', e.target.value)}
-                  placeholder="candidate-a"
-                  aria-label={`Candidate ${i + 1} id`}
-                />
-                <input
-                  type="text"
-                  value={c.name}
-                  onChange={(e) => updateCandidate(i, 'name', e.target.value)}
-                  placeholder="Candidate A"
-                  aria-label={`Candidate ${i + 1} name`}
-                />
+              <li key={i} className="candidate-list__row">
+                <div className="candidate-list__fields">
+                  <label className="form__field">
+                    <span>ID</span>
+                    <input
+                      type="text"
+                      value={c.id}
+                      onChange={(e) => updateCandidate(i, 'id', e.target.value)}
+                      placeholder="candidate-a"
+                    />
+                  </label>
+                  <label className="form__field">
+                    <span>Name</span>
+                    <input
+                      type="text"
+                      value={c.name}
+                      onChange={(e) =>
+                        updateCandidate(i, 'name', e.target.value)
+                      }
+                      placeholder="Candidate A"
+                    />
+                  </label>
+                  <label className="form__field">
+                    <span>Subtext (optional)</span>
+                    <input
+                      type="text"
+                      value={c.subtext ?? ''}
+                      onChange={(e) =>
+                        updateCandidate(i, 'subtext', e.target.value)
+                      }
+                      placeholder="Party, list, tagline…"
+                    />
+                  </label>
+                  <label className="form__field form__field--wide">
+                    <span>Photo URL (optional)</span>
+                    <input
+                      type="url"
+                      value={c.photoUrl ?? ''}
+                      onChange={(e) =>
+                        updateCandidate(i, 'photoUrl', e.target.value)
+                      }
+                      placeholder="https://…"
+                    />
+                  </label>
+                </div>
                 <button
                   type="button"
-                  className="btn btn--ghost btn--small"
+                  className="btn btn--ghost btn--small candidate-list__remove"
                   onClick={() => removeCandidate(i)}
                   disabled={candidates.length <= 2}
                   title={

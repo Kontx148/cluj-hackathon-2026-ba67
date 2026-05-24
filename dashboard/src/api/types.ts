@@ -3,6 +3,8 @@ import type { ElectionStatus, ElectionType } from '../constants';
 export interface Candidate {
   id: string;
   name: string;
+  subtext?: string;
+  photoUrl?: string;
 }
 
 export interface ApprovalRecord {

@@ -11,6 +11,7 @@ import {
 import type { ChainBlock } from '../api/types';
 import { shortValidatorId, toPublicValidatorUrl } from '../api/urls';
 import { BlockFlow } from '../components/BlockFlow/BlockFlow';
+import { TransactionDetail } from '../components/TransactionDetail/TransactionDetail';
 import { toast } from '../components/Toast/toastStore';
 
 type Tab = 'block' | 'tx' | 'verify';
@@ -129,6 +130,18 @@ function BlockBrowser({ initialHash }: { initialHash?: string }) {
 
           <dl className="explorer-result__facts">
             <div>
+              <dt>Block number</dt>
+              <dd>{query.data.blockNumber}</dd>
+            </div>
+            <div>
+              <dt>Timestamp</dt>
+              <dd>
+                {query.data.timestamp
+                  ? new Date(query.data.timestamp).toLocaleString()
+                  : '—'}
+              </dd>
+            </div>
+            <div>
               <dt>blockHash</dt>
               <dd>
                 <code className="hash">{query.data.blockHash}</code>
@@ -140,37 +153,47 @@ function BlockBrowser({ initialHash }: { initialHash?: string }) {
                 <code className="hash">{query.data.previousHash}</code>
               </dd>
             </div>
+            <div>
+              <dt>Validator signatures</dt>
+              <dd>{query.data.validatorSignatures?.length ?? 0}</dd>
+            </div>
           </dl>
 
-          <h4>Transactions</h4>
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Hash</th>
-                <th>Type</th>
-                <th>Election</th>
-              </tr>
-            </thead>
-            <tbody>
-              {query.data.transactions.map((tx) => (
-                <tr key={tx.transactionHash}>
-                  <td>
-                    <code className="hash">{tx.transactionHash}</code>
-                  </td>
-                  <td>{tx.type}</td>
-                  <td>
-                    {tx.electionId ? (
-                      <Link to={`/elections/${encodeURIComponent(tx.electionId)}`}>
-                        <code>{tx.electionId}</code>
-                      </Link>
-                    ) : (
-                      <span className="muted">—</span>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          {(query.data.validatorSignatures?.length ?? 0) > 0 && (
+            <>
+              <h4>Signatures</h4>
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th>Validator</th>
+                    <th>Signature</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {query.data.validatorSignatures.map((s) => (
+                    <tr key={s.validatorId}>
+                      <td>
+                        <code>{s.validatorId}</code>
+                      </td>
+                      <td>
+                        <code className="hash small">{s.signature}</code>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </>
+          )}
+
+          <h4>Transactions ({query.data.transactions.length})</h4>
+          <div className="block-card__tx-list">
+            {query.data.transactions.map((tx, i) => (
+              <TransactionDetail
+                key={tx.transactionHash ?? `tx-${i}`}
+                tx={tx}
+              />
+            ))}
+          </div>
         </div>
       )}
     </div>
