@@ -153,8 +153,47 @@ export function validateAction(
       }
 
       const used = state.usedTokensByElection[action.electionId] || [];
-      if (used.includes(anonymousTokenHash)) {
+      const tokenAlreadyUsed = used.includes(anonymousTokenHash);
+      const usedDigitalIds =
+        state.usedDigitalIdHashesByElection[action.electionId] || [];
+      const digitalIdAlreadyUsed = usedDigitalIds.includes(
+        digitalIdCheck.digitalIdHash,
+      );
+      // #region agent log
+      fetch('http://host.docker.internal:7528/ingest/9b39a962-5f44-4917-9c64-0e70bdd0a08a', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Debug-Session-Id': '3c82ea',
+        },
+        body: JSON.stringify({
+          sessionId: '3c82ea',
+          location: 'validate.ts:VOTE_CAST',
+          message: 'duplicate-vote checks',
+          data: {
+            electionId: action.electionId,
+            anonymousTokenHashPrefix: anonymousTokenHash.slice(0, 12),
+            digitalIdHashPrefix: digitalIdCheck.digitalIdHash.slice(0, 12),
+            tokenAlreadyUsed,
+            digitalIdAlreadyUsed,
+            usedTokenCount: used.length,
+            usedDigitalIdCount: usedDigitalIds.length,
+            checksDigitalIdHash: true,
+          },
+          timestamp: Date.now(),
+          hypothesisId: 'A',
+          runId: 'post-fix',
+        }),
+      }).catch(() => {});
+      // #endregion
+      if (tokenAlreadyUsed) {
         return { ok: false, error: 'Token already used. Re-voting is not supported.' };
+      }
+      if (digitalIdAlreadyUsed) {
+        return {
+          ok: false,
+          error: 'Digital ID already voted in this election. Re-voting is not supported.',
+        };
       }
 
       const decoded = decodeVote(encryptedVote, action.electionId, e.candidates);

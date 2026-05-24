@@ -188,6 +188,10 @@ If the decrypted ID is not present locally, validators reject the vote with
 `VOTER_NOT_ELIGIBLE`. Validators never log or return the decrypted ID; they
 only include a SHA-256 `digitalIdHash` in the committed vote transaction.
 
+Each eligible digital ID may vote **once per election**. A second vote with
+the same decrypted ID (even under a fresh `anonymousTokenHash`) is rejected
+with HTTP **409** (`Digital ID already voted in this election`).
+
 ---
 
 ## Environment variables

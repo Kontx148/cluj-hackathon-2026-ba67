@@ -130,5 +130,7 @@ export interface Block {
 export interface ValidatorState {
   elections: Record<string, Election>;
   usedTokensByElection: Record<string, string[]>;
+  /** SHA-256 of decrypted digital IDs that already voted in each election. */
+  usedDigitalIdHashesByElection: Record<string, string[]>;
   blocks: Block[];
 }

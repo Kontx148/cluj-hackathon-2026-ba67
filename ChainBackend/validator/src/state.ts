@@ -44,6 +44,7 @@ export function applyTransaction(
       };
       state.elections[tx.electionId] = election;
       state.usedTokensByElection[tx.electionId] = [];
+      state.usedDigitalIdHashesByElection[tx.electionId] = [];
       return { ok: true };
     }
 
@@ -83,8 +84,39 @@ export function applyTransaction(
       const e = state.elections[tx.electionId];
       if (!e) return { ok: false, error: 'election not found' };
       const token = String(data.anonymousTokenHash || '');
+      const digitalIdHash = String(data.digitalIdHash || '');
       const used = (state.usedTokensByElection[tx.electionId] ||= []);
       if (!used.includes(token)) used.push(token);
+      if (digitalIdHash) {
+        const usedIds = (state.usedDigitalIdHashesByElection[tx.electionId] ||= []);
+        if (!usedIds.includes(digitalIdHash)) usedIds.push(digitalIdHash);
+      }
+      // #region agent log
+      fetch('http://host.docker.internal:7528/ingest/9b39a962-5f44-4917-9c64-0e70bdd0a08a', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Debug-Session-Id': '3c82ea',
+        },
+        body: JSON.stringify({
+          sessionId: '3c82ea',
+          location: 'state.ts:VOTE_CAST',
+          message: 'vote applied to state',
+          data: {
+            electionId: tx.electionId,
+            anonymousTokenHashPrefix: token.slice(0, 12),
+            digitalIdHashPrefix: digitalIdHash.slice(0, 12),
+            recordsDigitalIdHash: Boolean(digitalIdHash),
+            usedTokenCountAfter: used.length,
+            usedDigitalIdCountAfter:
+              (state.usedDigitalIdHashesByElection[tx.electionId] || []).length,
+          },
+          timestamp: Date.now(),
+          hypothesisId: 'C',
+          runId: 'post-fix',
+        }),
+      }).catch(() => {});
+      // #endregion
       return { ok: true };
     }
 
@@ -143,6 +175,7 @@ export function applyTransaction(
 export function replayState(state: ValidatorState): void {
   state.elections = {};
   state.usedTokensByElection = {};
+  state.usedDigitalIdHashesByElection = {};
   for (const block of state.blocks) {
     for (const tx of block.transactions) {
       applyTransaction(state, tx);

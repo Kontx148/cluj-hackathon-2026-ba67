@@ -103,6 +103,35 @@ class ElectionVoteService {
 
     final encryptedVote = _buildEncryptedVote(request.election, request.candidateId);
     final token = request.anonymousTokenHash ?? _randomHex(32);
+    // #region agent log
+    try {
+      await http.post(
+        Uri.parse(
+          'http://127.0.0.1:7528/ingest/9b39a962-5f44-4917-9c64-0e70bdd0a08a',
+        ),
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Debug-Session-Id': '3c82ea',
+        },
+        body: jsonEncode({
+          'sessionId': '3c82ea',
+          'location': 'election_vote_service.dart:submitVote',
+          'message': 'client vote token generation',
+          'data': {
+            'electionId': electionId,
+            'tokenFromRequest': request.anonymousTokenHash != null,
+            'anonymousTokenHashPrefix': token.length >= 12
+                ? token.substring(0, 12)
+                : token,
+            'generatesFreshTokenEachSubmit': request.anonymousTokenHash == null,
+          },
+          'timestamp': DateTime.now().millisecondsSinceEpoch,
+          'hypothesisId': 'B',
+          'runId': 'pre-fix',
+        }),
+      );
+    } catch (_) {}
+    // #endregion
     final proof = request.voterProof ?? 'mock-voter-proof:${_randomHex(8)}';
     final timestamp = (request.timestamp ?? DateTime.now()).toUtc();
 
@@ -170,7 +199,9 @@ class ElectionVoteService {
     return switch (status) {
       403 => 'Voter not eligible. The decrypted digital ID is not on the '
           'validator allowlist.',
-      409 => 'This anonymous token has already been used to vote.',
+      409 => raw.contains('Digital ID already voted')
+          ? 'You have already voted in this election.'
+          : 'This anonymous token has already been used to vote.',
       400 => 'Vote rejected: $raw',
       502 => 'Validators could not reach consensus: $raw',
       _ => 'Vote API $status: $raw',

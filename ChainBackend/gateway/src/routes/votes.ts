@@ -63,6 +63,13 @@ router.post('/', async (req, res) => {
         consensus,
       });
     }
+    if (validatorReasons.some((r) => r.includes('Digital ID already voted'))) {
+      return res.status(409).json({
+        error: 'Digital ID already voted in this election. Re-voting is not supported.',
+        validatorReasons,
+        consensus,
+      });
+    }
     if (validatorReasons.some((r) => r === 'VOTER_NOT_ELIGIBLE')) {
       return res.status(403).json({
         error: 'VOTER_NOT_ELIGIBLE',

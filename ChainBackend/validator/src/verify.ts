@@ -17,12 +17,14 @@ export interface VerifyReport {
  *   2. block.previousHash links to the previous block
  *   3. every non-genesis block carries ≥ CONSENSUS_THRESHOLD signatures
  *   4. no anonymousTokenHash appears twice in the same election
- *   5. votes only appear inside [ELECTION_OPENED, ELECTION_FROZEN]
+ *   5. no digitalIdHash appears twice in the same election
+ *   6. votes only appear inside [ELECTION_OPENED, ELECTION_FROZEN]
  */
 export function verifyChain(): VerifyReport {
   const issues: string[] = [];
   const blocks = storage.state.blocks;
   const seenTokens: Record<string, Set<string>> = {};
+  const seenDigitalIdHashes: Record<string, Set<string>> = {};
   const electionWindow: Record<string, { openedAt?: number; frozenAt?: number }> = {};
 
   for (let i = 0; i < blocks.length; i++) {
@@ -72,6 +74,15 @@ export function verifyChain(): VerifyReport {
           );
         }
         set.add(token);
+
+        const digitalIdHash = String(data.digitalIdHash || '');
+        const seenIds = (seenDigitalIdHashes[tx.electionId] ||= new Set());
+        if (digitalIdHash && seenIds.has(digitalIdHash)) {
+          issues.push(
+            `Duplicate digitalIdHash ${digitalIdHash} in election ${tx.electionId} (block ${b.blockNumber})`,
+          );
+        }
+        if (digitalIdHash) seenIds.add(digitalIdHash);
 
         const voteTs = Date.parse(String(data.voteTimestamp || ''));
         const w = electionWindow[tx.electionId];
