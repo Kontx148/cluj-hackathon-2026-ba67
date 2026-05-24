@@ -103,7 +103,7 @@
         "jsonBody": "={{ JSON.stringify({ records: $json.records, category: 'law', meta: { workflow: 'senat-plx' } }) }}"
       },
       "id": "f1a20001-0001-4000-8000-000000000004",
-      "name": "Ingest merge",
+      "name": "Ingest replace",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
@@ -150,7 +150,7 @@
       "main": [
         [
           {
-            "node": "Ingest merge",
+            "node": "Ingest replace",
             "type": "main",
             "index": 0
           }

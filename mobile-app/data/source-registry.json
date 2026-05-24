@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "description": "Active n8n workflows by pillar. All ingest into the same JSON files; dedupe by item id.",
+  "description": "Active n8n workflows by pillar. Law feeds replace on each ingest; news merges by item id.",
   "workflowCounts": {
     "law": 2,
     "news": 3,

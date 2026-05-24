@@ -195,15 +195,16 @@ app.post("/api/ingest/feed", (req, res) => {
 });
 
 /**
- * Merge normalized or raw records into news-items.json or law-items.json.
- * Body: { records: RawLawRecord[], meta?, category?: "news"|"law" }
+ * Ingest normalized or raw records into news-items.json or law-items.json.
+ * Law feeds replace entirely on each run; news feeds merge by item id.
+ * Body: { records: RawLawRecord[], meta?, category?: "news"|"law", mode?: "merge"|"replace" }
  */
 app.post("/api/ingest/raw", async (req, res) => {
   if (!checkIngestKey(req)) {
     return res.status(401).json({ error: "Invalid or missing X-Ingest-Key" });
   }
 
-  const { records, meta, category } = req.body || {};
+  const { records, meta, category, mode: modeOverride } = req.body || {};
   if (!Array.isArray(records)) {
     return res.status(400).json({ error: "Body must include records: []" });
   }
@@ -220,13 +221,26 @@ app.post("/api/ingest/raw", async (req, res) => {
     incoming = await translateLawItems(incoming);
   }
 
+  const mode =
+    modeOverride === "merge" || modeOverride === "replace"
+      ? modeOverride
+      : resolvedCategory === "law"
+        ? "replace"
+        : "merge";
+
   const existing = resolvedCategory === "news" ? readNewsFeed() : readLawFeed();
-  const merged = mergeFeedItems(existing.items || [], incoming);
+  const items =
+    mode === "replace"
+      ? [...incoming].sort(
+          (a, b) =>
+            new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
+        )
+      : mergeFeedItems(existing.items || [], incoming);
 
   const payload = {
-    items: merged,
+    items,
     meta: {
-      ...existing.meta,
+      ...(mode === "merge" ? existing.meta : {}),
       ...meta,
       feed: resolvedCategory,
       source: meta?.source || "n8n-ingest",
@@ -241,10 +255,10 @@ app.post("/api/ingest/raw", async (req, res) => {
 
   res.json({
     ok: true,
-    mode: "merge",
+    mode,
     category: resolvedCategory,
     ingested: incoming.length,
-    total: merged.length,
+    total: items.length,
     updatedAt: payload.meta.updatedAt,
     path: targetFile,
   });

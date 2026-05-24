@@ -57,7 +57,7 @@
         "jsonBody": "={{ JSON.stringify({ records: $json.records, category: 'law', meta: { workflow: 'cdep-plx' } }) }}"
       },
       "id": "f1a60001-0001-4000-8000-000000000004",
-      "name": "Ingest merge",
+      "name": "Ingest replace",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [660, 0]
@@ -71,7 +71,7 @@
       "main": [[{ "node": "Prepare records", "type": "main", "index": 0 }]]
     },
     "Prepare records": {
-      "main": [[{ "node": "Ingest merge", "type": "main", "index": 0 }]]
+      "main": [[{ "node": "Ingest replace", "type": "main", "index": 0 }]]
     }
   },
   "active": false,
