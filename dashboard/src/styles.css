@@ -1374,6 +1374,34 @@ select {
   color: var(--fg-2);
 }
 
+.tx-detail__vote-choice {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--primary);
+  flex: 1 1 100%;
+}
+
+.tx-detail__vote-banner {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+  background: var(--blue-soft);
+  border: 1px solid rgba(214, 69, 69, 0.2);
+  border-radius: var(--radius);
+}
+.tx-detail__vote-banner strong {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--fg-3);
+}
+
+.tx-detail__field-hint {
+  margin-top: 2px;
+}
+
 .tx-detail__body {
   padding: 0 14px 14px;
   border-top: 1px solid var(--border);

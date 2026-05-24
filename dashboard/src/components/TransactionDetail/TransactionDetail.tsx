@@ -1,6 +1,9 @@
 import type { ReactNode } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
+import { getElection } from '../../api/elections';
 import type { ChainTransaction } from '../../api/types';
+import { resolveVoteChoiceWithElection } from '../../utils/voteDisplay';
 
 function asRecord(v: unknown): Record<string, unknown> | null {
   return v && typeof v === 'object' && !Array.isArray(v)
@@ -11,15 +14,18 @@ function asRecord(v: unknown): Record<string, unknown> | null {
 function Field({
   label,
   value,
+  hint,
 }: {
   label: string;
   value: ReactNode;
+  hint?: string;
 }) {
   if (value === null || value === undefined || value === '') return null;
   return (
     <div className="tx-detail__field">
-      <dt>{label}</dt>
+      <dt title={hint}>{label}</dt>
       <dd>{value}</dd>
+      {hint && <dd className="muted small tx-detail__field-hint">{hint}</dd>}
     </div>
   );
 }
@@ -75,8 +81,26 @@ export function TransactionDetail({ tx }: { tx: ChainTransaction }) {
     tx.electionId ??
     (typeof data?.electionId === 'string' ? data.electionId : undefined);
 
+  const isVote = tx.type === 'VOTE_CAST';
+
+  const electionQuery = useQuery({
+    queryKey: ['election', electionId],
+    queryFn: () => getElection(electionId!),
+    enabled: isVote && !!electionId,
+    staleTime: 60_000,
+  });
+
+  const voteChoice =
+    isVote && data
+      ? resolveVoteChoiceWithElection(
+          data,
+          electionId,
+          electionQuery.data?.candidates ?? [],
+        )
+      : null;
+
   return (
-    <details className="tx-detail">
+    <details className="tx-detail" open={isVote ? undefined : false}>
       <summary className="tx-detail__summary">
         <span className="tx-detail__type">{tx.type}</span>
         {electionId && (
@@ -88,10 +112,34 @@ export function TransactionDetail({ tx }: { tx: ChainTransaction }) {
             {electionId}
           </Link>
         )}
+        {voteChoice && (
+          <span className="tx-detail__vote-choice">{voteChoice.summary}</span>
+        )}
         <code className="tx-detail__hash hash">{tx.transactionHash}</code>
       </summary>
 
       <div className="tx-detail__body">
+        {isVote && voteChoice && (
+          <div className="tx-detail__vote-banner">
+            <strong>Voted for</strong>
+            <span>
+              {voteChoice.candidateName ?? voteChoice.candidateId ?? '—'}
+              {voteChoice.candidateId && (
+                <>
+                  {' '}
+                  <code>{voteChoice.candidateId}</code>
+                </>
+              )}
+            </span>
+            {voteChoice.districtId && (
+              <span className="muted small">
+                District <code>{voteChoice.districtId}</code> — geographic
+                roll the voter was checked against
+              </span>
+            )}
+          </div>
+        )}
+
         <dl className="tx-detail__grid">
           <Field label="Transaction hash" value={<code className="hash">{tx.transactionHash}</code>} />
           <Field label="Type" value={tx.type} />
@@ -119,6 +167,37 @@ export function TransactionDetail({ tx }: { tx: ChainTransaction }) {
           <>
             <h4 className="tx-detail__section-title">Transaction data</h4>
             <dl className="tx-detail__grid">
+              {isVote && voteChoice && (
+                <>
+                  <Field
+                    label="Voted for"
+                    value={
+                      <>
+                        <strong>
+                          {voteChoice.candidateName ??
+                            voteChoice.candidateId ??
+                            '—'}
+                        </strong>
+                        {voteChoice.candidateId && (
+                          <>
+                            {' '}
+                            <code>{voteChoice.candidateId}</code>
+                          </>
+                        )}
+                      </>
+                    }
+                  />
+                  <Field
+                    label="District"
+                    value={
+                      voteChoice.districtId ? (
+                        <code>{voteChoice.districtId}</code>
+                      ) : undefined
+                    }
+                    hint="Which electoral district this ballot counts in (must be one of the election's districts)."
+                  />
+                </>
+              )}
               <Field label="Name" value={data.name as string} />
               <Field label="Type" value={data.type as string} />
               <Field label="Status" value={data.status as string} />
@@ -156,7 +235,7 @@ export function TransactionDetail({ tx }: { tx: ChainTransaction }) {
                 }
               />
               <Field
-                label="Districts"
+                label="Districts (election)"
                 value={
                   Array.isArray(data.districts)
                     ? (data.districts as string[]).map((d) => (
@@ -166,16 +245,21 @@ export function TransactionDetail({ tx }: { tx: ChainTransaction }) {
                       ))
                     : undefined
                 }
+                hint="All districts configured when the election was proposed."
               />
               <Field
                 label="Institution"
                 value={data.institutionId as string}
               />
-              <Field
-                label="Candidate"
-                value={data.candidateId as string}
-              />
-              <Field label="District" value={data.districtId as string} />
+              {!isVote && (
+                <Field
+                  label="Candidate"
+                  value={data.candidateId as string}
+                />
+              )}
+              {!isVote && (
+                <Field label="District" value={data.districtId as string} />
+              )}
               <Field
                 label="Encrypted vote"
                 value={
@@ -183,6 +267,7 @@ export function TransactionDetail({ tx }: { tx: ChainTransaction }) {
                     <code className="hash small">{String(data.encryptedVote)}</code>
                   ) : undefined
                 }
+                hint="Ciphertext (mock vector in this prototype). Choice is decoded above."
               />
               <Field
                 label="Public key"
