@@ -47,6 +47,15 @@ function BlockBrowser({ initialHash }: { initialHash?: string }) {
     enabled: lookup !== null,
   });
 
+  // Keep both inputs in sync with the loaded block (hash search ↔ number search).
+  useEffect(() => {
+    if (!query.data) return;
+    setNumberInput(String(query.data.blockNumber));
+    if (query.data.blockHash) {
+      setHashInput(query.data.blockHash);
+    }
+  }, [query.data]);
+
   function submitNumber(e: React.FormEvent) {
     e.preventDefault();
     const n = Number(numberInput);
