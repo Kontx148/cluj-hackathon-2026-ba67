@@ -33,6 +33,12 @@ class AppStrings {
       _ro ? 'Votați acum →' : 'Vote now →';
   String get electionNotOpen =>
       _ro ? 'Nu este deschis pentru vot' : 'Not open for voting';
+  String get alreadyVotedTag => _ro ? 'VOTAT' : 'VOTED';
+  String get duplicateVoteTitle =>
+      _ro ? 'Ați votat deja în această alegere' : 'You already voted in this election';
+  String get duplicateVoteBody => _ro
+      ? 'Identitatea digitală folosită a înregistrat deja un vot. Fiecare persoană poate vota o singură dată — încercarea a fost respinsă în siguranță.'
+      : 'The digital identity you used has already cast a vote here. Each person may vote only once — this attempt was safely rejected.';
   String get retry => _ro ? 'Reîncearcă' : 'Retry';
 
   String get offlineBanner => _ro
@@ -160,11 +166,31 @@ class AppStrings {
   String get sectionNews => _ro ? 'Știri civice' : 'Civic news';
   String get sectionLaws => _ro ? 'Voturi' : 'Votes';
   String get filterLevel => _ro ? 'Nivel' : 'Level';
+  String get filterLevelHint => _ro
+      ? 'Geografie — UE, național sau local'
+      : 'Geography — EU, national, or local';
   String get filterTopics => _ro ? 'Topic' : 'Topic';
+  String get filterTopicsHint => _ro
+      ? 'Domenii civice (sănătate, educație, …)'
+      : 'Civic domains (healthcare, education, …)';
   String get filterImportance => _ro ? 'Importanță' : 'Importance';
+  String get filterImportanceHint => _ro
+      ? 'Minim — afișează doar articole de acest nivel sau mai ridicate'
+      : 'Minimum — show items at this level or higher';
+  String get filterSection => _ro ? 'Tip conținut' : 'Content type';
+  String get filterSectionHint => _ro
+      ? 'Voturi în curs sau știri civice'
+      : 'Upcoming votes or civic news';
   String get filterLanguage => _ro ? 'Limbă' : 'Language';
   String get clearFilters =>
       _ro ? 'Ștergeți filtrele' : 'Clear filters';
+  String get feedFiltersButton => _ro ? 'Filtre' : 'Filters';
+  String get feedFiltersSheetTitle =>
+      _ro ? 'Filtre feed' : 'Feed filters';
+  String get feedFiltersSummaryAll =>
+      _ro ? 'Toate articolele' : 'All items';
+  String get feedFilterAll => _ro ? 'Toate' : 'All';
+  String get applyFilters => _ro ? 'Aplică' : 'Apply';
   String resultsCount(int n) {
     if (_ro) return '$n ${n == 1 ? 'rezultat' : 'rezultate'}';
     return '$n ${n == 1 ? 'result' : 'results'}';

@@ -10,6 +10,9 @@ import '../../l10n/locale_scope.dart';
 import '../../models/election.dart';
 import '../../services/election_vote_service.dart';
 import '../../services/identity_service.dart';
+import '../../services/vote_history_service.dart';
+import '../../theme.dart';
+import '../../widgets/candidate_avatar.dart';
 
 enum _Step { identity, candidate, confirm, receipt }
 
@@ -40,11 +43,13 @@ class _VoteFlowScreenState extends State<VoteFlowScreen> {
   ElectionCandidate? _candidate;
 
   bool _submitting = false;
+  bool _duplicateVote = false;
   String? _errorMessage;
   VoteSubmissionResult? _result;
 
   final _identityService = IdentityService();
   final _voteService = ElectionVoteService();
+  final _voteHistory = VoteHistoryService();
 
   @override
   Widget build(BuildContext context) {
@@ -119,6 +124,7 @@ class _VoteFlowScreenState extends State<VoteFlowScreen> {
           identityMode: _mode,
           candidate: _candidate!,
           submitting: _submitting,
+          duplicateVote: _duplicateVote,
           errorMessage: _errorMessage,
           onSubmit: _submit,
         );
@@ -157,6 +163,7 @@ class _VoteFlowScreenState extends State<VoteFlowScreen> {
     setState(() {
       _submitting = true;
       _errorMessage = null;
+      _duplicateVote = false;
     });
     try {
       final result = await _voteService.submitVote(
@@ -168,13 +175,22 @@ class _VoteFlowScreenState extends State<VoteFlowScreen> {
         ),
       );
       if (!mounted) return;
+      await _voteHistory.markVoted(widget.election.id);
       setState(() {
         _result = result;
         _step = _Step.receipt;
       });
     } on VoteSubmissionException catch (e) {
       if (!mounted) return;
-      setState(() => _errorMessage = e.message);
+      setState(() {
+        _duplicateVote = e.statusCode == 409 &&
+            (e.message.toLowerCase().contains('already voted') ||
+                e.message.toLowerCase().contains('deja'));
+        _errorMessage = _duplicateVote ? null : e.message;
+      });
+      if (_duplicateVote) {
+        await _voteHistory.markVoted(widget.election.id);
+      }
     } catch (e) {
       if (!mounted) return;
       setState(() => _errorMessage = e.toString());
@@ -268,21 +284,19 @@ class _Stepper extends StatelessWidget {
                 height: 28,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: (isDone || isActive)
-                      ? theme.colorScheme.primary
-                      : theme.colorScheme.surfaceContainerHighest,
-                  border: isActive
-                      ? Border.all(
-                          color: theme.colorScheme.secondary,
-                          width: 3,
-                        )
-                      : null,
+                  color: CivicPalette.card,
+                  border: Border.all(
+                    color: isDone || isActive
+                        ? CivicPalette.primary
+                        : CivicPalette.border,
+                    width: isActive ? 2.5 : 1.5,
+                  ),
                 ),
                 alignment: Alignment.center,
                 child: isDone
                     ? const Icon(
                         Icons.check_rounded,
-                        color: Colors.white,
+                        color: CivicPalette.primary,
                         size: 14,
                       )
                     : Text(
@@ -291,8 +305,8 @@ class _Stepper extends StatelessWidget {
                           fontSize: 11,
                           fontWeight: FontWeight.w800,
                           color: isActive
-                              ? theme.colorScheme.onPrimary
-                              : theme.textTheme.bodyMedium?.color,
+                              ? CivicPalette.primary
+                              : CivicPalette.mutedFg,
                         ),
                       ),
               ),
@@ -445,8 +459,9 @@ class _PrivacyCallout extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: theme.colorScheme.secondary,
+        color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: theme.colorScheme.outline),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -501,32 +516,10 @@ class _ModeToggle extends StatelessWidget {
   }
 
   Widget _pill(BuildContext context, _IdentityMode value, String label) {
-    final theme = Theme.of(context);
-    final selected = mode == value;
-    return Material(
-      color: selected
-          ? theme.colorScheme.primary
-          : theme.colorScheme.surfaceContainerHighest,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(999),
-        onTap: () => onChanged(value),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          child: Center(
-            child: Text(
-              label,
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w800,
-                color: selected
-                    ? theme.colorScheme.onPrimary
-                    : theme.textTheme.bodyMedium?.color,
-              ),
-            ),
-          ),
-        ),
-      ),
+    return CivicFilterChip(
+      label: label,
+      selected: mode == value,
+      onTap: () => onChanged(value),
     );
   }
 }
@@ -564,7 +557,7 @@ class _CEICard extends StatelessWidget {
             width: 64,
             height: 64,
             decoration: BoxDecoration(
-              color: theme.colorScheme.secondary,
+              color: theme.colorScheme.surfaceContainerHighest,
               shape: BoxShape.circle,
             ),
             child: Center(
@@ -667,7 +660,9 @@ class _DemoIdentityTile extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Container(
-        color: selected ? theme.colorScheme.secondary : Colors.transparent,
+        color: selected
+            ? theme.colorScheme.surfaceContainerHighest
+            : Colors.transparent,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Row(
           children: [
@@ -675,10 +670,12 @@ class _DemoIdentityTile extends StatelessWidget {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: selected
-                    ? theme.colorScheme.primary
-                    : theme.colorScheme.surfaceContainerHighest,
+                color: CivicPalette.muted,
                 shape: BoxShape.circle,
+                border: Border.all(
+                  color: selected ? CivicPalette.primary : CivicPalette.border,
+                  width: selected ? 2 : 1,
+                ),
               ),
               alignment: Alignment.center,
               child: Text(
@@ -687,8 +684,8 @@ class _DemoIdentityTile extends StatelessWidget {
                   fontSize: 12,
                   fontWeight: FontWeight.w800,
                   color: selected
-                      ? theme.colorScheme.onPrimary
-                      : theme.textTheme.bodyMedium?.color,
+                      ? CivicPalette.primary
+                      : CivicPalette.mutedFg,
                 ),
               ),
             ),
@@ -839,27 +836,21 @@ class _CandidateTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final initials = _initials(candidate.name);
+    final subline = candidate.displaySubtext ?? candidate.id;
     return InkWell(
       onTap: onTap,
       child: Container(
-        color: selected ? theme.colorScheme.secondary : Colors.transparent,
+        color: selected
+            ? theme.colorScheme.surfaceContainerHighest
+            : Colors.transparent,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         child: Row(
           children: [
-            Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-              alignment: Alignment.center,
-              child: Text(
-                initials,
-                style: const TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w800,
-                  color: Colors.white,
-                ),
-              ),
+            CandidateAvatar(
+              name: candidate.name,
+              photoUrl: candidate.photoUrl,
+              fallbackColor: color,
+              size: 44,
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -869,9 +860,9 @@ class _CandidateTile extends StatelessWidget {
                   Text(candidate.name, style: theme.textTheme.titleMedium),
                   const SizedBox(height: 2),
                   Text(
-                    candidate.id,
+                    subline,
                     style: theme.textTheme.bodySmall,
-                    maxLines: 1,
+                    maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ],
@@ -882,14 +873,6 @@ class _CandidateTile extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  static String _initials(String name) {
-    final parts = name.trim().split(RegExp(r'\s+'));
-    if (parts.isEmpty) return '?';
-    if (parts.length == 1) return parts.first.characters.first.toUpperCase();
-    return (parts.first.characters.first + parts.last.characters.first)
-        .toUpperCase();
   }
 }
 
@@ -902,6 +885,7 @@ class _ConfirmStep extends StatelessWidget {
     required this.identityMode,
     required this.candidate,
     required this.submitting,
+    required this.duplicateVote,
     required this.errorMessage,
     required this.onSubmit,
   });
@@ -911,6 +895,7 @@ class _ConfirmStep extends StatelessWidget {
   final _IdentityMode identityMode;
   final ElectionCandidate candidate;
   final bool submitting;
+  final bool duplicateVote;
   final String? errorMessage;
   final VoidCallback onSubmit;
 
@@ -934,7 +919,10 @@ class _ConfirmStep extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 _ProtectionCard(strings: strings),
-                if (errorMessage != null) ...[
+                if (duplicateVote) ...[
+                  const SizedBox(height: 14),
+                  _DuplicateVoteCallout(strings: strings),
+                ] else if (errorMessage != null) ...[
                   const SizedBox(height: 14),
                   _ErrorBox(message: errorMessage!),
                 ],
@@ -1007,7 +995,7 @@ class _BallotCard extends StatelessWidget {
           _BallotRow(
             label: strings.confirmCandidateLabel,
             value: candidate.name,
-            sub: candidate.id,
+            sub: candidate.displaySubtext ?? candidate.id,
           ),
         ],
       ),
@@ -1054,8 +1042,9 @@ class _ProtectionCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: theme.colorScheme.secondary,
+        color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: theme.colorScheme.outline),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1104,6 +1093,57 @@ class _ProtectionCard extends StatelessWidget {
                 ],
               ),
             ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DuplicateVoteCallout extends StatelessWidget {
+  const _DuplicateVoteCallout({required this.strings});
+
+  final AppStrings strings;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: CivicPalette.statusAmberBg,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: CivicPalette.amberBannerBorder),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const HugeIcon(
+            icon: HugeIcons.strokeRoundedAlert02,
+            color: CivicPalette.amberBannerFg,
+            size: 22,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  strings.duplicateVoteTitle,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    color: CivicPalette.amberBannerFg,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  strings.duplicateVoteBody,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontSize: 13,
+                    color: CivicPalette.amberBannerFg,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -1225,7 +1265,7 @@ class _SuccessGlyph extends StatelessWidget {
           width: 96,
           height: 96,
           decoration: BoxDecoration(
-            color: theme.colorScheme.secondary,
+            color: theme.colorScheme.surfaceContainerHighest,
             shape: BoxShape.circle,
           ),
           alignment: Alignment.center,

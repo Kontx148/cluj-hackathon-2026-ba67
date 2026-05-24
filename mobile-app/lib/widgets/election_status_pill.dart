@@ -5,7 +5,7 @@ import '../l10n/locale_scope.dart';
 import '../models/election.dart';
 import '../theme.dart';
 
-/// Rounded uppercase status pill, mirroring the Figma `StatusPill` component.
+/// Status pill — solid fill + contrasting text (matches Figma `StatusPill`).
 class ElectionStatusPill extends StatelessWidget {
   const ElectionStatusPill({super.key, required this.status});
 
@@ -13,20 +13,26 @@ class ElectionStatusPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final strings = context.strings;
-    final (label, bg, fg) = _styleFor(status, strings, theme);
+    final (label, bg, fg) = _styleFor(status, strings);
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
         color: bg,
         borderRadius: BorderRadius.circular(999),
+        boxShadow: [
+          BoxShadow(
+            color: bg.withValues(alpha: 0.35),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Text(
         label,
         style: TextStyle(
           color: fg,
-          fontSize: 10,
+          fontSize: 11,
           fontWeight: FontWeight.w800,
           letterSpacing: 1.0,
         ),
@@ -37,49 +43,74 @@ class ElectionStatusPill extends StatelessWidget {
   static (String label, Color bg, Color fg) _styleFor(
     ElectionStatus status,
     AppStrings strings,
-    ThemeData theme,
   ) {
     return switch (status) {
       ElectionStatus.open => (
         strings.statusOpen,
-        theme.colorScheme.primary,
-        theme.colorScheme.onPrimary,
+        CivicPalette.primary,
+        CivicPalette.onPrimary,
       ),
       ElectionStatus.proposed => (
         strings.statusProposed,
-        CivicPalette.statusAmberBg,
-        CivicPalette.statusAmberFg,
+        CivicPalette.statusProposedSolid,
+        CivicPalette.onPrimary,
       ),
       ElectionStatus.approved => (
         strings.statusApproved,
-        CivicPalette.statusEmeraldBg,
-        CivicPalette.statusEmeraldFg,
+        CivicPalette.statusApprovedSolid,
+        CivicPalette.onPrimary,
       ),
       ElectionStatus.frozen => (
         strings.statusFrozen,
-        CivicPalette.statusSkyBg,
-        CivicPalette.statusSkyFg,
+        CivicPalette.statusFrozenSolid,
+        CivicPalette.onPrimary,
       ),
       ElectionStatus.tallying => (
         strings.statusTallying,
-        CivicPalette.statusAmberBg,
-        CivicPalette.statusAmberFg,
+        CivicPalette.statusTallyingSolid,
+        CivicPalette.onPrimary,
       ),
       ElectionStatus.decrypted => (
         strings.statusDecrypted,
-        CivicPalette.statusEmeraldBg,
-        CivicPalette.statusEmeraldFg,
+        CivicPalette.statusDecryptedSolid,
+        CivicPalette.onPrimary,
       ),
       ElectionStatus.finished => (
         strings.statusFinished,
-        CivicPalette.statusGrayBg,
-        CivicPalette.statusGrayFg,
+        CivicPalette.statusFinishedSolid,
+        CivicPalette.onPrimary,
       ),
       ElectionStatus.unknown => (
         status.name.toUpperCase(),
-        CivicPalette.statusGrayBg,
-        CivicPalette.statusGrayFg,
+        CivicPalette.statusFinishedSolid,
+        CivicPalette.onPrimary,
       ),
     };
+  }
+}
+
+/// Small tag shown beside DESCHIS when this device already cast a vote.
+class VotedTag extends StatelessWidget {
+  const VotedTag({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final strings = context.strings;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: CivicPalette.statusApprovedSolid,
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Text(
+        strings.alreadyVotedTag,
+        style: const TextStyle(
+          color: CivicPalette.onPrimary,
+          fontSize: 11,
+          fontWeight: FontWeight.w800,
+          letterSpacing: 0.6,
+        ),
+      ),
+    );
   }
 }

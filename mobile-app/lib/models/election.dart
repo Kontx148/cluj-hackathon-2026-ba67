@@ -25,15 +25,31 @@ enum ElectionStatus {
 }
 
 class ElectionCandidate {
-  const ElectionCandidate({required this.id, required this.name});
+  const ElectionCandidate({
+    required this.id,
+    required this.name,
+    this.subtext,
+    this.photoUrl,
+  });
 
   final String id;
   final String name;
+  final String? subtext;
+  final String? photoUrl;
+
+  /// Line shown under the name in the ballot (party, list, etc.).
+  String? get displaySubtext {
+    final s = subtext?.trim();
+    if (s != null && s.isNotEmpty) return s;
+    return null;
+  }
 
   factory ElectionCandidate.fromJson(Map<String, dynamic> json) {
     return ElectionCandidate(
       id: json['id'] as String,
       name: json['name'] as String,
+      subtext: json['subtext'] as String?,
+      photoUrl: json['photoUrl'] as String?,
     );
   }
 }

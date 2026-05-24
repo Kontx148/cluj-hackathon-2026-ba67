@@ -356,9 +356,9 @@ curl -X POST http://localhost:4001/elections/proposals \
     "type": "PRESIDENTIAL",
     "districts": ["CJ-01", "B-01", "BV-01"],
     "candidates": [
-      { "id": "candidate-a", "name": "Candidate A" },
+      { "id": "candidate-a", "name": "Candidate A", "subtext": "Party list line (optional)", "photoUrl": "" },
       { "id": "candidate-b", "name": "Candidate B" },
-      { "id": "candidate-c", "name": "Candidate C" }
+      { "id": "candidate-c", "name": "Candidate C", "subtext": "Independent" }
     ],
     "startsAt": "2029-11-10T07:00:00Z",
     "endsAt":   "2029-11-10T21:00:00Z",

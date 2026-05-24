@@ -6,6 +6,7 @@ import '../../l10n/app_strings.dart';
 import '../../l10n/locale_scope.dart';
 import '../../models/election.dart';
 import '../../services/elections_service.dart';
+import '../../services/vote_history_service.dart';
 import '../../theme.dart';
 import '../../widgets/election_status_pill.dart';
 import 'vote_flow_screen.dart';
@@ -19,13 +20,21 @@ class ElectionsScreen extends StatefulWidget {
 
 class _ElectionsScreenState extends State<ElectionsScreen> {
   final _service = ElectionsService();
+  final _voteHistory = VoteHistoryService();
   late Future<ElectionsResult> _future;
+  Set<String> _votedIds = {};
   bool _refreshing = false;
 
   @override
   void initState() {
     super.initState();
     _future = _service.fetchElections();
+    _loadVoteHistory();
+  }
+
+  Future<void> _loadVoteHistory() async {
+    final ids = await _voteHistory.votedElectionIds();
+    if (mounted) setState(() => _votedIds = ids);
   }
 
   Future<void> _reload() async {
@@ -113,6 +122,7 @@ class _ElectionsScreenState extends State<ElectionsScreen> {
                               ),
                               child: _ElectionCard(
                                 election: sorted[i],
+                                alreadyVoted: _votedIds.contains(sorted[i].id),
                                 onTap: () => _openVoteFlow(sorted[i]),
                               ),
                             );
@@ -143,7 +153,10 @@ class _ElectionsScreenState extends State<ElectionsScreen> {
         builder: (_) => VoteFlowScreen(election: election),
       ),
     );
-    if (mounted) _reload();
+    if (mounted) {
+      await _loadVoteHistory();
+      _reload();
+    }
   }
 }
 
@@ -222,7 +235,7 @@ class _RefreshButtonState extends State<_RefreshButton>
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Material(
-      color: theme.colorScheme.surfaceContainerHighest,
+      color: CivicPalette.muted,
       shape: const CircleBorder(),
       child: InkWell(
         customBorder: const CircleBorder(),
@@ -260,7 +273,6 @@ class _LangSwitch extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final scope = LocaleScope.of(context);
     final next = locale == AppLocale.en ? AppLocale.ro : AppLocale.en;
     return InkWell(
@@ -269,7 +281,7 @@ class _LangSwitch extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
-          color: theme.colorScheme.surfaceContainerHighest,
+          color: CivicPalette.muted,
           borderRadius: BorderRadius.circular(999),
         ),
         child: Text(
@@ -296,9 +308,9 @@ class _PrivacyStrip extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
-        color: theme.colorScheme.secondary,
+        color: CivicPalette.muted,
         borderRadius: BorderRadius.circular(14),
       ),
       child: Row(
@@ -313,7 +325,7 @@ class _PrivacyStrip extends StatelessWidget {
             child: Text(
               strings.privacyStrip,
               style: TextStyle(
-                fontSize: 11,
+                fontSize: 13,
                 fontWeight: FontWeight.w700,
                 color: theme.colorScheme.primary,
               ),
@@ -369,9 +381,14 @@ class _OfflineBanner extends StatelessWidget {
 // Election card ---------------------------------------------------------------
 
 class _ElectionCard extends StatelessWidget {
-  const _ElectionCard({required this.election, required this.onTap});
+  const _ElectionCard({
+    required this.election,
+    required this.alreadyVoted,
+    required this.onTap,
+  });
 
   final Election election;
+  final bool alreadyVoted;
   final VoidCallback onTap;
 
   @override
@@ -399,13 +416,17 @@ class _ElectionCard extends StatelessWidget {
                 Row(
                   children: [
                     ElectionStatusPill(status: election.status),
+                    if (alreadyVoted && canVote) ...[
+                      const SizedBox(width: 8),
+                      const VotedTag(),
+                    ],
                     const Spacer(),
                     if (canVote)
                       Text(
                         strings.electionTapToVote,
                         style: TextStyle(
                           color: theme.colorScheme.primary,
-                          fontSize: 11,
+                          fontSize: 13,
                           fontWeight: FontWeight.w700,
                         ),
                       ),

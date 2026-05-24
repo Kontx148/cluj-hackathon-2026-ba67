@@ -62,13 +62,26 @@ export function validateAction(
       if (!Array.isArray(data.candidates) || (data.candidates as unknown[]).length === 0) {
         return { ok: false, error: 'data.candidates must be a non-empty array' };
       }
-      const candidates = data.candidates as Array<{ id?: unknown; name?: unknown }>;
+      const candidates = data.candidates as Array<{
+        id?: unknown;
+        name?: unknown;
+        subtext?: unknown;
+        photoUrl?: unknown;
+      }>;
       if (
         !candidates.every(
           (c) => c && typeof c.id === 'string' && typeof c.name === 'string',
         )
       ) {
         return { ok: false, error: 'each candidate must have a string id and name' };
+      }
+      for (const c of candidates) {
+        if (c.subtext != null && typeof c.subtext !== 'string') {
+          return { ok: false, error: 'candidate subtext must be a string when provided' };
+        }
+        if (c.photoUrl != null && typeof c.photoUrl !== 'string') {
+          return { ok: false, error: 'candidate photoUrl must be a string when provided' };
+        }
       }
       if (
         Number.isNaN(Date.parse(String(data.startsAt))) ||

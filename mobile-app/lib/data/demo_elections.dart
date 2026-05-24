@@ -19,9 +19,21 @@ List<Election> buildDemoElections() {
       status: ElectionStatus.open,
       districts: ['CJ-01'],
       candidates: const [
-        ElectionCandidate(id: 'candidate-a', name: 'Elena Ionescu'),
-        ElectionCandidate(id: 'candidate-b', name: 'Mihai Popescu'),
-        ElectionCandidate(id: 'candidate-c', name: 'Andrei Muresan'),
+        ElectionCandidate(
+          id: 'candidate-a',
+          name: 'Elena Ionescu',
+          subtext: 'Partidul Național Democrat',
+        ),
+        ElectionCandidate(
+          id: 'candidate-b',
+          name: 'Mihai Popescu',
+          subtext: 'Uniunea Civică Română',
+        ),
+        ElectionCandidate(
+          id: 'candidate-c',
+          name: 'Andrei Muresan',
+          subtext: 'Alianța Verde',
+        ),
       ],
       startsAt: base.subtract(const Duration(hours: 1)),
       endsAt: base.add(const Duration(hours: 6)),
@@ -33,9 +45,21 @@ List<Election> buildDemoElections() {
       status: ElectionStatus.finished,
       districts: ['CJ-01', 'B-01', 'BV-01'],
       candidates: const [
-        ElectionCandidate(id: 'candidate-a', name: 'Elena Ionescu'),
-        ElectionCandidate(id: 'candidate-b', name: 'Mihai Popescu'),
-        ElectionCandidate(id: 'candidate-c', name: 'Andrei Muresan'),
+        ElectionCandidate(
+          id: 'candidate-a',
+          name: 'Elena Ionescu',
+          subtext: 'Partidul Național Democrat',
+        ),
+        ElectionCandidate(
+          id: 'candidate-b',
+          name: 'Mihai Popescu',
+          subtext: 'Uniunea Civică Română',
+        ),
+        ElectionCandidate(
+          id: 'candidate-c',
+          name: 'Andrei Muresan',
+          subtext: 'Alianța Verde',
+        ),
       ],
       startsAt: DateTime(2029, 11, 10, 7),
       endsAt: DateTime(2029, 11, 10, 21),

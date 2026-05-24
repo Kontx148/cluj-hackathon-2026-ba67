@@ -1,254 +1,333 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
-/// Warm-red civic palette mirroring the Figma design tokens
-/// (see `Votera Civic App Design/src/styles/theme.css`).
+/// Tokens from `Votera Civic App Design/src/styles/theme.css`.
+///
+/// Layout: white [card] surfaces on a white canvas; [muted] chip fills;
+/// [primary] red only for buttons, links, and small accents — never page tint.
 class CivicPalette {
-  // Primary
   static const Color primary = Color(0xFFD64545);
-  static const Color primaryDark = Color(0xFFE05555);
   static const Color onPrimary = Color(0xFFFFFFFF);
 
-  // Secondary / accent (soft peach)
-  static const Color secondary = Color(0xFFFFE4DC);
-  static const Color secondaryDark = Color(0xFF3A2025);
-
-  // Surfaces
-  static const Color background = Color(0xFFFFF8F4);
+  /// Figma `--card` / phone content area.
   static const Color card = Color(0xFFFFFFFF);
+
+  /// Figma `--muted` — chip / pill backgrounds (not red).
   static const Color muted = Color(0xFFF5EDE9);
-  static const Color inputBg = Color(0xFFFFF0EB);
 
-  // Dark mode
-  static const Color darkBackground = Color(0xFF1A0F12);
-  static const Color darkCard = Color(0xFF2A1A1E);
-  static const Color darkSecondary = Color(0xFF3A2025);
-  static const Color darkMuted = Color(0xFF2E1B1F);
-
-  // Text
+  /// Figma `--foreground`.
   static const Color ink = Color(0xFF1F1316);
-  static const Color cream = Color(0xFFFFF8F4);
+
+  /// Figma `--muted-foreground`.
   static const Color mutedFg = Color(0xFF7A6B6E);
-  static const Color mutedFgDark = Color(0xFFA08888);
 
-  // Borders
-  static const Color border = Color(0x191F1316); // ~rgba(31,19,22,0.1)
-  static const Color borderDark = Color(0x1AFFF8F4); // rgba(255,248,244,0.1)
+  /// Figma `--border` ≈ rgba(31,19,22,0.1).
+  static const Color border = Color(0x191F1316);
 
-  // Status colors (Tailwind-derived) used for election pills and
-  // "open for public input" badges.
-  static const Color statusAmberBg = Color(0xFFFEF3C7); // amber-100
-  static const Color statusAmberFg = Color(0xFF92400E); // amber-800
-  static const Color statusEmeraldBg = Color(0xFFD1FAE5); // emerald-100
-  static const Color statusEmeraldFg = Color(0xFF065F46); // emerald-800
-  static const Color statusEmeraldStrong = Color(0xFF059669); // emerald-600
-  static const Color statusSkyBg = Color(0xFFE0F2FE); // sky-100
-  static const Color statusSkyFg = Color(0xFF075985); // sky-800
-  static const Color statusGrayBg = Color(0xFFF3F4F6); // gray-100
-  static const Color statusGrayFg = Color(0xFF6B7280); // gray-500
+  /// Solid status pill fills — saturated (Figma OPEN uses #D64545 + white).
+  static const Color statusProposedSolid = Color(0xFFB45309);
+  static const Color statusApprovedSolid = Color(0xFF047857);
+  static const Color statusFrozenSolid = Color(0xFF0369A1);
+  static const Color statusTallyingSolid = Color(0xFFC2410C);
+  static const Color statusDecryptedSolid = Color(0xFF059669);
+  static const Color statusFinishedSolid = Color(0xFF475569);
 
-  // Warning / offline banner
-  static const Color amberBannerBg = Color(0xFFFFFBEB); // amber-50
-  static const Color amberBannerFg = Color(0xFFB45309); // amber-700
-  static const Color amberBannerBorder = Color(0xFFFDE68A); // amber-200
+  static const Color statusAmberBg = Color(0xFFFEF3C7);
+  static const Color statusAmberFg = Color(0xFF92400E);
+  static const Color statusEmeraldBg = Color(0xFFD1FAE5);
+  static const Color statusEmeraldFg = Color(0xFF065F46);
+  static const Color statusEmeraldStrong = Color(0xFF059669);
+  static const Color statusSkyBg = Color(0xFFE0F2FE);
+  static const Color statusSkyFg = Color(0xFF075985);
+  static const Color statusGrayBg = Color(0xFFF3F4F6);
+  static const Color statusGrayFg = Color(0xFF6B7280);
+
+  static const Color amberBannerBg = Color(0xFFFFFBEB);
+  static const Color amberBannerFg = Color(0xFFB45309);
+  static const Color amberBannerBorder = Color(0xFFFDE68A);
 }
 
-ThemeData buildCivicTheme({required bool dark}) {
-  if (dark) {
-    final scheme = ColorScheme.fromSeed(
-      seedColor: CivicPalette.primary,
-      brightness: Brightness.dark,
-    ).copyWith(
-      primary: CivicPalette.primaryDark,
-      onPrimary: CivicPalette.onPrimary,
-      primaryContainer: CivicPalette.darkSecondary,
-      onPrimaryContainer: CivicPalette.primaryDark,
-      secondary: CivicPalette.darkSecondary,
-      onSecondary: CivicPalette.cream,
-      surface: CivicPalette.darkCard,
-      onSurface: CivicPalette.cream,
-      surfaceContainerHighest: CivicPalette.darkMuted,
-      outline: CivicPalette.borderDark,
-    );
-    return _baseTheme(
-      scheme: scheme,
-      scaffold: CivicPalette.darkBackground,
-      onSurface: CivicPalette.cream,
-      muted: CivicPalette.mutedFgDark,
-    );
-  }
-
-  final scheme = ColorScheme.fromSeed(
-    seedColor: CivicPalette.primary,
+/// Light theme only — matches the Figma export (no Material red seed tint).
+ThemeData buildCivicTheme() {
+  const scheme = ColorScheme(
     brightness: Brightness.light,
-  ).copyWith(
     primary: CivicPalette.primary,
     onPrimary: CivicPalette.onPrimary,
-    primaryContainer: CivicPalette.secondary,
-    onPrimaryContainer: CivicPalette.primary,
-    secondary: CivicPalette.secondary,
+    secondary: CivicPalette.muted,
     onSecondary: CivicPalette.ink,
+    tertiary: CivicPalette.mutedFg,
+    onTertiary: CivicPalette.ink,
+    error: Color(0xFFB91C1C),
+    onError: Colors.white,
     surface: CivicPalette.card,
     onSurface: CivicPalette.ink,
     surfaceContainerHighest: CivicPalette.muted,
+    surfaceContainerHigh: CivicPalette.muted,
+    surfaceContainer: CivicPalette.card,
+    surfaceContainerLow: CivicPalette.card,
+    surfaceContainerLowest: CivicPalette.card,
+    onSurfaceVariant: CivicPalette.mutedFg,
     outline: CivicPalette.border,
+    outlineVariant: CivicPalette.border,
+    shadow: Colors.black,
+    scrim: Colors.black54,
+    inverseSurface: CivicPalette.ink,
+    onInverseSurface: CivicPalette.card,
+    inversePrimary: CivicPalette.primary,
+    surfaceTint: Colors.transparent,
   );
 
-  return _baseTheme(
-    scheme: scheme,
-    scaffold: CivicPalette.background,
-    onSurface: CivicPalette.ink,
-    muted: CivicPalette.mutedFg,
-  );
-}
+  final baseText = _baseTextTheme();
+  final textTheme = GoogleFonts.plusJakartaSansTextTheme(baseText);
 
-ThemeData _baseTheme({
-  required ColorScheme scheme,
-  required Color scaffold,
-  required Color onSurface,
-  required Color muted,
-}) {
   return ThemeData(
     useMaterial3: true,
-    brightness: scheme.brightness,
-    scaffoldBackgroundColor: scaffold,
+    brightness: Brightness.light,
+    scaffoldBackgroundColor: CivicPalette.card,
+    canvasColor: CivicPalette.card,
+    cardColor: CivicPalette.card,
+    fontFamily: GoogleFonts.plusJakartaSans().fontFamily,
     colorScheme: scheme,
-    textTheme: _textTheme(onSurface, muted),
+    splashColor: CivicPalette.primary.withValues(alpha: 0.08),
+    highlightColor: CivicPalette.primary.withValues(alpha: 0.06),
+    textTheme: textTheme,
+    appBarTheme: const AppBarTheme(
+      backgroundColor: CivicPalette.card,
+      foregroundColor: CivicPalette.ink,
+      surfaceTintColor: Colors.transparent,
+      elevation: 0,
+      scrolledUnderElevation: 0,
+    ),
     cardTheme: CardThemeData(
       elevation: 0,
-      color: scheme.surface,
+      color: CivicPalette.card,
+      surfaceTintColor: Colors.transparent,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
-        side: BorderSide(color: scheme.outline),
+        side: const BorderSide(color: CivicPalette.border),
       ),
     ),
     filledButtonTheme: FilledButtonThemeData(
       style: FilledButton.styleFrom(
-        backgroundColor: scheme.primary,
-        foregroundColor: scheme.onPrimary,
+        backgroundColor: CivicPalette.primary,
+        foregroundColor: CivicPalette.onPrimary,
         padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 14),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
-        textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
-        minimumSize: const Size(0, 48),
+        textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+        minimumSize: const Size(0, 50),
       ),
     ),
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(
-        foregroundColor: scheme.primary,
-        textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+        foregroundColor: CivicPalette.primary,
+        textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
       ),
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
-        foregroundColor: scheme.primary,
-        side: BorderSide(color: scheme.primary.withValues(alpha: 0.4)),
+        foregroundColor: CivicPalette.primary,
+        side: const BorderSide(color: CivicPalette.primary),
         padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 14),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
-        minimumSize: const Size(0, 48),
+        minimumSize: const Size(0, 50),
       ),
     ),
-    chipTheme: ChipThemeData(
-      side: BorderSide(color: scheme.outline),
-      backgroundColor: scheme.surfaceContainerHighest,
-      selectedColor: scheme.primary,
-      labelStyle: TextStyle(color: muted, fontWeight: FontWeight.w700, fontSize: 12),
-      secondaryLabelStyle:
-          TextStyle(color: scheme.onPrimary, fontWeight: FontWeight.w700, fontSize: 12),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
+    chipTheme: const ChipThemeData(
+      backgroundColor: CivicPalette.muted,
+      selectedColor: CivicPalette.card,
+      disabledColor: CivicPalette.muted,
+      labelStyle: TextStyle(
+        color: CivicPalette.mutedFg,
+        fontWeight: FontWeight.w700,
+        fontSize: 13,
+      ),
+      secondaryLabelStyle: TextStyle(
+        color: CivicPalette.primary,
+        fontWeight: FontWeight.w700,
+        fontSize: 13,
+      ),
+      side: BorderSide(color: CivicPalette.border),
+      shape: StadiumBorder(),
     ),
-    navigationBarTheme: NavigationBarThemeData(
-      backgroundColor: scheme.surface,
+    navigationBarTheme: const NavigationBarThemeData(
+      backgroundColor: CivicPalette.card,
       indicatorColor: Colors.transparent,
       surfaceTintColor: Colors.transparent,
       elevation: 0,
-      labelTextStyle: WidgetStatePropertyAll(
-        TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: onSurface),
-      ),
     ),
     snackBarTheme: SnackBarThemeData(
       behavior: SnackBarBehavior.floating,
-      backgroundColor: scheme.inverseSurface,
-      contentTextStyle: TextStyle(color: scheme.onInverseSurface),
+      backgroundColor: CivicPalette.ink,
+      contentTextStyle: const TextStyle(color: CivicPalette.card, fontSize: 14),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: scheme.surfaceContainerHighest,
+      fillColor: CivicPalette.muted,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
-        borderSide: BorderSide(color: scheme.outline),
+        borderSide: const BorderSide(color: CivicPalette.border),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
-        borderSide: BorderSide(color: scheme.outline),
+        borderSide: const BorderSide(color: CivicPalette.border),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
-        borderSide: BorderSide(color: scheme.primary, width: 1.5),
+        borderSide: const BorderSide(color: CivicPalette.primary, width: 1.5),
       ),
     ),
-    dividerTheme: DividerThemeData(
-      color: scheme.outline,
+    dividerTheme: const DividerThemeData(
+      color: CivicPalette.border,
       thickness: 1,
       space: 1,
+    ),
+    progressIndicatorTheme: const ProgressIndicatorThemeData(
+      color: CivicPalette.primary,
+    ),
+    dropdownMenuTheme: DropdownMenuThemeData(
+      textStyle: GoogleFonts.plusJakartaSans(
+        fontSize: 14,
+        fontWeight: FontWeight.w600,
+        color: CivicPalette.ink,
+      ),
+    ),
+    bottomSheetTheme: const BottomSheetThemeData(
+      backgroundColor: CivicPalette.card,
+      surfaceTintColor: Colors.transparent,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
     ),
   );
 }
 
-TextTheme _textTheme(Color onSurface, Color muted) {
+TextTheme _baseTextTheme() {
+  const ink = CivicPalette.ink;
+  const muted = CivicPalette.mutedFg;
   return TextTheme(
     displaySmall: TextStyle(
-      fontSize: 30,
+      fontSize: 32,
       fontWeight: FontWeight.w800,
       letterSpacing: -0.6,
-      color: onSurface,
+      color: ink,
     ),
     headlineMedium: TextStyle(
-      fontSize: 23,
+      fontSize: 26,
       fontWeight: FontWeight.w800,
       letterSpacing: -0.4,
-      color: onSurface,
+      color: ink,
       height: 1.15,
     ),
     headlineSmall: TextStyle(
-      fontSize: 20,
+      fontSize: 22,
       fontWeight: FontWeight.w800,
-      letterSpacing: -0.3,
-      color: onSurface,
+      color: ink,
     ),
     titleLarge: TextStyle(
-      fontSize: 15,
+      fontSize: 17,
       fontWeight: FontWeight.w700,
-      color: onSurface,
+      color: ink,
       height: 1.3,
     ),
     titleMedium: TextStyle(
-      fontSize: 14,
+      fontSize: 16,
       fontWeight: FontWeight.w700,
-      color: onSurface,
+      color: ink,
     ),
     titleSmall: TextStyle(
-      fontSize: 13,
+      fontSize: 15,
       fontWeight: FontWeight.w700,
-      color: onSurface,
+      color: ink,
     ),
-    bodyLarge: TextStyle(fontSize: 14, color: onSurface, height: 1.45),
-    bodyMedium: TextStyle(fontSize: 12, color: muted, height: 1.5),
-    bodySmall: TextStyle(fontSize: 11, color: muted, height: 1.4),
+    bodyLarge: TextStyle(fontSize: 15, color: ink, height: 1.45),
+    bodyMedium: TextStyle(fontSize: 14, color: muted, height: 1.5),
+    bodySmall: TextStyle(fontSize: 13, color: muted, height: 1.4),
     labelLarge: TextStyle(
-      fontSize: 13,
+      fontSize: 14,
       fontWeight: FontWeight.w700,
-      color: onSurface,
+      color: ink,
     ),
     labelMedium: TextStyle(
-      fontSize: 11,
+      fontSize: 12,
       fontWeight: FontWeight.w600,
       color: muted,
     ),
     labelSmall: TextStyle(
-      fontSize: 10,
+      fontSize: 11,
       fontWeight: FontWeight.w800,
-      letterSpacing: 1.4,
+      letterSpacing: 1.2,
       color: muted,
     ),
   );
+}
+
+/// Figma-style filter / toggle chip — muted when off, white + red ring when on.
+class CivicFilterChip extends StatelessWidget {
+  const CivicFilterChip({
+    super.key,
+    required this.label,
+    required this.selected,
+    required this.onTap,
+    this.circular = false,
+  });
+
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+  final bool circular;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: selected ? CivicPalette.card : CivicPalette.muted,
+      shape: circular
+          ? const CircleBorder()
+          : RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(999),
+              side: BorderSide(
+                color: selected ? CivicPalette.primary : CivicPalette.border,
+                width: selected ? 1.5 : 1,
+              ),
+            ),
+      child: InkWell(
+        onTap: onTap,
+        customBorder: circular
+            ? const CircleBorder()
+            : RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: circular ? 0 : 12,
+            vertical: circular ? 0 : 7,
+          ),
+          child: circular
+              ? SizedBox(
+                  width: 32,
+                  height: 32,
+                  child: Center(
+                    child: Text(
+                      label,
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w800,
+                        color: selected
+                            ? CivicPalette.primary
+                            : CivicPalette.mutedFg,
+                      ),
+                    ),
+                  ),
+                )
+              : Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w800,
+                    color:
+                        selected ? CivicPalette.primary : CivicPalette.mutedFg,
+                  ),
+                ),
+        ),
+      ),
+    );
+  }
 }

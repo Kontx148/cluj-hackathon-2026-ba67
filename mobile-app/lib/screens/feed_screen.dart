@@ -90,31 +90,28 @@ class _FeedScreenState extends State<FeedScreen> {
                     child: _Header(strings: strings, locale: locale),
                   ),
                   SliverToBoxAdapter(
-                    child: _FilterRow(
+                    child: _FeedFilterBar(
                       strings: strings,
                       section: _sectionFilter,
                       level: _levelFilter,
                       importance: _importanceFilter,
                       topic: _topicFilter,
-                      onSection: (s) => setState(
-                        () => _sectionFilter = _sectionFilter == s ? null : s,
-                      ),
-                      onLevel: (l) => setState(
-                        () => _levelFilter = _levelFilter == l ? null : l,
-                      ),
-                      onImportance: (i) => setState(
-                        () => _importanceFilter =
-                            _importanceFilter == i ? null : i,
-                      ),
-                      onTopic: (t) => setState(
-                        () => _topicFilter = _topicFilter == t ? null : t,
-                      ),
+                      activeCount: _activeFilterCount,
+                      onApply: (values) {
+                        setState(() {
+                          _sectionFilter = values.section;
+                          _levelFilter = values.level;
+                          _importanceFilter = values.importance;
+                          _topicFilter = values.topic;
+                        });
+                      },
+                      onReset: _clearFilters,
                     ),
                   ),
                   if (_activeFilterCount > 0)
                     SliverToBoxAdapter(
                       child: Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 6, 16, 0),
+                        padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -261,7 +258,6 @@ class _LangSwitch extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final scope = LocaleScope.of(context);
     final next = locale == AppLocale.en ? AppLocale.ro : AppLocale.en;
     return InkWell(
@@ -270,7 +266,7 @@ class _LangSwitch extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
-          color: theme.colorScheme.surfaceContainerHighest,
+          color: CivicPalette.muted,
           borderRadius: BorderRadius.circular(999),
         ),
         child: Text(
@@ -286,19 +282,24 @@ class _LangSwitch extends StatelessWidget {
   }
 }
 
-// ─── Filter row ─────────────────────────────────────────────────────────────
+typedef _FeedFilterValues = ({
+  FeedSection? section,
+  FeedLevel? level,
+  int? importance,
+  String? topic,
+});
 
-class _FilterRow extends StatelessWidget {
-  const _FilterRow({
+/// Dropdown-style filter control — opens a sheet with per-field dropdowns + reset.
+class _FeedFilterBar extends StatelessWidget {
+  const _FeedFilterBar({
     required this.strings,
     required this.section,
     required this.level,
     required this.importance,
     required this.topic,
-    required this.onSection,
-    required this.onLevel,
-    required this.onImportance,
-    required this.onTopic,
+    required this.activeCount,
+    required this.onApply,
+    required this.onReset,
   });
 
   final AppStrings strings;
@@ -306,173 +307,316 @@ class _FilterRow extends StatelessWidget {
   final FeedLevel? level;
   final int? importance;
   final String? topic;
-  final ValueChanged<FeedSection> onSection;
-  final ValueChanged<FeedLevel> onLevel;
-  final ValueChanged<int> onImportance;
-  final ValueChanged<String> onTopic;
+  final int activeCount;
+  final void Function(_FeedFilterValues values) onApply;
+  final VoidCallback onReset;
+
+  String _summary() {
+    if (activeCount == 0) return strings.feedFiltersSummaryAll;
+    final parts = <String>[];
+    if (section != null) {
+      parts.add(
+        section == FeedSection.laws ? strings.sectionLaws : strings.sectionNews,
+      );
+    }
+    if (level != null) {
+      parts.add(switch (level!) {
+        FeedLevel.eu => strings.levelEu,
+        FeedLevel.romania => strings.levelRomania,
+        FeedLevel.local => strings.levelLocal,
+      });
+    }
+    if (importance != null) parts.add('≥$importance');
+    if (topic != null) parts.add(_stripHash(topic!));
+    return parts.join(' · ');
+  }
+
+  Future<void> _openSheet(BuildContext context) async {
+    var draftSection = section;
+    var draftLevel = level;
+    var draftImportance = importance;
+    var draftTopic = topic;
+
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (context, setSheetState) {
+            void setDraft(VoidCallback fn) => setSheetState(fn);
+
+            return Padding(
+              padding: EdgeInsets.only(
+                left: 20,
+                right: 20,
+                top: 12,
+                bottom: MediaQuery.paddingOf(context).bottom + 20,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: CivicPalette.border,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    strings.feedFiltersSheetTitle,
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  const SizedBox(height: 16),
+                  _FilterDropdown<FeedSection?>(
+                    label: strings.filterSection,
+                    hint: strings.filterSectionHint,
+                    value: draftSection,
+                    items: [
+                      _FilterMenuItem(null, strings.feedFilterAll),
+                      _FilterMenuItem(
+                        FeedSection.laws,
+                        strings.sectionLaws,
+                      ),
+                      _FilterMenuItem(
+                        FeedSection.news,
+                        strings.sectionNews,
+                      ),
+                    ],
+                    onChanged: (v) =>
+                        setDraft(() => draftSection = v),
+                  ),
+                  const SizedBox(height: 12),
+                  _FilterDropdown<FeedLevel?>(
+                    label: strings.filterLevel,
+                    hint: strings.filterLevelHint,
+                    value: draftLevel,
+                    items: [
+                      _FilterMenuItem(null, strings.feedFilterAll),
+                      _FilterMenuItem(FeedLevel.eu, strings.levelEu),
+                      _FilterMenuItem(
+                        FeedLevel.romania,
+                        strings.levelRomania,
+                      ),
+                      _FilterMenuItem(FeedLevel.local, strings.levelLocal),
+                    ],
+                    onChanged: (v) => setDraft(() => draftLevel = v),
+                  ),
+                  const SizedBox(height: 12),
+                  _FilterDropdown<int?>(
+                    label: strings.filterImportance,
+                    hint: strings.filterImportanceHint,
+                    value: draftImportance,
+                    items: [
+                      _FilterMenuItem(null, strings.allImportance),
+                      for (var i = 1; i <= 5; i++)
+                        _FilterMenuItem(i, '≥ $i'),
+                    ],
+                    onChanged: (v) => setDraft(() => draftImportance = v),
+                  ),
+                  const SizedBox(height: 12),
+                  _FilterDropdown<String?>(
+                    label: strings.filterTopics,
+                    hint: strings.filterTopicsHint,
+                    value: draftTopic,
+                    items: [
+                      _FilterMenuItem(null, strings.allTags),
+                      for (final t in FeedTags.topics)
+                        _FilterMenuItem(t, _stripHash(t)),
+                    ],
+                    onChanged: (v) => setDraft(() => draftTopic = v),
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () {
+                            setSheetState(() {
+                              draftSection = null;
+                              draftLevel = null;
+                              draftImportance = null;
+                              draftTopic = null;
+                            });
+                            onReset();
+                            Navigator.pop(ctx);
+                          },
+                          child: Text(strings.resetFilters),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        flex: 2,
+                        child: FilledButton(
+                          onPressed: () {
+                            onApply((
+                              section: draftSection,
+                              level: draftLevel,
+                              importance: draftImportance,
+                              topic: draftTopic,
+                            ));
+                            Navigator.pop(ctx);
+                          },
+                          child: Text(strings.applyFilters),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final hasFilters = activeCount > 0;
+
     return Padding(
-      padding: const EdgeInsets.only(top: 12, bottom: 4),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Row(
-          children: [
-            _Chip(
-              label: strings.sectionLaws,
-              selected: section == FeedSection.laws,
-              onTap: () => onSection(FeedSection.laws),
-            ),
-            const SizedBox(width: 8),
-            _Chip(
-              label: strings.sectionNews,
-              selected: section == FeedSection.news,
-              onTap: () => onSection(FeedSection.news),
-            ),
-            _Divider(),
-            _Chip(
-              label: strings.levelEu,
-              selected: level == FeedLevel.eu,
-              onTap: () => onLevel(FeedLevel.eu),
-            ),
-            const SizedBox(width: 8),
-            _Chip(
-              label: strings.levelRomania,
-              selected: level == FeedLevel.romania,
-              onTap: () => onLevel(FeedLevel.romania),
-            ),
-            const SizedBox(width: 8),
-            _Chip(
-              label: strings.levelLocal,
-              selected: level == FeedLevel.local,
-              onTap: () => onLevel(FeedLevel.local),
-            ),
-            _Divider(),
-            for (var i = 1; i <= 5; i++) ...[
-              _ImportanceChip(
-                value: i,
-                selected: importance == i,
-                onTap: () => onImportance(i),
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+      child: Row(
+        children: [
+          Expanded(
+            child: Material(
+              color: CivicPalette.muted,
+              borderRadius: BorderRadius.circular(14),
+              child: InkWell(
+                onTap: () => _openSheet(context),
+                borderRadius: BorderRadius.circular(14),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 12,
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.tune_rounded,
+                        size: 20,
+                        color: hasFilters
+                            ? CivicPalette.primary
+                            : CivicPalette.mutedFg,
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              strings.feedFiltersButton,
+                              style: theme.textTheme.labelMedium?.copyWith(
+                                color: CivicPalette.mutedFg,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              _summary(),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.titleSmall?.copyWith(
+                                color: hasFilters
+                                    ? CivicPalette.primary
+                                    : CivicPalette.ink,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Icon(
+                        Icons.keyboard_arrow_down_rounded,
+                        color: CivicPalette.mutedFg,
+                      ),
+                    ],
+                  ),
+                ),
               ),
-              const SizedBox(width: 6),
-            ],
-            _Divider(),
-            for (var i = 0; i < 6 && i < FeedTags.topics.length; i++) ...[
-              _Chip(
-                label: _stripHash(FeedTags.topics[i]),
-                selected: topic == FeedTags.topics[i],
-                onTap: () => onTopic(FeedTags.topics[i]),
-              ),
-              const SizedBox(width: 8),
-            ],
+            ),
+          ),
+          if (hasFilters) ...[
             const SizedBox(width: 8),
+            IconButton(
+              tooltip: strings.clearFilters,
+              onPressed: onReset,
+              style: IconButton.styleFrom(
+                backgroundColor: CivicPalette.muted,
+                foregroundColor: CivicPalette.primary,
+              ),
+              icon: const Icon(Icons.close_rounded, size: 20),
+            ),
           ],
-        ),
+        ],
       ),
     );
   }
 
   static String _stripHash(String t) {
-    return t.startsWith('#')
-        ? t.substring(1).replaceAll('-', ' ')
-        : t;
+    return t.startsWith('#') ? t.substring(1).replaceAll('-', ' ') : t;
   }
 }
 
-class _Chip extends StatelessWidget {
-  const _Chip({
+class _FilterMenuItem<T> {
+  const _FilterMenuItem(this.value, this.label);
+  final T value;
+  final String label;
+}
+
+class _FilterDropdown<T> extends StatelessWidget {
+  const _FilterDropdown({
     required this.label,
-    required this.selected,
-    required this.onTap,
+    required this.hint,
+    required this.value,
+    required this.items,
+    required this.onChanged,
   });
 
   final String label;
-  final bool selected;
-  final VoidCallback onTap;
+  final String hint;
+  final T value;
+  final List<_FilterMenuItem<T>> items;
+  final ValueChanged<T> onChanged;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Material(
-      color: selected
-          ? theme.colorScheme.primary
-          : theme.colorScheme.surfaceContainerHighest,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(999),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          child: Text(
-            label,
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w800,
-              color: selected
-                  ? theme.colorScheme.onPrimary
-                  : theme.textTheme.bodyMedium?.color,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: theme.textTheme.labelLarge),
+        const SizedBox(height: 4),
+        InputDecorator(
+          decoration: InputDecoration(
+            hintText: hint,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 14,
+              vertical: 4,
+            ),
+          ),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<T>(
+              value: value,
+              isExpanded: true,
+              items: items
+                  .map(
+                    (e) => DropdownMenuItem<T>(
+                      value: e.value,
+                      child: Text(e.label),
+                    ),
+                  )
+                  .toList(),
+              onChanged: (v) => onChanged(v as T),
             ),
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _ImportanceChip extends StatelessWidget {
-  const _ImportanceChip({
-    required this.value,
-    required this.selected,
-    required this.onTap,
-  });
-
-  final int value;
-  final bool selected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Material(
-      color: selected
-          ? theme.colorScheme.primary
-          : theme.colorScheme.surfaceContainerHighest,
-      shape: const CircleBorder(),
-      child: InkWell(
-        onTap: onTap,
-        customBorder: const CircleBorder(),
-        child: SizedBox(
-          width: 30,
-          height: 30,
-          child: Center(
-            child: Text(
-              '$value',
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w800,
-                color: selected
-                    ? theme.colorScheme.onPrimary
-                    : theme.textTheme.bodyMedium?.color,
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _Divider extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Container(
-      width: 1,
-      height: 22,
-      margin: const EdgeInsets.symmetric(horizontal: 8),
-      color: theme.colorScheme.outline,
+      ],
     );
   }
 }
@@ -569,7 +713,7 @@ class _CivicCard extends StatelessWidget {
                     vertical: 3,
                   ),
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.surfaceContainerHighest,
+                    color: CivicPalette.muted,
                     borderRadius: BorderRadius.circular(999),
                   ),
                   child: Text(
@@ -695,8 +839,8 @@ class _EmptyState extends StatelessWidget {
             Container(
               width: 64,
               height: 64,
-              decoration: BoxDecoration(
-                color: theme.colorScheme.surfaceContainerHighest,
+              decoration: const BoxDecoration(
+                color: CivicPalette.muted,
                 shape: BoxShape.circle,
               ),
               child: Center(

@@ -10,6 +10,10 @@ export type ElectionStatus =
 export interface Candidate {
   id: string;
   name: string;
+  /** Optional party / list line shown under the name in the ballot UI. */
+  subtext?: string;
+  /** Optional portrait URL; clients fall back to initials when absent. */
+  photoUrl?: string;
 }
 
 export interface Approval {

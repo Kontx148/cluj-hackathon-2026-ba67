@@ -31,9 +31,8 @@ class _CivicAppState extends State<CivicApp> {
       child: MaterialApp(
         title: 'Votera',
         debugShowCheckedModeBanner: false,
-        theme: buildCivicTheme(dark: false),
-        darkTheme: buildCivicTheme(dark: true),
-        themeMode: ThemeMode.system,
+        theme: buildCivicTheme(),
+        themeMode: ThemeMode.light,
         home: const MainShell(),
       ),
     );
