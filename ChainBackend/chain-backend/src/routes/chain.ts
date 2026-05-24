@@ -17,6 +17,18 @@ router.get('/blocks', (_req, res) => {
   res.json({ blocks: storage.state.blocks });
 });
 
+// More specific route first so `/blocks/by-hash/<hash>` is not consumed by
+// the `/blocks/:blockNumber` matcher.
+router.get('/blocks/by-hash/:blockHash', (req, res) => {
+  const hash = req.params.blockHash;
+  if (!hash || typeof hash !== 'string') {
+    return res.status(400).json({ error: 'blockHash is required' });
+  }
+  const b = storage.state.blocks.find((x) => x.blockHash === hash);
+  if (!b) return res.status(404).json({ error: 'Block not found' });
+  res.json(b);
+});
+
 router.get('/blocks/:blockNumber', (req, res) => {
   const n = Number(req.params.blockNumber);
   if (!Number.isInteger(n)) {
