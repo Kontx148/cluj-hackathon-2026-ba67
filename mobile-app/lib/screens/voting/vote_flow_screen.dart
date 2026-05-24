@@ -904,6 +904,16 @@ class _ConfirmStep extends StatelessWidget {
     final strings = context.strings;
     return Column(
       children: [
+        if (duplicateVote)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+            child: _DuplicateVoteCallout(strings: strings),
+          )
+        else if (errorMessage != null)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+            child: _ErrorBox(message: errorMessage!),
+          ),
         Expanded(
           child: SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
@@ -919,13 +929,6 @@ class _ConfirmStep extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 _ProtectionCard(strings: strings),
-                if (duplicateVote) ...[
-                  const SizedBox(height: 14),
-                  _DuplicateVoteCallout(strings: strings),
-                ] else if (errorMessage != null) ...[
-                  const SizedBox(height: 14),
-                  _ErrorBox(message: errorMessage!),
-                ],
               ],
             ),
           ),

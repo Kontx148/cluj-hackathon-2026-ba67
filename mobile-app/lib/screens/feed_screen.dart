@@ -90,6 +90,13 @@ class _FeedScreenState extends State<FeedScreen> {
                   SliverToBoxAdapter(
                     child: _Header(strings: strings, locale: locale),
                   ),
+                  if (hasError && !loading)
+                    SliverToBoxAdapter(
+                      child: _FeedErrorBanner(
+                        strings: strings,
+                        onRetry: _reload,
+                      ),
+                    ),
                   SliverToBoxAdapter(
                     child: _FeedFilterBar(
                       strings: strings,
@@ -133,40 +140,7 @@ class _FeedScreenState extends State<FeedScreen> {
                       hasScrollBody: false,
                       child: Center(child: CircularProgressIndicator()),
                     )
-                  else if (hasError)
-                    SliverFillRemaining(
-                      hasScrollBody: false,
-                      child: Center(
-                        child: Padding(
-                          padding: const EdgeInsets.all(24),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              HugeIcon(
-                                icon: HugeIcons.strokeRoundedAlert02,
-                                color: theme.colorScheme.error,
-                                size: 32,
-                              ),
-                              const SizedBox(height: 12),
-                              Text(strings.loadError,
-                                  style: theme.textTheme.titleMedium),
-                              const SizedBox(height: 6),
-                              Text(
-                                strings.loadErrorHint,
-                                textAlign: TextAlign.center,
-                                style: theme.textTheme.bodyMedium,
-                              ),
-                              const SizedBox(height: 12),
-                              FilledButton(
-                                onPressed: _reload,
-                                child: Text(strings.retry),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    )
-                  else if (filtered.isEmpty)
+                  else if (!hasError && filtered.isEmpty)
                     SliverFillRemaining(
                       hasScrollBody: false,
                       child: _EmptyState(
@@ -174,7 +148,7 @@ class _FeedScreenState extends State<FeedScreen> {
                         onReset: _clearFilters,
                       ),
                     )
-                  else
+                  else if (!hasError)
                     SliverPadding(
                       padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
                       sliver: SliverList(
@@ -891,7 +865,78 @@ class _ImportanceDots extends StatelessWidget {
   }
 }
 
-// ─── Empty + footer ─────────────────────────────────────────────────────────
+// ─── Error + empty + footer ─────────────────────────────────────────────────
+
+class _FeedErrorBanner extends StatelessWidget {
+  const _FeedErrorBanner({
+    required this.strings,
+    required this.onRetry,
+  });
+
+  final AppStrings strings;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.error.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: theme.colorScheme.error.withValues(alpha: 0.35),
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                HugeIcon(
+                  icon: HugeIcons.strokeRoundedAlert02,
+                  color: theme.colorScheme.error,
+                  size: 20,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        strings.loadError,
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          color: theme.colorScheme.error,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        strings.loadErrorHint,
+                        style: theme.textTheme.bodySmall,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Align(
+              alignment: Alignment.centerRight,
+              child: FilledButton.tonal(
+                onPressed: onRetry,
+                child: Text(strings.retry),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
 class _EmptyState extends StatelessWidget {
   const _EmptyState({required this.strings, required this.onReset});
