@@ -79,4 +79,21 @@ class AppStrings {
       _locale == AppLocale.ro ? 'Importanță' : 'Importance';
 
   String get footer => 'CivicAI · Hackathon MVP · Cluj 2026';
+
+  String get lawDetailTitle =>
+      _locale == AppLocale.ro ? 'Rezumat lege' : 'Law summary';
+
+  String get lawSummaryHeading => _locale == AppLocale.ro
+      ? 'Ce înseamnă, pe înțelesul tuturor'
+      : 'What it means in plain language';
+
+  String get lawSummaryPending => _locale == AppLocale.ro
+      ? 'Rezumatul simplificat nu este disponibil. Rulează workflow-ul Senat (Vertex AI).'
+      : 'Plain-language summary not available. Run the Senat workflow (Vertex AI).';
+
+  String get lawOfficialSource =>
+      _locale == AppLocale.ro ? 'Sursa oficială' : 'Official source';
+
+  String get readSummary =>
+      _locale == AppLocale.ro ? 'Citește rezumatul' : 'Read summary';
 }

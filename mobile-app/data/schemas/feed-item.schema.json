@@ -61,7 +61,21 @@
         "local_official"
       ],
       "description": "Optional filter category"
-    }
+    },
+    "feedCategory": {
+      "enum": ["news", "law"],
+      "description": "Which app tab this item belongs to"
+    },
+    "plain_summary": {
+      "type": "string",
+      "description": "Gemini plain-language summary (Romanian)"
+    },
+    "plain_summary_en": {
+      "type": "string",
+      "description": "Gemini plain-language summary (English)"
+    },
+    "analyzed_at": { "type": "string", "format": "date-time" },
+    "analysis_source": { "enum": ["vertex", "groq", "openai", "gemini"] }
   },
   "additionalProperties": false
 }

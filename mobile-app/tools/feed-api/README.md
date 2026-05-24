@@ -111,9 +111,10 @@ Ingest is a **listener**; workflows are **callers**.
 
 | Method | Path | Description |
 |--------|------|-------------|
-| GET | `/api/health` | Service status + data file paths |
+| GET | `/api/health` | Service status + active LLM provider |
+| GET | `/api/health/llm` | Test Gemini/OpenAI key (use before running Senat workflow) |
 | GET | `/api/feed` | Combined news + law items. Query: `level`, `entityType`, `category` (`news`\|`law`), `lang` (`en`\|`ro`) |
-| GET | `/api/fetch/senat` | Fetch + parse Senat public consultation HTML → `{ records: [...] }` (~68 bills) |
+| GET | `/api/fetch/senat` | Fetch + parse Senat bills → `{ records: [...] }` (max 5 by default, `?limit=N`) |
 | GET | `/api/fetch/cdep` | Camera Deputatilor listing (may 404 if URL changes) |
 | GET | `/api/fetch/primaria-cluj` | Cluj-Napoca public consultations RSS → `{ records: [...] }` |
 
@@ -123,6 +124,7 @@ Ingest is a **listener**; workflows are **callers**.
 |--------|------|-------------|
 | POST | `/api/ingest/raw` | **Main n8n endpoint** — normalize + merge records |
 | POST | `/api/ingest/feed` | Replace entire news or law file |
+| POST | `/api/simplify/records` | Plain-language summaries for law records (Senat workflow) |
 
 ### POST `/api/ingest/raw`
 
@@ -168,6 +170,24 @@ Content-Type: application/json
 
 Normalization logic: [normalize.js](./normalize.js).
 
+### POST `/api/simplify/records`
+
+Plain-language summaries for raw law records (Romanian + English). Used by the Senat n8n workflow. Defaults to **Gemini free tier**.
+
+```http
+POST /api/simplify/records
+X-Ingest-Key: civicai-dev-key
+Content-Type: application/json
+
+{ "records": [ { "title": "…", "description": "…", … } ] }
+```
+
+Returns `{ ok, count, engine: "gemini"|"openai", records: [...] }` with `plain_summary` (RO) and `plain_summary_en` (EN).
+
+Implementation: [simplify.js](./simplify.js), [llm.js](./llm.js), [gemini.js](./gemini.js).
+
+Check key: `GET /api/health/llm`
+
 Romanian law items are auto-translated to English on ingest (`title_en` + `summary`) via [translate.js](./translate.js) (MyMemory API + legal phrase map). To refresh bundled JSON:
 
 ```bash
@@ -206,7 +226,7 @@ Point n8n HTTP nodes to `http://localhost:3001` instead of `http://feed-api:3001
 
 | Workflow | Fetch step | Ingest `category` | Writes to |
 |----------|------------|-------------------|-----------|
-| `civicai-senat-romania.json` | `GET /api/fetch/senat` | `law` | `law-items.json` |
+| `civicai-senat-romania.json` | `GET /api/fetch/senat` → `POST /api/simplify/records` | `law` | `law-items.json` |
 | `civicai-cdep-romania.json` | `GET /api/fetch/cdep` | `law` | `law-items.json` |
 | `civicai-g4media-ro-civic.json` | G4Media RSS | `news` | `news-items.json` |
 | `civicai-digi24-ro-civic.json` | Digi24 RSS | `news` | `news-items.json` |
@@ -253,5 +273,12 @@ flutter build ios --release --dart-define=API_BASE=http://<your-mac-lan-ip>:3001
 | `PORT` | `3001` | HTTP port |
 | `MOBILE_APP_DATA_DIR` | `../../data` | Directory for `news-items.json` / `law-items.json` |
 | `INGEST_API_KEY` | *(empty = no auth)* | Required secret for POST ingest endpoints |
+| `LLM_PROVIDER` | `vertex` (auto) | `vertex`, `groq`, `gemini`, or `openai` |
+| `GCP_PROJECT_ID` | *(empty)* | Google Cloud project for Vertex AI |
+| `GCP_REGION` | `europe-west4` | Vertex AI region |
+| `VERTEX_MODEL` | `gemini-2.5-flash` | Gemini model on Vertex |
+| `GOOGLE_APPLICATION_CREDENTIALS` | *(empty)* | Path to service account JSON inside container |
+| `GOOGLE_SERVICE_ACCOUNT_JSON` | *(empty)* | Inline service account JSON (alternative to file) |
+| `SENAT_FETCH_LIMIT` | `5` | Max Senat bills per fetch |
 
 See [.env.example](./.env.example).

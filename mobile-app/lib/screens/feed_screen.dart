@@ -10,6 +10,7 @@ import '../services/feed_service.dart';
 import '../utils/feed_item_localization.dart';
 import '../utils/feed_filter.dart';
 import '../utils/feed_section.dart';
+import 'law_detail_screen.dart';
 import '../utils/importance_level.dart';
 import '../widgets/importance_indicator.dart';
 
@@ -406,6 +407,16 @@ class _FeedCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final strings = context.strings;
     final theme = Theme.of(context);
+    final isLaw = feedSectionForItem(item) == FeedSection.laws;
+
+    void openDetail() {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => LawDetailScreen(item: item),
+        ),
+      );
+    }
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Card(
@@ -414,11 +425,14 @@ class _FeedCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           side: BorderSide(color: theme.colorScheme.outline),
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: isLaw ? openDetail : null,
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -443,8 +457,18 @@ class _FeedCard extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                item.localizedSummary(locale),
-                style: theme.textTheme.bodyMedium,
+                isLaw
+                    ? (item.localizedLawPreview(locale) ??
+                        strings.lawSummaryPending)
+                    : item.localizedSummary(locale),
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontStyle: isLaw && !item.hasPlainSummary
+                      ? FontStyle.italic
+                      : null,
+                  color: isLaw && !item.hasPlainSummary
+                      ? theme.colorScheme.onSurfaceVariant
+                      : null,
+                ),
                 maxLines: 4,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -511,6 +535,11 @@ class _FeedCard extends StatelessWidget {
                     )
                   else
                     const Spacer(),
+                  if (isLaw)
+                    TextButton(
+                      onPressed: openDetail,
+                      child: Text(strings.readSummary),
+                    ),
                   TextButton(
                     onPressed: () => launchUrl(Uri.parse(item.link)),
                     child: Text(strings.open),
@@ -521,6 +550,7 @@ class _FeedCard extends StatelessWidget {
           ),
         ),
       ),
+    ),
     );
   }
 }

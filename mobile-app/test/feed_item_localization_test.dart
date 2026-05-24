@@ -28,4 +28,29 @@ void main() {
     expect(roBill.localizedTitle(AppLocale.en), contains('Legislative'));
     expect(roBill.localizedSummary(AppLocale.en), contains('Legislative proposal'));
   });
+
+  test('prefers Gemini plain summary for law preview', () {
+    const withPlain = FeedItem(
+      id: '2',
+      title: 'B1',
+      link: 'https://example.com',
+      description: 'Official text',
+      publishedAt: '2026-05-01T00:00:00Z',
+      source: 'Senat',
+      sourceId: 'senat-plx',
+      level: FeedLevel.romania,
+      sourceLang: 'ro',
+      feedCategory: 'law',
+      plainSummary: 'Pe scurt: această lege schimbă regulile fiscale.',
+      plainSummaryEn: 'In short: this bill changes tax rules.',
+    );
+    expect(
+      withPlain.localizedPlainSummary(AppLocale.ro),
+      contains('Pe scurt'),
+    );
+    expect(
+      withPlain.localizedLawPreview(AppLocale.en),
+      contains('In short'),
+    );
+  });
 }

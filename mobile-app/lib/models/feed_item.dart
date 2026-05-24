@@ -20,6 +20,8 @@ class FeedItem {
     this.entityType,
     this.voteDate,
     this.feedCategory,
+    this.plainSummary,
+    this.plainSummaryEn,
   });
 
   final String id;
@@ -41,6 +43,12 @@ class FeedItem {
   final String? voteDate;
   /// `news` or `law` — which tab/section this item belongs to.
   final String? feedCategory;
+  final String? plainSummary;
+  final String? plainSummaryEn;
+
+  bool get hasPlainSummary =>
+      (plainSummary?.trim().isNotEmpty ?? false) ||
+      (plainSummaryEn?.trim().isNotEmpty ?? false);
 
   String get displaySummary => summary ?? description;
 
@@ -75,6 +83,8 @@ class FeedItem {
       entityType: json['entityType'] as String?,
       voteDate: json['voteDate'] as String?,
       feedCategory: json['feedCategory'] as String?,
+      plainSummary: json['plain_summary'] as String?,
+      plainSummaryEn: json['plain_summary_en'] as String?,
     );
   }
 }

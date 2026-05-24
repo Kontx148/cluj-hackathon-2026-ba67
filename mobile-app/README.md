@@ -172,9 +172,14 @@ cd mobile-app/tools/feed-api && npm install && npm start
 | Android emulator | `http://10.0.2.2:3001` |
 | iOS Simulator | `http://localhost:3001` |
 | Physical device (same Wi‑Fi as laptop) | `http://<laptop-LAN-IP>:3001` |
+| **VPS deploy (DigitalOcean)** | `http://165.232.67.137:3001` |
 
 ```bash
+# Local emulator
 flutter run --release --dart-define=API_BASE=http://10.0.2.2:3001
+
+# Release APK against VPS
+flutter build apk --release --dart-define=API_BASE=http://165.232.67.137:3001
 ```
 
 Default (no `API_BASE`): loads bundled `data/news-items.json` and `data/law-items.json`.
