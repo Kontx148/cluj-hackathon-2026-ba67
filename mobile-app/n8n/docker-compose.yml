@@ -10,10 +10,16 @@ services:
     volumes:
       - ../tools/feed-api:/app
       - ../data:/data
+      # Optional: mount GCP service account (copy gcp-service-account.json.example first)
+      - ./gcp-service-account.json:/secrets/gcp-credentials.json:ro
+    env_file:
+      - .env
     environment:
       PORT: 3001
       MOBILE_APP_DATA_DIR: /data
       INGEST_API_KEY: ${INGEST_API_KEY:-civicai-dev-key}
+      SENAT_FETCH_LIMIT: ${SENAT_FETCH_LIMIT:-5}
+      # Vertex / LLM secrets come from env_file only (GCP_PROJECT_ID, GOOGLE_APPLICATION_CREDENTIALS, …)
     ports:
       - "3001:3001"
     restart: unless-stopped
@@ -23,6 +29,8 @@ services:
     pull_policy: if_not_present
     ports:
       - "5678:5678"
+    env_file:
+      - .env
     environment:
       GENERIC_TIMEZONE: ${GENERIC_TIMEZONE:-Europe/Bucharest}
       TZ: ${GENERIC_TIMEZONE:-Europe/Bucharest}
@@ -33,6 +41,7 @@ services:
       N8N_BASIC_AUTH_ACTIVE: ${N8N_BASIC_AUTH_ACTIVE:-true}
       N8N_BASIC_AUTH_USER: ${N8N_BASIC_AUTH_USER:-admin}
       N8N_BASIC_AUTH_PASSWORD: ${N8N_BASIC_AUTH_PASSWORD:-changeme}
+      N8N_BLOCK_ENV_ACCESS_IN_NODE: "false"
     volumes:
       - n8n_data:/home/node/.n8n
     depends_on:
