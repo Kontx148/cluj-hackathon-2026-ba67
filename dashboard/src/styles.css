@@ -1327,6 +1327,17 @@ select {
   overflow: hidden;
 }
 
+.tx-detail--vote-plain {
+  border: none;
+  background: transparent;
+  padding: 0;
+}
+
+.tx-detail--vote-plain .json-block {
+  max-height: none;
+  margin: 0;
+}
+
 .tx-detail__summary {
   display: flex;
   flex-wrap: wrap;

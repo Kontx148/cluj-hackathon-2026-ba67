@@ -1,8 +1,5 @@
-import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
-import { getElection } from '../../api/elections';
 import type { ChainTransaction } from '../../api/types';
-import { resolveVoteChoiceWithElection } from '../../utils/voteDisplay';
 
 function asRecord(v: unknown): Record<string, unknown> | null {
   return v && typeof v === 'object' && !Array.isArray(v)
@@ -11,7 +8,9 @@ function asRecord(v: unknown): Record<string, unknown> | null {
 }
 
 /**
- * Block explorer transaction row — summary + raw JSON only.
+ * Block explorer transaction row.
+ * VOTE_CAST: only encryptedVote + encryptedDigitalId, always visible (no summary).
+ * Other types: collapsible summary + full data JSON.
  */
 export function TransactionDetail({ tx }: { tx: ChainTransaction }) {
   const data =
@@ -23,28 +22,29 @@ export function TransactionDetail({ tx }: { tx: ChainTransaction }) {
     tx.electionId ??
     (typeof data?.electionId === 'string' ? data.electionId : undefined);
 
-  const isVote = tx.type === 'VOTE_CAST';
+  if (tx.type === 'VOTE_CAST' && data) {
+    const encryptedOnly = {
+      ...(data.encryptedVote !== undefined
+        ? { encryptedVote: data.encryptedVote }
+        : {}),
+      ...(data.encryptedDigitalId !== undefined
+        ? { encryptedDigitalId: data.encryptedDigitalId }
+        : {}),
+    };
 
-  const electionQuery = useQuery({
-    queryKey: ['election', electionId],
-    queryFn: () => getElection(electionId!),
-    enabled: isVote && !!electionId,
-    staleTime: 60_000,
-  });
+    return (
+      <div className="tx-detail tx-detail--vote-plain">
+        <pre className="json-block">
+          <code>{JSON.stringify(encryptedOnly, null, 2)}</code>
+        </pre>
+      </div>
+    );
+  }
 
-  const voteChoice =
-    isVote && data
-      ? resolveVoteChoiceWithElection(
-          data,
-          electionId,
-          electionQuery.data?.candidates ?? [],
-        )
-      : null;
-
-  const rawPayload = data ?? tx;
+  const displayPayload = data ?? tx;
 
   return (
-    <details className="tx-detail" open={isVote ? undefined : false}>
+    <details className="tx-detail">
       <summary className="tx-detail__summary">
         <span className="tx-detail__type">{tx.type}</span>
         {electionId && (
@@ -56,15 +56,12 @@ export function TransactionDetail({ tx }: { tx: ChainTransaction }) {
             {electionId}
           </Link>
         )}
-        {voteChoice && (
-          <span className="tx-detail__vote-choice">{voteChoice.summary}</span>
-        )}
         <code className="tx-detail__hash hash">{tx.transactionHash}</code>
       </summary>
 
       <div className="tx-detail__body">
         <pre className="json-block">
-          <code>{JSON.stringify(rawPayload, null, 2)}</code>
+          <code>{JSON.stringify(displayPayload, null, 2)}</code>
         </pre>
       </div>
     </details>
