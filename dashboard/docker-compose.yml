@@ -1,0 +1,25 @@
+# Operations dashboard — static SPA + nginx /gw proxy to gateway-1.
+# Requires ChainBackend stack running first (external network chainbackend_chain-net).
+#
+#   docker compose -p dashboard up --build -d
+
+services:
+  dashboard:
+    build:
+      context: .
+      args:
+        VITE_GATEWAY_URL: ${VITE_GATEWAY_URL:-/gw}
+        VITE_GATEWAY_PUBLIC_URL: ${VITE_GATEWAY_PUBLIC_URL:-}
+        VITE_GATEWAY_2_URL: ${VITE_GATEWAY_2_URL:-}
+        VITE_VALIDATOR_PUBLIC_HOST: ${VITE_VALIDATOR_PUBLIC_HOST:-}
+    container_name: election-dashboard
+    restart: unless-stopped
+    ports:
+      - "5173:80"
+    networks:
+      - chain-net
+
+networks:
+  chain-net:
+    external: true
+    name: chainbackend_chain-net

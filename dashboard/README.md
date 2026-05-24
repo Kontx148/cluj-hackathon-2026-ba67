@@ -57,6 +57,22 @@ closes and are never written to disk.
 - `/elections/:id` — Election detail + lifecycle actions.
 - `/chain` — Block browser, transaction lookup, integrity verify.
 
+## Production (DigitalOcean)
+
+Deployed automatically by `.github/workflows/deploy-chain-backend.yml` on push to
+`main`, after ChainBackend is healthy.
+
+- **URL:** `http://<DO_HOST>:5173/` (same host as the gateways; port **5173**)
+- The container nginx proxies `/gw/*` → `gateway-1:4001` on the Docker network
+  so the browser never needs CORS.
+- Build-time env is written on the server from `DO_HOST` — no extra GitHub
+  secrets beyond the existing deploy set.
+
+Open **port 5173** on the droplet firewall if the UI is unreachable.
+
+Operator API keys in the credential bar must match the keys configured on the
+gateways (`CHAIN_*_API_KEY` GitHub secrets → ChainBackend `.env`).
+
 ## Upgrade seams
 
 These are the deliberate points to change for production:

@@ -29,8 +29,11 @@ const BASE: string = import.meta.env.DEV
  * panel so the operator can see which deployment they're talking to, even
  * when traffic is being proxied through the dev server.
  */
+/** Public URLs shown in the UI (may differ from [BASE] when proxied via `/gw`). */
 export const GATEWAY_URLS = {
-  primary: import.meta.env.VITE_GATEWAY_URL as string,
+  primary:
+    (import.meta.env.VITE_GATEWAY_PUBLIC_URL as string | undefined) ||
+    (import.meta.env.VITE_GATEWAY_URL as string),
   secondary: import.meta.env.VITE_GATEWAY_2_URL as string,
 };
 

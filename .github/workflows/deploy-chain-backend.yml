@@ -1,4 +1,4 @@
-name: Deploy Backend Services
+name: Deploy Backend & Dashboard
 
 on:
   push:
@@ -154,4 +154,43 @@ jobs:
               echo "feed-api health check failed or not exposed, continuing..."
             fi
 
+            echo "Deploying operations dashboard..."
+
+            cd "$REPO_DIR/dashboard"
+
+            DO_PUBLIC_HOST="${{ secrets.DO_HOST }}"
+
+            cat > .env << EOF
+            VITE_GATEWAY_URL=/gw
+            VITE_GATEWAY_PUBLIC_URL=http://${DO_PUBLIC_HOST}:4001
+            VITE_GATEWAY_2_URL=http://${DO_PUBLIC_HOST}:4002
+            VITE_VALIDATOR_PUBLIC_HOST=${DO_PUBLIC_HOST}
+            EOF
+
+            docker compose -p dashboard down || true
+            docker compose -p dashboard up --build -d
+
+            docker compose -p dashboard ps
+
+            for i in {1..30}; do
+              if curl -fsS http://localhost:5173/ >/dev/null; then
+                echo "dashboard healthy"
+                break
+              fi
+
+              echo "dashboard not ready yet... retry $i/30"
+              sleep 2
+
+              if [ "$i" -eq 30 ]; then
+                echo "dashboard failed"
+                docker compose -p dashboard logs --tail=100
+                exit 1
+              fi
+            done
+
             echo "Deployment finished."
+            echo "Dashboard: http://${DO_PUBLIC_HOST}:5173/"
+            echo "Gateway 1: http://${DO_PUBLIC_HOST}:4001/health"
+            echo "Gateway 2: http://${DO_PUBLIC_HOST}:4002/health"
+            echo "n8n:       http://${DO_PUBLIC_HOST}:5678/"
+            echo "Feed API:  http://${DO_PUBLIC_HOST}:3001/health"

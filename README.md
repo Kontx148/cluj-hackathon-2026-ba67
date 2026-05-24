@@ -28,3 +28,18 @@ See [`ChainBackend/README.md`](./ChainBackend/README.md) for the full API
 reference, environment variables, and an end-to-end test flow with `curl`
 (propose → approve → open → vote → freeze → tally → threshold-decrypt →
 finish → verify).
+
+## Operations dashboard
+
+Web UI for institutions (propose / approve / lifecycle / chain explorer) in
+[`dashboard/`](./dashboard/). On DigitalOcean it is deployed with the same
+GitHub Action as ChainBackend and n8n — see
+[`dashboard/README.md`](./dashboard/README.md).
+
+| Service | Port (droplet) |
+|---------|----------------|
+| Dashboard | **5173** |
+| Gateway 1 | 4001 |
+| Gateway 2 | 4002 |
+| n8n | 5678 |
+| Feed API | 3001 |
