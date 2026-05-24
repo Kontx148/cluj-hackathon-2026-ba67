@@ -89,20 +89,6 @@ router.get('/', async (_req, res) => {
   });
 });
 
-router.get('/:id', async (req, res) => {
-  const view = await readMajority<unknown>(
-    `/elections/${encodeURIComponent(req.params.id)}`,
-  );
-  if (!view.result) return res.status(404).json(view);
-  res.json({
-    election: view.result,
-    consistent: view.consistent,
-    warning: view.warning,
-    responsiveValidators: view.responsiveValidators,
-    totalValidators: view.totalValidators,
-  });
-});
-
 router.get('/:id/public-key', async (req, res) => {
   const view = await readMajority<{ electionId: string; publicKey: string }>(
     `/elections/${encodeURIComponent(req.params.id)}/public-key`,
@@ -110,6 +96,20 @@ router.get('/:id/public-key', async (req, res) => {
   if (!view.result) return res.status(404).json(view);
   res.json({
     ...view.result,
+    consistent: view.consistent,
+    warning: view.warning,
+    responsiveValidators: view.responsiveValidators,
+    totalValidators: view.totalValidators,
+  });
+});
+
+router.get('/:id', async (req, res) => {
+  const view = await readMajority<unknown>(
+    `/elections/${encodeURIComponent(req.params.id)}`,
+  );
+  if (!view.result) return res.status(404).json(view);
+  res.json({
+    election: view.result,
     consistent: view.consistent,
     warning: view.warning,
     responsiveValidators: view.responsiveValidators,

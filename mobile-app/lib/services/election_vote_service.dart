@@ -83,16 +83,18 @@ class ElectionVoteService {
     }
 
     final electionId = request.election.id;
-    final publicKey = await _keyService.fetchElectionPublicKey(electionId);
+    final publicKey = await _keyService.fetchElectionPublicKey(
+      electionId,
+      cachedPem: request.election.electionPublicKey,
+    );
 
-    if (!_isPemKey(publicKey.publicKey)) {
+    if (!ElectionKeyService.isPemPublicKey(publicKey.publicKey)) {
       throw VoteSubmissionException(
         statusCode: 0,
         body: const {},
         message:
-            'This election is using a legacy mock key. The deployed gateway '
-            'needs the latest backend (with /elections/:id/public-key + '
-            'eligibility list). Redeploy and try again.',
+            'This election has no valid RSA public key. '
+            'Re-propose it with a current backend or redeploy the gateway.',
       );
     }
 
@@ -103,35 +105,6 @@ class ElectionVoteService {
 
     final encryptedVote = _buildEncryptedVote(request.election, request.candidateId);
     final token = request.anonymousTokenHash ?? _randomHex(32);
-    // #region agent log
-    try {
-      await http.post(
-        Uri.parse(
-          'http://127.0.0.1:7528/ingest/9b39a962-5f44-4917-9c64-0e70bdd0a08a',
-        ),
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Debug-Session-Id': '3c82ea',
-        },
-        body: jsonEncode({
-          'sessionId': '3c82ea',
-          'location': 'election_vote_service.dart:submitVote',
-          'message': 'client vote token generation',
-          'data': {
-            'electionId': electionId,
-            'tokenFromRequest': request.anonymousTokenHash != null,
-            'anonymousTokenHashPrefix': token.length >= 12
-                ? token.substring(0, 12)
-                : token,
-            'generatesFreshTokenEachSubmit': request.anonymousTokenHash == null,
-          },
-          'timestamp': DateTime.now().millisecondsSinceEpoch,
-          'hypothesisId': 'B',
-          'runId': 'pre-fix',
-        }),
-      );
-    } catch (_) {}
-    // #endregion
     final proof = request.voterProof ?? 'mock-voter-proof:${_randomHex(8)}';
     final timestamp = (request.timestamp ?? DateTime.now()).toUtc();
 
@@ -188,10 +161,6 @@ class ElectionVoteService {
     final vector = List<int>.filled(election.candidates.length, 0);
     vector[idx] = 1;
     return 'mock-enc:${election.id}:${jsonEncode(vector)}';
-  }
-
-  bool _isPemKey(String key) {
-    return key.contains('-----BEGIN') && key.contains('PUBLIC KEY-----');
   }
 
   String _humanError(int status, Map<String, dynamic> body) {

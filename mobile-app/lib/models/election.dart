@@ -65,6 +65,7 @@ class Election {
     required this.candidates,
     required this.startsAt,
     required this.endsAt,
+    this.electionPublicKey,
     this.publishedTally,
   });
 
@@ -76,6 +77,10 @@ class Election {
   final List<ElectionCandidate> candidates;
   final DateTime startsAt;
   final DateTime endsAt;
+
+  /// RSA public key (PEM) for encrypting the voter digital ID before submit.
+  final String? electionPublicKey;
+
   final Map<String, dynamic>? publishedTally;
 
   factory Election.fromJson(Map<String, dynamic> json) {
@@ -94,6 +99,7 @@ class Election {
       candidates: candidates,
       startsAt: DateTime.parse(json['startsAt'] as String),
       endsAt: DateTime.parse(json['endsAt'] as String),
+      electionPublicKey: json['electionPublicKey'] as String?,
       publishedTally: json['publishedTally'] as Map<String, dynamic>?,
     );
   }
