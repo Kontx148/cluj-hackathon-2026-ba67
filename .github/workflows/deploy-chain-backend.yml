@@ -230,7 +230,6 @@ jobs:
               exit 1
             fi
 
-<<<<<<< HEAD
             if curl -fsS http://localhost:3001/api/health/llm; then
               echo "Vertex AI healthy"
             else
@@ -239,8 +238,6 @@ jobs:
               exit 1
             fi
 
-            echo "Deployment finished."
-=======
             DO_PUBLIC_HOST="${{ secrets.DO_HOST }}"
 
             echo "Deployment finished."
@@ -249,4 +246,3 @@ jobs:
             echo "Gateway 2: http://${DO_PUBLIC_HOST}:4002/health"
             echo "n8n:       http://${DO_PUBLIC_HOST}:5678/"
             echo "Feed API:  http://${DO_PUBLIC_HOST}:3001/api/health"
->>>>>>> origin/main
