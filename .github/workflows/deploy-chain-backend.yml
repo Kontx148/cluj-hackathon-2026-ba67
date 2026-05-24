@@ -173,16 +173,22 @@ jobs:
             if [ "$FORCE_IMPORT_WORKFLOWS" = "true" ]; then
               SHOULD_IMPORT=true
               echo "Force-import enabled (workflow_dispatch)."
-            elif git diff --name-only "$PREV_HEAD" "$NEW_HEAD" -- mobile-app/n8n/workflows/ | grep -q .; then
-              SHOULD_IMPORT=true
-              echo "Workflow JSON changed in this deploy:"
-              git diff --name-only "$PREV_HEAD" "$NEW_HEAD" -- mobile-app/n8n/workflows/
             else
-              echo "No workflow JSON changes — skipping n8n import (live n8n workflows preserved)."
+              echo "Skipping n8n import on push deploy (use workflow_dispatch + Import n8n workflows to sync JSON)."
+            fi
+
+            SENAT_WF="$REPO_DIR/mobile-app/n8n/workflows/civicai-senat-romania.json"
+            if [ "$SHOULD_IMPORT" = "true" ] && [ -f "$SENAT_WF" ]; then
+              if ! grep -q 'simplify/records' "$SENAT_WF"; then
+                echo "ERROR: civicai-senat-romania.json on branch ${DEPLOY_BRANCH} has no Vertex simplify step."
+                echo "Merge the feature branch (or update main) before importing workflows."
+                exit 1
+              fi
+              echo "Senat workflow OK (contains /api/simplify/records)."
             fi
 
             if [ "$SHOULD_IMPORT" = "true" ] && [ -d "$REPO_DIR/mobile-app/n8n/workflows" ]; then
-              echo "Importing n8n workflows from repo..."
+              echo "Importing n8n workflows from repo (branch ${DEPLOY_BRANCH})..."
               docker compose -p civicai-n8n exec -T n8n n8n import:workflow --separate --input=/workflows
               docker compose -p civicai-n8n restart n8n
               echo "n8n workflows imported."

@@ -20,7 +20,9 @@ Docker Compose: **n8n** + **feed-api**. Workflows fetch civic data and merge int
 
 Each workflow POSTs to `POST /api/ingest/raw` with `category: law` or `category: news`. Law feeds **replace** on each run; news **merge** by item `id`.
 
-**CI deploy:** GitHub Actions only re-imports workflows when JSON files under `workflows/` change (or when you run deploy manually with **Import n8n workflows** checked). Pushes that only touch code/backend will **not** overwrite live n8n workflows.
+**CI deploy:** GitHub Actions **does not** re-import n8n workflows on ordinary push — only when you run **Deploy Backend Services** manually and check **Import n8n workflows**. That stops `main` (old JSON) from overwriting a fixed Senat workflow on the VPS. Import requires the Senat JSON to include `POST /api/simplify/records` (Vertex step).
+
+**Important:** `main` may still have the old 4-node Senat workflow until you merge the feature branch. Deploy that branch + import, or merge to `main` first.
 
 ---
 
