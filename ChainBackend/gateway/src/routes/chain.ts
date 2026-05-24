@@ -21,6 +21,14 @@ router.get('/blocks', async (_req, res) => {
   res.json(merge(view));
 });
 
+router.get('/blocks/by-hash/:blockHash', async (req, res) => {
+  const view = await readMajority<unknown>(
+    `/chain/blocks/by-hash/${encodeURIComponent(req.params.blockHash)}`,
+  );
+  if (!view.result) return res.status(404).json(view);
+  res.json(merge(view));
+});
+
 router.get('/blocks/:blockNumber', async (req, res) => {
   const view = await readMajority<unknown>(
     `/chain/blocks/${encodeURIComponent(req.params.blockNumber)}`,

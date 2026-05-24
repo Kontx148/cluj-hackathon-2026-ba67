@@ -8,11 +8,10 @@ import '../l10n/app_strings.dart';
 import '../l10n/locale_scope.dart';
 import '../models/feed_item.dart';
 import '../services/feed_service.dart';
-import '../utils/feed_item_localization.dart';
+import '../theme.dart';
 import '../utils/feed_filter.dart';
+import '../utils/feed_item_localization.dart';
 import '../utils/feed_section.dart';
-import '../utils/importance_level.dart';
-import '../widgets/importance_indicator.dart';
 
 class FeedScreen extends StatefulWidget {
   const FeedScreen({super.key});
@@ -25,19 +24,10 @@ class _FeedScreenState extends State<FeedScreen> {
   final _feedService = FeedService();
   late Future<List<FeedItem>> _feedFuture;
 
-  FeedLevel? _levelFilter = FeedLevel.romania;
-  String? _tagFilter;
+  FeedSection? _sectionFilter;
+  FeedLevel? _levelFilter;
   int? _importanceFilter;
-  FeedSection _section = FeedSection.laws;
-  bool _showFilters = false;
-
-  FeedFilters _filters(AppLocale locale) => FeedFilters(
-        section: _section,
-        language: locale,
-        level: _levelFilter,
-        tag: _tagFilter,
-        importance: _importanceFilter,
-      );
+  String? _topicFilter;
 
   @override
   void initState() {
@@ -52,34 +42,160 @@ class _FeedScreenState extends State<FeedScreen> {
     await _feedFuture;
   }
 
+  void _clearFilters() {
+    setState(() {
+      _sectionFilter = null;
+      _levelFilter = null;
+      _importanceFilter = null;
+      _topicFilter = null;
+    });
+  }
+
+  FeedFilters _filters(AppLocale locale) => FeedFilters(
+        section: _sectionFilter,
+        language: locale,
+        level: _levelFilter,
+        tag: _topicFilter,
+        importance: _importanceFilter,
+      );
+
+  int get _activeFilterCount =>
+      [_sectionFilter, _levelFilter, _importanceFilter, _topicFilter]
+          .where((e) => e != null)
+          .length;
+
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final strings = context.strings;
     final locale = context.appLocale;
 
     return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: SafeArea(
         child: FutureBuilder<List<FeedItem>>(
           future: _feedFuture,
           builder: (context, snapshot) {
+            final loading = snapshot.connectionState == ConnectionState.waiting;
+            final hasError = snapshot.hasError;
+            final all = snapshot.data ?? const <FeedItem>[];
+            final filtered = _filters(locale).apply(all);
+
             return RefreshIndicator(
               onRefresh: _reload,
               child: CustomScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 slivers: [
                   SliverToBoxAdapter(
-                    child: _buildHeader(context, strings, locale),
+                    child: _Header(strings: strings, locale: locale),
                   ),
-                  ..._buildFeedSlivers(context, snapshot, strings, locale),
                   SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 24, bottom: 32),
-                      child: Text(
-                        strings.footer,
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.labelSmall,
+                    child: _FilterRow(
+                      strings: strings,
+                      section: _sectionFilter,
+                      level: _levelFilter,
+                      importance: _importanceFilter,
+                      topic: _topicFilter,
+                      onSection: (s) => setState(
+                        () => _sectionFilter = _sectionFilter == s ? null : s,
+                      ),
+                      onLevel: (l) => setState(
+                        () => _levelFilter = _levelFilter == l ? null : l,
+                      ),
+                      onImportance: (i) => setState(
+                        () => _importanceFilter =
+                            _importanceFilter == i ? null : i,
+                      ),
+                      onTopic: (t) => setState(
+                        () => _topicFilter = _topicFilter == t ? null : t,
                       ),
                     ),
+                  ),
+                  if (_activeFilterCount > 0)
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 6, 16, 0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              strings.resultsCount(filtered.length),
+                              style: theme.textTheme.bodyMedium,
+                            ),
+                            TextButton(
+                              onPressed: _clearFilters,
+                              child: Text(strings.clearFilters),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  if (loading)
+                    const SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: Center(child: CircularProgressIndicator()),
+                    )
+                  else if (hasError)
+                    SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(24),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              HugeIcon(
+                                icon: HugeIcons.strokeRoundedAlert02,
+                                color: theme.colorScheme.error,
+                                size: 32,
+                              ),
+                              const SizedBox(height: 12),
+                              Text(strings.loadError,
+                                  style: theme.textTheme.titleMedium),
+                              const SizedBox(height: 6),
+                              Text(
+                                strings.loadErrorHint,
+                                textAlign: TextAlign.center,
+                                style: theme.textTheme.bodyMedium,
+                              ),
+                              const SizedBox(height: 12),
+                              FilledButton(
+                                onPressed: _reload,
+                                child: Text(strings.retry),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    )
+                  else if (filtered.isEmpty)
+                    SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: _EmptyState(
+                        strings: strings,
+                        onReset: _clearFilters,
+                      ),
+                    )
+                  else
+                    SliverPadding(
+                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+                      sliver: SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                          (context, i) {
+                            final item = filtered[i];
+                            return Padding(
+                              padding: EdgeInsets.only(
+                                bottom: i == filtered.length - 1 ? 0 : 12,
+                              ),
+                              child: _CivicCard(item: item, locale: locale),
+                            );
+                          },
+                          childCount: filtered.length,
+                        ),
+                      ),
+                    ),
+                  SliverToBoxAdapter(
+                    child: _Footer(strings: strings),
                   ),
                 ],
               ),
@@ -89,505 +205,559 @@ class _FeedScreenState extends State<FeedScreen> {
       ),
     );
   }
+}
 
-  List<Widget> _buildFeedSlivers(
-    BuildContext context,
-    AsyncSnapshot<List<FeedItem>> snapshot,
-    AppStrings strings,
-    AppLocale locale,
-  ) {
-    final theme = Theme.of(context);
-    if (snapshot.connectionState == ConnectionState.waiting) {
-      return const [
-        SliverFillRemaining(
-          hasScrollBody: false,
-          child: Center(child: CircularProgressIndicator()),
-        ),
-      ];
-    }
-    if (snapshot.hasError) {
-      return [
-        SliverFillRemaining(
-          hasScrollBody: false,
-          child: Center(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    HugeIcon(
-                      icon: HugeIcons.strokeRoundedAlert02,
-                      color: theme.colorScheme.error,
-                      size: 36,
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      strings.loadError,
-                      style: theme.textTheme.titleMedium,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      '${snapshot.error}\n\n${strings.loadErrorHint}',
-                      textAlign: TextAlign.center,
-                      style: theme.textTheme.bodyMedium,
-                    ),
-                    const SizedBox(height: 16),
-                    FilledButton(
-                      onPressed: _reload,
-                      child: Text(strings.retry),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-      ];
-    }
+// ─── Header ─────────────────────────────────────────────────────────────────
 
-    final allItems = snapshot.data ?? [];
-    final items = _filters(locale).apply(allItems);
+class _Header extends StatelessWidget {
+  const _Header({required this.strings, required this.locale});
 
-    if (items.isEmpty) {
-      return [
-        SliverFillRemaining(
-          hasScrollBody: false,
-          child: Center(
-            child: Text(
-              strings.noResults,
-              style: theme.textTheme.bodyMedium,
-            ),
-          ),
-        ),
-      ];
-    }
+  final AppStrings strings;
+  final AppLocale locale;
 
-    return [
-      SliverList.separated(
-        itemCount: items.length,
-        separatorBuilder: (_, __) => const SizedBox(height: 12),
-        itemBuilder: (context, index) =>
-            _FeedCard(item: items[index], locale: locale),
-      ),
-    ];
-  }
-
-  Widget _buildHeader(
-    BuildContext context,
-    AppStrings strings,
-    AppLocale locale,
-  ) {
+  @override
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
-      child: Column(
+      padding: const EdgeInsets.fromLTRB(16, 20, 16, 4),
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.primaryContainer,
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: HugeIcon(
-                  icon: HugeIcons.strokeRoundedAiBrain02,
-                  color: theme.colorScheme.primary,
-                  size: 22,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(strings.eyebrow, style: theme.textTheme.labelSmall),
-                    const SizedBox(height: 2),
-                    Text(strings.appName,
-                        style: theme.textTheme.headlineMedium),
-                  ],
-                ),
-              ),
-              IconButton(
-                tooltip: strings.refresh,
-                onPressed: _reload,
-                icon: HugeIcon(
-                  icon: HugeIcons.strokeRoundedRefresh,
-                  color: theme.colorScheme.onSurface,
-                  size: 20,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 6),
-          Text(strings.tagline, style: theme.textTheme.bodyMedium),
-          const SizedBox(height: 16),
-          SegmentedButton<FeedSection>(
-            segments: [
-              ButtonSegment(
-                value: FeedSection.laws,
-                label: Text(strings.sectionLaws),
-              ),
-              ButtonSegment(
-                value: FeedSection.news,
-                label: Text(strings.sectionNews),
-              ),
-            ],
-            selected: {_section},
-            onSelectionChanged: (selection) {
-              setState(() {
-                _section = selection.first;
-                _levelFilter =
-                    _section == FeedSection.laws ? FeedLevel.romania : null;
-                _tagFilter = null;
-              });
-            },
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: SegmentedButton<AppLocale>(
-                  segments: [
-                    for (final option in AppLocale.values)
-                      ButtonSegment(
-                        value: option,
-                        label: Text(option.label),
-                      ),
-                  ],
-                  selected: {locale},
-                  onSelectionChanged: (selection) {
-                    LocaleScope.of(context).onLocaleChanged(selection.first);
-                  },
-                ),
-              ),
-              const SizedBox(width: 8),
-              IconButton.filledTonal(
-                tooltip: 'Filters',
-                onPressed: () => setState(() => _showFilters = !_showFilters),
-                isSelected: _showFilters,
-                icon: HugeIcon(
-                  icon: HugeIcons.strokeRoundedSettings02,
-                  color: theme.colorScheme.primary,
-                  size: 20,
-                ),
-              ),
-            ],
-          ),
-          if (_showFilters) ...[
-            const SizedBox(height: 12),
-            _FilterSection(
-              title: strings.filterLevel,
-              child: _horizontalChips([
-                _chip(
-                  label: strings.allLevels,
-                  selected: _levelFilter == null,
-                  onTap: () => setState(() => _levelFilter = null),
-                ),
-                _chip(
-                  label: strings.levelEu,
-                  selected: _levelFilter == FeedLevel.eu,
-                  onTap: () => setState(() => _levelFilter = FeedLevel.eu),
-                ),
-                _chip(
-                  label: strings.levelRomania,
-                  selected: _levelFilter == FeedLevel.romania,
-                  onTap: () => setState(() => _levelFilter = FeedLevel.romania),
-                ),
-                _chip(
-                  label: strings.levelLocal,
-                  selected: _levelFilter == FeedLevel.local,
-                  onTap: () => setState(() => _levelFilter = FeedLevel.local),
-                ),
-              ]),
-            ),
-            _FilterSection(
-              title: strings.filterImportance,
-              child: _importanceDropdown(context, strings, locale),
-            ),
-            _FilterSection(
-              title: strings.filterTopics,
-              child: _topicDropdown(context, strings),
-            ),
-          ],
-          const SizedBox(height: 8),
-        ],
-      ),
-    );
-  }
-
-  String _tagShortLabel(String tag) {
-    return tag.startsWith('#') ? tag.substring(1).replaceAll('-', ' ') : tag;
-  }
-
-  Widget _filterDropdown<T>({
-    required T? value,
-    required List<DropdownMenuItem<T?>> items,
-    required ValueChanged<T?> onChanged,
-  }) {
-    return InputDecorator(
-      decoration: InputDecoration(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 12),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-      ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<T?>(
-          value: value,
-          isExpanded: true,
-          isDense: true,
-          items: items,
-          onChanged: onChanged,
-        ),
-      ),
-    );
-  }
-
-  Widget _importanceDropdown(
-    BuildContext context,
-    AppStrings strings,
-    AppLocale locale,
-  ) {
-    return _filterDropdown<int?>(
-      value: _importanceFilter,
-      items: [
-        DropdownMenuItem<int?>(
-          value: null,
-          child: Text(strings.allImportance),
-        ),
-        for (var i = ImportanceLevel.min; i <= ImportanceLevel.max; i++)
-          DropdownMenuItem<int?>(
-            value: i,
-            child: Row(
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(Icons.circle, size: 10, color: ImportanceLevel.color(i)),
-                const SizedBox(width: 8),
-                Text(ImportanceLevel.label(i, locale)),
+                Text(
+                  strings.eyebrow,
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: theme.colorScheme.primary,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  strings.civicFeedTitle,
+                  style: theme.textTheme.headlineMedium,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  strings.tagline,
+                  style: theme.textTheme.bodyMedium,
+                ),
               ],
             ),
           ),
-      ],
-      onChanged: (value) => setState(() => _importanceFilter = value),
-    );
-  }
-
-  Widget _topicDropdown(BuildContext context, AppStrings strings) {
-    return _filterDropdown<String?>(
-      value: _tagFilter,
-      items: [
-        DropdownMenuItem<String?>(
-          value: null,
-          child: Text(strings.allTags),
-        ),
-        for (final tag in FeedTags.topics)
-          DropdownMenuItem<String?>(
-            value: tag,
-            child: Text(_tagShortLabel(tag)),
-          ),
-      ],
-      onChanged: (value) => setState(() => _tagFilter = value),
-    );
-  }
-
-  Widget _horizontalChips(List<Widget> chips) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(children: chips),
-    );
-  }
-
-  Widget _chip({
-    required String label,
-    required bool selected,
-    required VoidCallback onTap,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.only(right: 8),
-      child: FilterChip(
-        label: Text(label),
-        selected: selected,
-        onSelected: (_) => onTap(),
+          const SizedBox(width: 10),
+          _LangSwitch(locale: locale),
+        ],
       ),
     );
   }
 }
 
-class _FilterSection extends StatelessWidget {
-  const _FilterSection({required this.title, required this.child});
+class _LangSwitch extends StatelessWidget {
+  const _LangSwitch({required this.locale});
 
-  final String title;
-  final Widget child;
+  final AppLocale locale;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final scope = LocaleScope.of(context);
+    final next = locale == AppLocale.en ? AppLocale.ro : AppLocale.en;
+    return InkWell(
+      onTap: () => scope.onLocaleChanged(next),
+      borderRadius: BorderRadius.circular(999),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surfaceContainerHighest,
+          borderRadius: BorderRadius.circular(999),
+        ),
+        child: Text(
+          next.label.toUpperCase().substring(0, 2),
+          style: const TextStyle(
+            fontSize: 11,
+            fontWeight: FontWeight.w800,
+            letterSpacing: 1.0,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Filter row ─────────────────────────────────────────────────────────────
+
+class _FilterRow extends StatelessWidget {
+  const _FilterRow({
+    required this.strings,
+    required this.section,
+    required this.level,
+    required this.importance,
+    required this.topic,
+    required this.onSection,
+    required this.onLevel,
+    required this.onImportance,
+    required this.onTopic,
+  });
+
+  final AppStrings strings;
+  final FeedSection? section;
+  final FeedLevel? level;
+  final int? importance;
+  final String? topic;
+  final ValueChanged<FeedSection> onSection;
+  final ValueChanged<FeedLevel> onLevel;
+  final ValueChanged<int> onImportance;
+  final ValueChanged<String> onTopic;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title.toUpperCase(),
-            style: Theme.of(context).textTheme.labelSmall,
+      padding: const EdgeInsets.only(top: 12, bottom: 4),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Row(
+          children: [
+            _Chip(
+              label: strings.sectionLaws,
+              selected: section == FeedSection.laws,
+              onTap: () => onSection(FeedSection.laws),
+            ),
+            const SizedBox(width: 8),
+            _Chip(
+              label: strings.sectionNews,
+              selected: section == FeedSection.news,
+              onTap: () => onSection(FeedSection.news),
+            ),
+            _Divider(),
+            _Chip(
+              label: strings.levelEu,
+              selected: level == FeedLevel.eu,
+              onTap: () => onLevel(FeedLevel.eu),
+            ),
+            const SizedBox(width: 8),
+            _Chip(
+              label: strings.levelRomania,
+              selected: level == FeedLevel.romania,
+              onTap: () => onLevel(FeedLevel.romania),
+            ),
+            const SizedBox(width: 8),
+            _Chip(
+              label: strings.levelLocal,
+              selected: level == FeedLevel.local,
+              onTap: () => onLevel(FeedLevel.local),
+            ),
+            _Divider(),
+            for (var i = 1; i <= 5; i++) ...[
+              _ImportanceChip(
+                value: i,
+                selected: importance == i,
+                onTap: () => onImportance(i),
+              ),
+              const SizedBox(width: 6),
+            ],
+            _Divider(),
+            for (var i = 0; i < 6 && i < FeedTags.topics.length; i++) ...[
+              _Chip(
+                label: _stripHash(FeedTags.topics[i]),
+                selected: topic == FeedTags.topics[i],
+                onTap: () => onTopic(FeedTags.topics[i]),
+              ),
+              const SizedBox(width: 8),
+            ],
+            const SizedBox(width: 8),
+          ],
+        ),
+      ),
+    );
+  }
+
+  static String _stripHash(String t) {
+    return t.startsWith('#')
+        ? t.substring(1).replaceAll('-', ' ')
+        : t;
+  }
+}
+
+class _Chip extends StatelessWidget {
+  const _Chip({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Material(
+      color: selected
+          ? theme.colorScheme.primary
+          : theme.colorScheme.surfaceContainerHighest,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(999),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          child: Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w800,
+              color: selected
+                  ? theme.colorScheme.onPrimary
+                  : theme.textTheme.bodyMedium?.color,
+            ),
           ),
-          const SizedBox(height: 6),
-          child,
-        ],
+        ),
       ),
     );
   }
 }
 
-class _FeedCard extends StatelessWidget {
-  const _FeedCard({required this.item, required this.locale});
+class _ImportanceChip extends StatelessWidget {
+  const _ImportanceChip({
+    required this.value,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final int value;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Material(
+      color: selected
+          ? theme.colorScheme.primary
+          : theme.colorScheme.surfaceContainerHighest,
+      shape: const CircleBorder(),
+      child: InkWell(
+        onTap: onTap,
+        customBorder: const CircleBorder(),
+        child: SizedBox(
+          width: 30,
+          height: 30,
+          child: Center(
+            child: Text(
+              '$value',
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w800,
+                color: selected
+                    ? theme.colorScheme.onPrimary
+                    : theme.textTheme.bodyMedium?.color,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _Divider extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      width: 1,
+      height: 22,
+      margin: const EdgeInsets.symmetric(horizontal: 8),
+      color: theme.colorScheme.outline,
+    );
+  }
+}
+
+// ─── Card ──────────────────────────────────────────────────────────────────
+
+class _CivicCard extends StatelessWidget {
+  const _CivicCard({required this.item, required this.locale});
 
   final FeedItem item;
   final AppLocale locale;
 
   @override
   Widget build(BuildContext context) {
-    final strings = context.strings;
     final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Card(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+    final strings = context.strings;
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: theme.colorScheme.outline),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
             children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _LevelBadge(level: item.level),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      item.source,
-                      style: theme.textTheme.labelSmall,
-                      overflow: TextOverflow.ellipsis,
-                    ),
+              Expanded(
+                child: Text(
+                  item.source,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
                   ),
-                  ImportanceBadge(level: item.importance),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Text(
-                item.localizedTitle(locale),
-                style: theme.textTheme.titleMedium,
-                maxLines: 3,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                item.localizedSummary(locale),
-                style: theme.textTheme.bodyMedium,
-                maxLines: 4,
-                overflow: TextOverflow.ellipsis,
-              ),
-              if (item.tags.isNotEmpty) ...[
-                const SizedBox(height: 8),
-                Wrap(
-                  spacing: 6,
-                  runSpacing: 6,
-                  children: item.tags.map((t) {
-                    return Chip(
-                      label: Text(
-                        t.startsWith('#') ? t.substring(1) : t,
-                        style: const TextStyle(fontSize: 11),
-                      ),
-                      visualDensity: VisualDensity.compact,
-                      padding: EdgeInsets.zero,
-                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    );
-                  }).toList(),
+                  overflow: TextOverflow.ellipsis,
                 ),
-              ],
-              const SizedBox(height: 12),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  if (item.actionPossible)
-                    Expanded(
-                      child: Tooltip(
-                        message: strings.civicActionHint,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color:
-                                const Color(0xFF2F9E44).withValues(alpha: 0.12),
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(
-                              color: const Color(0xFF2F9E44)
-                                  .withValues(alpha: 0.35),
-                            ),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const HugeIcon(
-                                icon: HugeIcons.strokeRoundedTaskDone02,
-                                color: Color(0xFF2F9E44),
-                                size: 14,
-                              ),
-                              const SizedBox(width: 6),
-                              Flexible(
-                                child: Text(
-                                  strings.civicAction,
-                                  style: theme.textTheme.labelSmall?.copyWith(
-                                    color: const Color(0xFF2F9E44),
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    )
-                  else
-                    const Spacer(),
-                  TextButton(
-                    onPressed: () => launchUrl(Uri.parse(item.link)),
-                    child: Text(strings.open),
-                  ),
-                ],
               ),
+              const SizedBox(width: 8),
+              _LevelGlyph(level: item.level),
+              const SizedBox(width: 8),
+              _ImportanceDots(value: item.importance),
             ],
           ),
+          const SizedBox(height: 8),
+          Text(
+            item.localizedTitle(locale),
+            style: theme.textTheme.titleLarge?.copyWith(fontSize: 14),
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: 6),
+          Text(
+            item.localizedSummary(locale),
+            style: theme.textTheme.bodyMedium,
+            maxLines: 4,
+            overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 6,
+            runSpacing: 6,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              if (item.actionPossible)
+                Tooltip(
+                  message: strings.civicActionHint,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 3,
+                    ),
+                    decoration: BoxDecoration(
+                      color: CivicPalette.statusEmeraldBg,
+                      borderRadius: BorderRadius.circular(999),
+                      border: Border.all(
+                        color: const Color(0xFFA7F3D0),
+                      ),
+                    ),
+                    child: Text(
+                      strings.civicAction,
+                      style: const TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w800,
+                        color: CivicPalette.statusEmeraldFg,
+                      ),
+                    ),
+                  ),
+                ),
+              for (final t in item.tags.take(3))
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 3,
+                  ),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: Text(
+                    t.startsWith('#') ? t.substring(1) : t,
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w600,
+                      color: theme.textTheme.bodyMedium?.color,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Align(
+            alignment: Alignment.centerRight,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(8),
+              onTap: () => launchUrl(
+                Uri.parse(item.link),
+                mode: LaunchMode.externalApplication,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 6,
+                  vertical: 4,
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    HugeIcon(
+                      icon: HugeIcons.strokeRoundedLinkSquare01,
+                      color: theme.colorScheme.primary,
+                      size: 11,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      strings.open,
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        color: theme.colorScheme.primary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _LevelGlyph extends StatelessWidget {
+  const _LevelGlyph({required this.level});
+
+  final FeedLevel level;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final color = theme.textTheme.bodyMedium?.color ?? theme.colorScheme.onSurface;
+    final icon = switch (level) {
+      FeedLevel.eu => HugeIcons.strokeRoundedGlobal,
+      FeedLevel.local => HugeIcons.strokeRoundedLocation01,
+      FeedLevel.romania => null,
+    };
+    if (icon == null) return const SizedBox.shrink();
+    return HugeIcon(icon: icon, color: color, size: 11);
+  }
+}
+
+class _ImportanceDots extends StatelessWidget {
+  const _ImportanceDots({required this.value});
+
+  final int value;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final clamped = value.clamp(1, 5);
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: List.generate(5, (i) {
+        final filled = i < clamped;
+        return Padding(
+          padding: const EdgeInsets.only(left: 3),
+          child: Container(
+            width: 6,
+            height: 6,
+            decoration: BoxDecoration(
+              color: filled
+                  ? theme.colorScheme.primary
+                  : theme.colorScheme.outline,
+              shape: BoxShape.circle,
+            ),
+          ),
+        );
+      }),
+    );
+  }
+}
+
+// ─── Empty + footer ─────────────────────────────────────────────────────────
+
+class _EmptyState extends StatelessWidget {
+  const _EmptyState({required this.strings, required this.onReset});
+
+  final AppStrings strings;
+  final VoidCallback onReset;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 64,
+              height: 64,
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surfaceContainerHighest,
+                shape: BoxShape.circle,
+              ),
+              child: Center(
+                child: HugeIcon(
+                  icon: HugeIcons.strokeRoundedNews01,
+                  color: theme.textTheme.bodyMedium?.color ??
+                      theme.colorScheme.onSurface,
+                  size: 26,
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(strings.emptyFeedTitle,
+                style: theme.textTheme.titleLarge?.copyWith(fontSize: 16)),
+            const SizedBox(height: 4),
+            Text(strings.emptyFeedSubtitle,
+                style: theme.textTheme.bodyMedium),
+            const SizedBox(height: 16),
+            FilledButton(
+              onPressed: onReset,
+              child: Text(strings.resetFilters),
+            ),
+          ],
         ),
       ),
     );
   }
 }
 
-class _LevelBadge extends StatelessWidget {
-  const _LevelBadge({required this.level});
+class _Footer extends StatelessWidget {
+  const _Footer({required this.strings});
 
-  final FeedLevel level;
+  final AppStrings strings;
 
   @override
   Widget build(BuildContext context) {
-    final strings = context.strings;
-    final label = switch (level) {
-      FeedLevel.eu => strings.levelEu,
-      FeedLevel.romania => strings.levelRomania,
-      FeedLevel.local => strings.levelLocal,
-    };
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Text(
-        label,
-        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              color: Theme.of(context).colorScheme.primary,
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 28, 16, 16),
+      child: Column(
+        children: [
+          Container(
+            height: 1,
+            color: theme.colorScheme.outline,
+          ),
+          const SizedBox(height: 14),
+          Text(
+            strings.footer,
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodySmall,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            strings.footerSlogan,
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodySmall?.copyWith(
+              fontSize: 10,
+              color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.6),
             ),
+          ),
+        ],
       ),
     );
   }

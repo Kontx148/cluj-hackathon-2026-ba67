@@ -312,7 +312,7 @@ cannot approve on behalf of another institution).
 
 * `GET  /health`
 * `GET  /status`
-* `GET  /chain` (`/blocks`, `/blocks/:n`, `/transactions/:hash`, `/elections/:id`, `/elections/:id/transactions`, `/verify`)
+* `GET  /chain` (`/blocks`, `/blocks/:n`, `/blocks/by-hash/:blockHash`, `/transactions/:hash`, `/elections/:id`, `/elections/:id/transactions`, `/verify`)
 * `GET  /elections`, `GET /elections/:id`
 * `POST /consensus/prepare`
 * `POST /consensus/commit`
