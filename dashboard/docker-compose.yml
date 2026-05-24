@@ -1,0 +1,28 @@
+# Local-only helper. Production deploy uses ChainBackend/docker-compose.yml
+# (dashboard service, same `docker compose -p chainbackend up` as gateways).
+#
+#   cd ChainBackend && docker compose up --build -d
+#
+# Standalone (needs chain network already up):
+#   docker compose -p dashboard up --build -d
+
+services:
+  dashboard:
+    build:
+      context: .
+      args:
+        VITE_GATEWAY_URL: ${VITE_GATEWAY_URL:-/gw}
+        VITE_GATEWAY_PUBLIC_URL: ${VITE_GATEWAY_PUBLIC_URL:-http://localhost:4001}
+        VITE_GATEWAY_2_URL: ${VITE_GATEWAY_2_URL:-http://localhost:4002}
+        VITE_VALIDATOR_PUBLIC_HOST: ${VITE_VALIDATOR_PUBLIC_HOST:-localhost}
+    container_name: election-dashboard
+    restart: unless-stopped
+    ports:
+      - "5173:80"
+    networks:
+      - chain-net
+
+networks:
+  chain-net:
+    external: true
+    name: chainbackend_chain-net
