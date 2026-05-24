@@ -260,12 +260,8 @@
     }
   ],
   "meta": {
-    "source": "n8n-law-gather",
-    "updatedAt": "2026-05-23T13:05:25.407Z",
-    "note": "Replace via n8n POST /api/ingest/raw or by editing this file",
-    "workflow": "senat-plx",
-    "lastIngestCount": 30,
     "feed": "news",
-    "count": 12
+    "source": "cloud-sync",
+    "updatedAt": "2026-05-24T08:41:57.940826Z"
   }
 }

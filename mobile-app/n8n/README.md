@@ -18,7 +18,11 @@ Docker Compose: **n8n** + **feed-api**. Workflows fetch civic data and merge int
 
 **Total in `workflows/`:** 6 JSON files — import the **5 active** ones (2 law + 3 news).
 
-Each workflow POSTs to `POST /api/ingest/raw` with `category: law` or `category: news`. Ingest merges by item `id`.
+Each workflow POSTs to `POST /api/ingest/raw` with `category: law` or `category: news`. Law feeds **replace** on each run; news **merge** by item `id`.
+
+**CI deploy:** GitHub Actions **does not** re-import n8n workflows on ordinary push — only when you run **Deploy Backend Services** manually and check **Import n8n workflows**. That stops `main` (old JSON) from overwriting a fixed Senat workflow on the VPS. Import requires the Senat JSON to include `POST /api/simplify/records` (Vertex step).
+
+**Important:** `main` may still have the old 4-node Senat workflow until you merge the feature branch. Deploy that branch + import, or merge to `main` first.
 
 ---
 
@@ -27,10 +31,48 @@ Each workflow POSTs to `POST /api/ingest/raw` with `category: law` or `category:
 ```bash
 cd mobile-app/n8n
 cp .env.example .env
+# Edit .env locally — Vertex AI + gcp-service-account.json (never commit; both gitignored)
 docker compose up -d
 ```
 
-1. **http://localhost:5678** → import workflows from `workflows/`
+**API keys stay off GitHub.** Docker reads secrets from your local `.env` file (`env_file` in `docker-compose.yml`) or from your shell:
+
+```bash
+export GCP_PROJECT_ID='your-project'
+# Place service account JSON at mobile-app/n8n/gcp-service-account.json
+docker compose up -d
+```
+
+Only `.env.example` (local) and `.env.deploy.example` (VPS) are in the repo — not your real `.env`.
+
+### Deploy on VPS (165.232.67.137)
+
+```bash
+cd mobile-app/n8n
+cp .env.deploy.example .env
+nano .env   # GCP_PROJECT_ID + strong passwords; copy gcp-service-account.json into n8n/
+docker compose up -d
+```
+
+| URL | Purpose |
+|-----|---------|
+| http://165.232.67.137:5678 | n8n UI |
+| http://165.232.67.137:3001/api/feed | feed-api (Flutter `API_BASE`) |
+| http://165.232.67.137:3001/api/health | health check |
+
+**Flutter release APK** (phone talks to the server):
+
+```bash
+flutter build apk --release --dart-define=API_BASE=http://165.232.67.137:3001
+```
+
+Open ports on the droplet firewall: **3001**, **5678** (or put nginx + HTTPS in front later).
+
+**CI/CD:** see [DEPLOY_CI.md](./DEPLOY_CI.md) for GitHub Actions setup (secrets, SSH, auto-deploy on push to `main`).
+
+Workflow JSON still uses `http://feed-api:3001` between containers — leave that as-is.
+
+1. **http://localhost:5678** (local) or **http://165.232.67.137:5678** (VPS) → import workflows
 2. Execute each active workflow once → toggle **Active**
 3. `curl http://localhost:3001/api/feed | head -c 400`
 4. Rebuild app: `cd .. && flutter build ios --release && flutter install --release`
@@ -41,7 +83,10 @@ docker compose up -d
 
 | File | Source | Fetch |
 |------|--------|-------|
-| `civicai-senat-romania.json` | [senat.ro/legiproiect](https://www.senat.ro/legiproiect.aspx) | `GET /api/fetch/senat` (~68 bills in consultation) |
+| `civicai-senat-romania.json` | [senat.ro/legiproiect](https://www.senat.ro/legiproiect.aspx) | Fetch → **feed-api Gemini simplify** → ingest |
+
+**Senat simplify:** `POST /api/simplify/records` via **Vertex AI** (Gemini on GCP). Fetches **20 bills max** per run (`SENAT_FETCH_LIMIT=20`). Romanian `plain_summary` + English `plain_summary_en`. Verify: `curl http://localhost:3001/api/health/llm`.
+
 | `civicai-cdep-romania.json` | [cdep.ro](https://www.cdep.ro/) | `GET /api/fetch/cdep` (best-effort; may return no records) |
 
 ---

@@ -28,4 +28,25 @@ void main() {
     expect(roBill.localizedTitle(AppLocale.en), contains('Legislative'));
     expect(roBill.localizedSummary(AppLocale.en), contains('Legislative proposal'));
   });
+
+  test('renders structured TL;DR preview', () {
+    const structured = FeedItem(
+      id: '3',
+      title: 'B1',
+      link: 'https://example.com',
+      description: 'Official text',
+      publishedAt: '2026-05-01T00:00:00Z',
+      source: 'Senat',
+      sourceId: 'senat-plx',
+      level: FeedLevel.romania,
+      sourceLang: 'ro',
+      feedCategory: 'law',
+      plainSummary:
+          '{"tldr":["Punct unu scurt","Punct doi scurt","Punct trei scurt"],"sections":[{"title":"Ce propune","body":"Detalii."},{"title":"Cine e afectat","body":"Cetatenii."}]}',
+    );
+    final parsed = structured.localizedStructuredSummary(AppLocale.ro);
+    expect(parsed?.tldr, hasLength(3));
+    expect(parsed?.sections, hasLength(2));
+    expect(structured.localizedLawPreview(AppLocale.ro), contains('Punct unu'));
+  });
 }

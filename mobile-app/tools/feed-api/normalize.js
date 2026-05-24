@@ -220,6 +220,12 @@ function normalizeRawRecord(raw) {
   const summary = raw.summary ? String(raw.summary).trim() : "";
   if (summary) item.summary = summary;
 
+  for (const key of ["plain_summary", "plain_summary_en", "analyzed_at", "analysis_source"]) {
+    if (raw[key] != null && String(raw[key]).trim() !== "") {
+      item[key] = String(raw[key]).trim();
+    }
+  }
+
   if (raw.voteDate) item.voteDate = raw.voteDate;
   if (raw.consultationDeadline && !item.voteDate) {
     item.voteDate = raw.consultationDeadline;

@@ -19,9 +19,12 @@ Thumbs.db
 .env
 .env.*
 !.env.example
+!.env.deploy.example
 *.pem
 *.key
 credentials.json
+gcp-service-account.json
+**/gcp-service-account.json
 
 # Flutter / Dart
 .dart_tool/

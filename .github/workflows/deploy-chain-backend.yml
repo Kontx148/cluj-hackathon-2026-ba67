@@ -2,8 +2,17 @@ name: Deploy Backend & Dashboard
 
 on:
   push:
-    branches:
-      - main
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: Branch to deploy
+        required: false
+        default: main
+      import_n8n_workflows:
+        description: Force re-import n8n workflows from repo JSON (overwrites matching workflow IDs)
+        required: false
+        default: false
+        type: boolean
 
 jobs:
   deploy:
@@ -12,10 +21,15 @@ jobs:
     steps:
       - name: Deploy services to DigitalOcean
         uses: appleboy/ssh-action@v1.2.0
+        env:
+          GCP_SERVICE_ACCOUNT_JSON: ${{ secrets.GCP_SERVICE_ACCOUNT_JSON }}
+          DEPLOY_BRANCH: ${{ github.event.inputs.branch || github.ref_name }}
+          FORCE_IMPORT_WORKFLOWS: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.import_n8n_workflows == true && 'true' || 'false' }}
         with:
           host: ${{ secrets.DO_HOST }}
           username: root
           key: ${{ secrets.DO_SSH_KEY }}
+          envs: GCP_SERVICE_ACCOUNT_JSON,DEPLOY_BRANCH,FORCE_IMPORT_WORKFLOWS
           script: |
             set -e
 
@@ -28,8 +42,15 @@ jobs:
 
             cd "$REPO_DIR"
 
-            git fetch origin main
-            git reset --hard origin/main
+            PREV_HEAD=$(git rev-parse HEAD)
+
+            git fetch origin "${DEPLOY_BRANCH}"
+            git checkout "${DEPLOY_BRANCH}"
+            git reset --hard "origin/${DEPLOY_BRANCH}"
+
+            NEW_HEAD=$(git rev-parse HEAD)
+
+            echo "Deployed branch: ${DEPLOY_BRANCH} (${PREV_HEAD:0:7} -> ${NEW_HEAD:0:7})"
 
             echo "Deploying ChainBackend..."
 
@@ -130,6 +151,12 @@ jobs:
             cat > .env << 'EOF'
             INGEST_API_KEY=${{ secrets.INGEST_API_KEY }}
             GENERIC_TIMEZONE=Europe/Bucharest
+            SENAT_FETCH_LIMIT=20
+            LLM_PROVIDER=vertex
+            GCP_PROJECT_ID=${{ secrets.GCP_PROJECT_ID }}
+            GCP_REGION=europe-west4
+            VERTEX_MODEL=gemini-2.5-flash
+            GOOGLE_APPLICATION_CREDENTIALS=/secrets/gcp-credentials.json
             N8N_HOST=${{ secrets.N8N_HOST }}
             N8N_PROTOCOL=http
             WEBHOOK_URL=${{ secrets.WEBHOOK_URL }}
@@ -138,6 +165,9 @@ jobs:
             N8N_BASIC_AUTH_PASSWORD=${{ secrets.N8N_BASIC_AUTH_PASSWORD }}
             N8N_SECURE_COOKIE=false
             EOF
+
+            umask 077
+            printf '%s\n' "$GCP_SERVICE_ACCOUNT_JSON" > gcp-service-account.json
 
             docker compose -p civicai-n8n down
             docker compose -p civicai-n8n up --build -d
@@ -163,13 +193,31 @@ jobs:
               fi
             done
 
-            echo "Importing n8n workflows..."
+            echo "Checking n8n workflow import..."
 
-            if [ -d "$REPO_DIR/mobile-app/n8n/workflows" ]; then
-              docker compose -p civicai-n8n exec -T n8n n8n import:workflow --separate --input=/workflows || true
-              docker compose -p civicai-n8n restart n8n
+            SHOULD_IMPORT=false
+            if [ "$FORCE_IMPORT_WORKFLOWS" = "true" ]; then
+              SHOULD_IMPORT=true
+              echo "Force-import enabled (workflow_dispatch)."
             else
-              echo "No workflows folder found, skipping workflow import."
+              echo "Skipping n8n import on push deploy (use workflow_dispatch + Import n8n workflows to sync JSON)."
+            fi
+
+            SENAT_WF="$REPO_DIR/mobile-app/n8n/workflows/civicai-senat-romania.json"
+            if [ "$SHOULD_IMPORT" = "true" ] && [ -f "$SENAT_WF" ]; then
+              if ! grep -q 'simplify/records' "$SENAT_WF"; then
+                echo "ERROR: civicai-senat-romania.json on branch ${DEPLOY_BRANCH} has no Vertex simplify step."
+                echo "Merge the feature branch (or update main) before importing workflows."
+                exit 1
+              fi
+              echo "Senat workflow OK (contains /api/simplify/records)."
+            fi
+
+            if [ "$SHOULD_IMPORT" = "true" ] && [ -d "$REPO_DIR/mobile-app/n8n/workflows" ]; then
+              echo "Importing n8n workflows from repo (branch ${DEPLOY_BRANCH})..."
+              docker compose -p civicai-n8n exec -T n8n n8n import:workflow --separate --input=/workflows
+              docker compose -p civicai-n8n restart n8n
+              echo "n8n workflows imported."
             fi
 
             echo "Checking feed-api..."
@@ -177,7 +225,17 @@ jobs:
             if curl -fsS http://localhost:3001/api/health; then
               echo "feed-api healthy"
             else
-              echo "feed-api health check failed or not exposed, continuing..."
+              echo "feed-api /api/health failed"
+              docker compose -p civicai-n8n logs feed-api --tail=100
+              exit 1
+            fi
+
+            if curl -fsS http://localhost:3001/api/health/llm; then
+              echo "Vertex AI healthy"
+            else
+              echo "feed-api /api/health/llm failed — check GCP_PROJECT_ID and GCP_SERVICE_ACCOUNT_JSON secrets"
+              docker compose -p civicai-n8n logs feed-api --tail=100
+              exit 1
             fi
 
             DO_PUBLIC_HOST="${{ secrets.DO_HOST }}"

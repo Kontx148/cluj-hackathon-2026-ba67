@@ -12,6 +12,7 @@ import '../theme.dart';
 import '../utils/feed_filter.dart';
 import '../utils/feed_item_localization.dart';
 import '../utils/feed_section.dart';
+import 'law_detail_screen.dart';
 
 class FeedScreen extends StatefulWidget {
   const FeedScreen({super.key});
@@ -89,6 +90,13 @@ class _FeedScreenState extends State<FeedScreen> {
                   SliverToBoxAdapter(
                     child: _Header(strings: strings, locale: locale),
                   ),
+                  if (hasError && !loading)
+                    SliverToBoxAdapter(
+                      child: _FeedErrorBanner(
+                        strings: strings,
+                        onRetry: _reload,
+                      ),
+                    ),
                   SliverToBoxAdapter(
                     child: _FeedFilterBar(
                       strings: strings,
@@ -132,40 +140,7 @@ class _FeedScreenState extends State<FeedScreen> {
                       hasScrollBody: false,
                       child: Center(child: CircularProgressIndicator()),
                     )
-                  else if (hasError)
-                    SliverFillRemaining(
-                      hasScrollBody: false,
-                      child: Center(
-                        child: Padding(
-                          padding: const EdgeInsets.all(24),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              HugeIcon(
-                                icon: HugeIcons.strokeRoundedAlert02,
-                                color: theme.colorScheme.error,
-                                size: 32,
-                              ),
-                              const SizedBox(height: 12),
-                              Text(strings.loadError,
-                                  style: theme.textTheme.titleMedium),
-                              const SizedBox(height: 6),
-                              Text(
-                                strings.loadErrorHint,
-                                textAlign: TextAlign.center,
-                                style: theme.textTheme.bodyMedium,
-                              ),
-                              const SizedBox(height: 12),
-                              FilledButton(
-                                onPressed: _reload,
-                                child: Text(strings.retry),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    )
-                  else if (filtered.isEmpty)
+                  else if (!hasError && filtered.isEmpty)
                     SliverFillRemaining(
                       hasScrollBody: false,
                       child: _EmptyState(
@@ -173,7 +148,7 @@ class _FeedScreenState extends State<FeedScreen> {
                         onReset: _clearFilters,
                       ),
                     )
-                  else
+                  else if (!hasError)
                     SliverPadding(
                       padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
                       sliver: SliverList(
@@ -633,6 +608,141 @@ class _CivicCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final strings = context.strings;
+    final isLaw = feedSectionForItem(item) == FeedSection.laws;
+
+    void openDetail() {
+      Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (_) => LawDetailScreen(item: item),
+        ),
+      );
+    }
+
+    final previewText = isLaw
+        ? (item.localizedLawPreview(locale) ?? strings.lawSummaryPending)
+        : item.localizedSummary(locale);
+
+    final tagsSection = Wrap(
+      spacing: 6,
+      runSpacing: 6,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: [
+        if (item.actionPossible)
+          Tooltip(
+            message: strings.civicActionHint,
+            child: Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 8,
+                vertical: 3,
+              ),
+              decoration: BoxDecoration(
+                color: CivicPalette.statusEmeraldBg,
+                borderRadius: BorderRadius.circular(999),
+                border: Border.all(
+                  color: const Color(0xFFA7F3D0),
+                ),
+              ),
+              child: Text(
+                strings.civicAction,
+                style: const TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w800,
+                  color: CivicPalette.statusEmeraldFg,
+                ),
+              ),
+            ),
+          ),
+        for (final t in item.tags.take(3))
+          Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 8,
+              vertical: 3,
+            ),
+            decoration: BoxDecoration(
+              color: CivicPalette.muted,
+              borderRadius: BorderRadius.circular(999),
+            ),
+            child: Text(
+              t.startsWith('#') ? t.substring(1) : t,
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w600,
+                color: theme.textTheme.bodyMedium?.color,
+              ),
+            ),
+          ),
+      ],
+    );
+
+    final actionRow = Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        if (isLaw) ...[
+          _CardLinkAction(
+            label: strings.readSummary,
+            icon: HugeIcons.strokeRoundedBookOpen01,
+            onTap: openDetail,
+          ),
+          const SizedBox(width: 12),
+        ],
+        _CardLinkAction(
+          label: strings.open,
+          icon: HugeIcons.strokeRoundedLinkSquare01,
+          onTap: () => launchUrl(
+            Uri.parse(item.link),
+            mode: LaunchMode.externalApplication,
+          ),
+        ),
+      ],
+    );
+
+    final mainBody = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                item.source,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            const SizedBox(width: 8),
+            _LevelGlyph(level: item.level),
+            const SizedBox(width: 8),
+            _ImportanceDots(value: item.importance),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Text(
+          item.localizedTitle(locale),
+          style: theme.textTheme.titleLarge?.copyWith(fontSize: 14),
+          maxLines: 3,
+          overflow: TextOverflow.ellipsis,
+        ),
+        const SizedBox(height: 6),
+        Text(
+          previewText,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            fontStyle: isLaw && !item.hasPlainSummary
+                ? FontStyle.italic
+                : null,
+            color: isLaw && !item.hasPlainSummary
+                ? theme.colorScheme.onSurfaceVariant
+                : null,
+          ),
+          maxLines: 4,
+          overflow: TextOverflow.ellipsis,
+        ),
+        const SizedBox(height: 12),
+        tagsSection,
+      ],
+    );
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -643,127 +753,63 @@ class _CivicCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  item.source,
-                  style: theme.textTheme.bodyMedium?.copyWith(
+          if (isLaw)
+            GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: openDetail,
+              child: mainBody,
+            )
+          else
+            mainBody,
+          const SizedBox(height: 10),
+          actionRow,
+        ],
+      ),
+    );
+  }
+}
+
+class _CardLinkAction extends StatelessWidget {
+  const _CardLinkAction({
+    required this.label,
+    required this.icon,
+    required this.onTap,
+  });
+
+  final String label;
+  final List<List<dynamic>> icon;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: onTap,
+      child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 44, minWidth: 44),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                HugeIcon(
+                  icon: icon,
+                  color: theme.colorScheme.primary,
+                  size: 11,
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  label,
+                  style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w700,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-              const SizedBox(width: 8),
-              _LevelGlyph(level: item.level),
-              const SizedBox(width: 8),
-              _ImportanceDots(value: item.importance),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            item.localizedTitle(locale),
-            style: theme.textTheme.titleLarge?.copyWith(fontSize: 14),
-            maxLines: 3,
-            overflow: TextOverflow.ellipsis,
-          ),
-          const SizedBox(height: 6),
-          Text(
-            item.localizedSummary(locale),
-            style: theme.textTheme.bodyMedium,
-            maxLines: 4,
-            overflow: TextOverflow.ellipsis,
-          ),
-          const SizedBox(height: 12),
-          Wrap(
-            spacing: 6,
-            runSpacing: 6,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: [
-              if (item.actionPossible)
-                Tooltip(
-                  message: strings.civicActionHint,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 3,
-                    ),
-                    decoration: BoxDecoration(
-                      color: CivicPalette.statusEmeraldBg,
-                      borderRadius: BorderRadius.circular(999),
-                      border: Border.all(
-                        color: const Color(0xFFA7F3D0),
-                      ),
-                    ),
-                    child: Text(
-                      strings.civicAction,
-                      style: const TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w800,
-                        color: CivicPalette.statusEmeraldFg,
-                      ),
-                    ),
+                    color: theme.colorScheme.primary,
                   ),
                 ),
-              for (final t in item.tags.take(3))
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 3,
-                  ),
-                  decoration: BoxDecoration(
-                    color: CivicPalette.muted,
-                    borderRadius: BorderRadius.circular(999),
-                  ),
-                  child: Text(
-                    t.startsWith('#') ? t.substring(1) : t,
-                    style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w600,
-                      color: theme.textTheme.bodyMedium?.color,
-                    ),
-                  ),
-                ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Align(
-            alignment: Alignment.centerRight,
-            child: InkWell(
-              borderRadius: BorderRadius.circular(8),
-              onTap: () => launchUrl(
-                Uri.parse(item.link),
-                mode: LaunchMode.externalApplication,
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 6,
-                  vertical: 4,
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    HugeIcon(
-                      icon: HugeIcons.strokeRoundedLinkSquare01,
-                      color: theme.colorScheme.primary,
-                      size: 11,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      strings.open,
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w700,
-                        color: theme.colorScheme.primary,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              ],
             ),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -819,7 +865,78 @@ class _ImportanceDots extends StatelessWidget {
   }
 }
 
-// ─── Empty + footer ─────────────────────────────────────────────────────────
+// ─── Error + empty + footer ─────────────────────────────────────────────────
+
+class _FeedErrorBanner extends StatelessWidget {
+  const _FeedErrorBanner({
+    required this.strings,
+    required this.onRetry,
+  });
+
+  final AppStrings strings;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.error.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: theme.colorScheme.error.withValues(alpha: 0.35),
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                HugeIcon(
+                  icon: HugeIcons.strokeRoundedAlert02,
+                  color: theme.colorScheme.error,
+                  size: 20,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        strings.loadError,
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          color: theme.colorScheme.error,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        strings.loadErrorHint,
+                        style: theme.textTheme.bodySmall,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Align(
+              alignment: Alignment.centerRight,
+              child: FilledButton.tonal(
+                onPressed: onRetry,
+                child: Text(strings.retry),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
 class _EmptyState extends StatelessWidget {
   const _EmptyState({required this.strings, required this.onReset});

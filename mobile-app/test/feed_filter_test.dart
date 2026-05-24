@@ -122,5 +122,9 @@ void main() {
       ).apply([sample, roBill]),
       hasLength(1),
     );
+    expect(
+      const FeedFilters(language: AppLocale.en).apply([sample, roBill]),
+      hasLength(2),
+    );
   });
 }
